@@ -8,9 +8,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
-import { useId, useState, type FormEvent } from 'react'
-import { Link, useSearchParams } from 'react-router'
-import { submitContactEnquiry } from '../config/contactForm.ts'
+import { Link } from 'react-router'
 import HeroVisual from '../components/HeroVisual'
 import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
@@ -72,44 +70,6 @@ const statItems = [
 ]
 
 export default function Home() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const formId = useId()
-  const [honeypot, setHoneypot] = useState('')
-  const [formError, setFormError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(searchParams.get('submitted') === 'true')
-
-  const handleContactSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setFormError(null)
-
-    if (honeypot.trim() !== '') {
-      setSubmitted(true)
-      return
-    }
-
-    const form = event.currentTarget
-    const formData = new FormData(form)
-    const name = String(formData.get('name') ?? '').trim()
-    const email = String(formData.get('email') ?? '').trim()
-    const message = String(formData.get('message') ?? '').trim()
-
-    setSubmitting(true)
-    const result = await submitContactEnquiry({ name, email, message })
-    setSubmitting(false)
-
-    if (result.ok) {
-      setSubmitted(true)
-      const nextSearchParams = new URLSearchParams(searchParams)
-      nextSearchParams.set('submitted', 'true')
-      setSearchParams(nextSearchParams, { replace: true })
-      form.reset()
-      return
-    }
-
-    setFormError(result.error)
-  }
-
   return (
     <>
       <PageMeta
@@ -130,9 +90,9 @@ export default function Home() {
             </div>
 
             <h1 className="display-xl hero-title mt-3.5 lg:mt-4">
-              Design the product
+              Everything feels <span className="italic text-accent">the same.</span>
               <br />
-              <span className="italic text-accent">only you would make.</span>
+              Your product doesn't have to.
             </h1>
 
             <div className="hero-lede mt-3.5 lg:mt-4">
@@ -531,83 +491,25 @@ export default function Home() {
             </h2>
 
             <div className="grid-12 mt-16">
-              <div className="md:col-span-8 lg:col-span-5">
+              <div className="md:col-span-8 lg:col-span-6">
                 <p className="measure text-xl leading-relaxed text-muted">
                   Share what you are trying to change, where the work is stuck and what
                   a useful outcome would look like. Michael will reply directly.
                 </p>
-                {submitted && (
-                  <p className="mt-6 border-l-2 border-accent pl-4 text-base text-bone" role="status">
-                    Thanks. Your message has been sent.
-                  </p>
-                )}
               </div>
 
-              <form
-                onSubmit={handleContactSubmit}
-                className="contact-form grid gap-6 md:col-span-10 md:col-start-3 lg:col-span-6 lg:col-start-7"
+              <Link
+                to="/contact"
+                className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 md:col-span-6 md:col-start-3 lg:col-span-4 lg:col-start-9"
               >
-                <div
-                  className="absolute -z-10 h-0 w-0 overflow-hidden opacity-0"
-                  aria-hidden="true"
-                >
-                  <label htmlFor={`${formId}-company`}>Company website</label>
-                  <input
-                    id={`${formId}-company`}
-                    type="text"
-                    name="company_website"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    value={honeypot}
-                    onChange={(e) => setHoneypot(e.target.value)}
-                  />
-                </div>
-
-                {formError ? (
-                  <p className="border-l-2 border-accent pl-4 text-base text-bone" role="alert">
-                    {formError}
-                  </p>
-                ) : null}
-
-                <label className="grid gap-2">
-                  <span className="label text-faint">Name</span>
-                  <input
-                    className="form-field"
-                    type="text"
-                    name="name"
-                    autoComplete="name"
-                    required
-                  />
-                </label>
-                <label className="grid gap-2">
-                  <span className="label text-faint">Email</span>
-                  <input
-                    className="form-field"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    inputMode="email"
-                    required
-                  />
-                </label>
-                <label className="grid gap-2">
-                  <span className="label text-faint">Message</span>
-                  <textarea className="form-field min-h-40 resize-y" name="message" required />
-                </label>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 text-left disabled:opacity-60"
-                >
-                  <span className="label">{submitting ? 'Sending…' : 'Send enquiry'}</span>
-                  <ArrowRight
-                    size={14}
-                    strokeWidth={1.5}
-                    aria-hidden
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </button>
-              </form>
+                <span className="label">Choose how to get in touch</span>
+                <ArrowRight
+                  size={14}
+                  strokeWidth={1.5}
+                  aria-hidden
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Link>
             </div>
           </Reveal>
         </div>

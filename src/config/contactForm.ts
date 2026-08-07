@@ -4,6 +4,8 @@ const WEB3FORMS_ACCESS_KEY = '8ee89548-7302-4128-950b-55fed9b298d1'
 export type ContactEnquiryPayload = {
   name: string
   email: string
+  organisation: string
+  reason: string
   message: string
 }
 
@@ -14,9 +16,14 @@ export async function submitContactEnquiry(
   body.append('access_key', WEB3FORMS_ACCESS_KEY)
   body.append('name', payload.name.trim())
   body.append('email', payload.email.trim())
+  body.append('organization', payload.organisation.trim())
+  body.append('reason', payload.reason)
   body.append('subject', 'New 4th Culture project enquiry')
   body.append('from_name', '4th Culture website')
-  body.append('message', payload.message.trim())
+  body.append(
+    'message',
+    `Reason for contact: ${payload.reason}\nOrganisation: ${payload.organisation.trim() || 'Not provided'}\n\n${payload.message.trim()}`,
+  )
   body.append('botcheck', 'false')
 
   const res = await fetch(WEB3FORMS_URL, {

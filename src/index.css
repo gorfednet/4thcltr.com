@@ -109,9 +109,10 @@
 
   .label {
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 400;
-    letter-spacing: 0.18em;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
 
@@ -131,6 +132,10 @@
     gap: 2.5rem 2rem;
   }
 
+  .grid-12 > * {
+    min-width: 0;
+  }
+
   .measure {
     max-width: 60ch;
   }
@@ -148,7 +153,7 @@
 
   .wrap-name {
     overflow-wrap: break-word;
-    hyphens: auto;
+    hyphens: none;
   }
 }
 
@@ -167,16 +172,19 @@
 }
 
 .reveal {
-  opacity: 0;
+  opacity: 1;
   transform: translateY(18px);
-  transition:
-    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal[data-shown='true'] {
-  opacity: 1;
   transform: none;
+}
+
+.tenet-watermark {
+  color: transparent;
+  opacity: 0.22;
+  -webkit-text-stroke: 1px var(--color-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -211,6 +219,28 @@
   .button-outline:hover, .button-outline:focus-visible { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-on-accent); transform: translateY(-1px); }
   .button-solid { border: 1px solid var(--color-accent); background: var(--color-accent); color: var(--color-on-accent); }
   .button-solid:hover, .button-solid:focus-visible { background: var(--color-accent-deep); border-color: var(--color-accent-deep); transform: translateY(-1px); }
+
+  .form-field {
+    min-height: 3rem;
+    width: 100%;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    background: var(--color-ground);
+    color: var(--color-bone);
+    padding: 0.875rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .form-field:hover { border-color: var(--color-muted); }
+  .form-field option { background: var(--color-ground); color: var(--color-bone); }
+  .form-field:focus-visible {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+    outline: 0;
+  }
+  .contact-form { min-width: 0; }
 
   .menu-trigger { display: inline-flex; align-items: center; gap: .7rem; min-height: 2.75rem; }
   .menu-mark { display: grid; gap: 4px; width: 1rem; }
@@ -255,6 +285,10 @@
 @media (max-width: 639px) {
   .display-xl { letter-spacing: -0.035em; }
   .proof-row::before { left: -.5rem; }
+  [data-layout] .shell { padding-inline: 1.25rem; }
+  [data-layout="minimal"] .shell.py-24,
+  [data-layout="minimal"] .shell.py-28,
+  [data-layout="minimal"] .shell.py-36 { padding-block: 5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -265,12 +299,6 @@
 
 .menu-trigger[aria-expanded='true'] .menu-mark i:first-child { transform: translateY(2.5px) rotate(45deg); }
 .menu-trigger[aria-expanded='true'] .menu-mark i:last-child { transform: translateY(-2.5px) rotate(-45deg); }
-
-:root {
-  transition:
-    background-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
-    color 420ms cubic-bezier(0.16, 1, 0.3, 1);
-}
 
 [data-layout="magazine"] .shell { max-width: 90rem; }
 [data-layout="magazine"] .shell.py-24 { padding-block: 4rem; }
@@ -315,7 +343,7 @@
 [data-layout="swiss"] .grid-12 { gap: 1.25rem 3rem; }
 [data-layout="swiss"] .hero-title { max-width: 14ch; }
 
-/* Hero composition reshuffles — same content, different AI layouts */
+/* Hero composition reshuffles the same content into different layouts. */
 @media (min-width: 1024px) {
   [data-hero="split-reverse"] .hero-grid { direction: rtl; }
   [data-hero="split-reverse"] .hero-grid > * { direction: ltr; }
@@ -353,11 +381,11 @@
 [data-mood="saas"] .button-outline,
 [data-mood="saas"] .button-solid,
 [data-mood="saas"] .hero-cta button {
-  border-radius: 999px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-accent) 12%, transparent);
 }
 [data-mood="saas"] .stat-cell,
 [data-mood="saas"] .engagement-card {
-  border-radius: 1rem;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
 }
 
 [data-mood="startup"] .hero-section {
@@ -367,14 +395,16 @@
     var(--color-ground);
 }
 
-[data-mood="glow"] body::after,
+[data-mood="glow"] .hero-title span,
 [data-mood="neon"] .hero-title span {
   text-shadow: 0 0 24px color-mix(in srgb, var(--color-accent) 55%, transparent);
 }
-[data-mood="neon"] .label { letter-spacing: 0.28em; }
+[data-mood="neon"] .label { letter-spacing: 0.18em; }
 
-[data-mood="pastel"] .shell {
-  border-radius: 1.5rem;
+[data-mood="pastel"] .practice-panel,
+[data-mood="pastel"] .engagement-card,
+[data-mood="pastel"] .stat-cell {
+  border-radius: var(--radius-block);
 }
 [data-mood="pastel"] .rule-top {
   border-top-style: dashed;
@@ -384,7 +414,6 @@
 [data-mood="brutal"] .button-solid,
 [data-mood="brutal"] .hero-cta button {
   border-width: 2px;
-  border-radius: 0;
   text-transform: uppercase;
 }
 
@@ -393,7 +422,14 @@
   padding-left: 1rem;
 }
 
-/* Radius scale — AI's favorite continuous slider */
+[data-hero="stacked-center"][data-mood="swiss"] .hero-title {
+  border-top: 4px solid var(--color-accent);
+  border-left: 0;
+  padding-top: 0.75rem;
+  padding-left: 0;
+}
+
+/* Radius scale, the familiar continuous design slider. */
 :root,
 [data-radius="sharp"] {
   --radius-block: 0;
@@ -430,12 +466,13 @@
   [data-mood="startup"] .hero-section {
     background: var(--color-ground);
   }
+  [data-mood="glow"] .hero-title span,
   [data-mood="neon"] .hero-title span {
     text-shadow: none;
   }
 }
 
-/* Type scale — another interchangeable AI dial */
+/* Type scale is another interchangeable design dial. */
 [data-type="compact"] .hero-title {
   font-size: clamp(1.7rem, 3.4vw, 3.25rem) !important;
 }
@@ -455,4 +492,107 @@
 [data-type="airy"] .measure {
   font-size: 1.0625rem;
   line-height: 1.7;
+}
+
+/*
+ * Keep the complete hero proposition and regenerate control above the fold.
+ * Width controls wrapping; dynamic viewport height controls scale on short
+ * screens. These rules intentionally win over the randomized type dial.
+ */
+.hero-title {
+  font-size: clamp(1.75rem, min(4vw, 6.5dvh), 3.5rem) !important;
+  line-height: clamp(0.9, 0.86 + 0.01vw, 0.98) !important;
+}
+
+.hero-section { isolation: isolate; }
+.hero-copy,
+.hero-stats { position: relative; z-index: 2; }
+.hero-visual { z-index: 0; pointer-events: none; }
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid-12 { gap: 2.5rem 2rem; }
+  .proof-row > *,
+  .contact-form,
+  .practice-panel { min-width: 0; }
+}
+
+@media (min-width: 1024px) {
+  .hero-grid > *,
+  .grid-12 > * { min-width: 0; }
+  .hero-copy { max-width: 100%; }
+  [data-hero="stacked-center"] .hero-copy,
+  [data-hero="stacked-flush"] .hero-copy { position: relative; z-index: 2; }
+}
+
+@media (max-height: 760px) {
+  .hero-section {
+    padding-top: 5rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .hero-copy {
+    justify-content: flex-start;
+    padding-block: 0 !important;
+  }
+
+  .hero-title {
+    margin-top: 0.75rem !important;
+    font-size: clamp(1.65rem, min(3.4vw, 5.5dvh), 2.9rem) !important;
+    line-height: 0.92 !important;
+  }
+
+  .hero-lede {
+    margin-top: 0.75rem !important;
+  }
+
+  .hero-lede .measure {
+    font-size: 0.9375rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .hero-cta {
+    margin-top: 0.875rem !important;
+  }
+
+  .hero-cta-button {
+    padding-block: 0.625rem !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 800px) {
+  [data-hero="stacked-center"] .hero-visual,
+  [data-hero="stacked-flush"] .hero-visual {
+    display: none;
+  }
+
+  [data-hero="stacked-center"] .hero-grid,
+  [data-hero="stacked-flush"] .hero-grid {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 380px) and (max-height: 700px) {
+  .hero-section {
+    padding-top: 4.75rem !important;
+  }
+
+  .hero-title {
+    font-size: 1.55rem !important;
+    line-height: 0.94 !important;
+  }
+
+  .hero-lede .measure {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .hero-cta {
+    margin-top: 0.75rem !important;
+  }
+}
+
+@supports not (height: 100dvh) {
+  .hero-title {
+    font-size: clamp(1.75rem, 4vw, 3.5rem) !important;
+  }
 }

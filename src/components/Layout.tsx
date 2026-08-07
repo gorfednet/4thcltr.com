@@ -73,7 +73,7 @@ export default function Layout() {
 
       <header
         className={`fixed inset-x-0 top-0 z-40 transition-all duration-500 ${
-          scrolled ? 'border-b border-line-soft bg-ground/85 backdrop-blur-xl' : ''
+          scrolled ? 'border-b border-line-soft bg-ground' : ''
         }`}
       >
         <div className="shell flex items-center justify-between py-5">
@@ -91,9 +91,9 @@ export default function Layout() {
             <Link to="/manifesto" className={navLinkClass}>
               Manifesto
             </Link>
-            <SectionLink to="contact" className="button-outline label px-5 py-2.5">
+            <Link to="/contact" className="button-outline label px-5 py-2.5">
               Start a project
-            </SectionLink>
+            </Link>
           </nav>
 
           <button
@@ -149,13 +149,13 @@ export default function Layout() {
               >
                 Manifesto
               </Link>
-              <SectionLink
-                to="contact"
+              <Link
+                to="/contact"
                 className="button-solid label mt-5 px-5 py-3.5 text-center"
-                onNavigate={() => setMenuOpen(false)}
+                onClick={() => setMenuOpen(false)}
               >
                 Start a project
-              </SectionLink>
+              </Link>
             </div>
           </nav>
         </div>
@@ -209,9 +209,9 @@ export default function Layout() {
                   </SectionLink>
                 </li>
                 <li>
-                  <SectionLink to="contact" className="footer-link">
+                  <Link to="/contact" className="footer-link">
                     Start a project
-                  </SectionLink>
+                  </Link>
                 </li>
               </ul>
             </div>

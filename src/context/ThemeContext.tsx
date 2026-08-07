@@ -1,14 +1,11 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useLayoutEffect, useRef, useState } from 'react'
 import {
-  defaultFontPack,
+  defaultRecipe,
   defaultTheme,
-  fontPacks,
-  heroes,
-  layouts,
-  moods,
-  radii,
-  themes,
-  typeScales,
+  designRecipes,
+  getFontPack,
+  getTheme,
+  type DesignRecipe,
   type FontPack,
   type HeroComposition,
   type Layout,
@@ -19,8 +16,8 @@ import {
 } from '../themes'
 
 export type DesignState = {
+  recipe: DesignRecipe
   theme: Theme
-  themeIndex: number
   layout: Layout
   mood: Mood
   hero: HeroComposition
@@ -32,25 +29,29 @@ export type DesignState = {
 }
 
 const ThemeContext = createContext<DesignState>({
+  recipe: defaultRecipe,
   theme: defaultTheme,
-  themeIndex: 0,
-  layout: defaultTheme.layout,
-  mood: defaultTheme.mood,
-  hero: defaultTheme.hero,
-  radius: defaultTheme.radius,
-  fontPack: defaultFontPack,
-  typeScale: 'default',
+  layout: defaultRecipe.layout,
+  mood: defaultRecipe.mood,
+  hero: defaultRecipe.hero,
+  radius: defaultRecipe.radius,
+  fontPack: getFontPack(defaultRecipe.fontPackId),
+  typeScale: defaultRecipe.typeScale,
   generation: 0,
   randomize: () => {},
 })
 
-function pickDifferent<T>(options: readonly T[], current: T): T {
-  if (options.length < 2) return options[0]
-  let next: T
-  do {
-    next = options[Math.floor(Math.random() * options.length)]
-  } while (next === current)
-  return next
+function getInitialRecipeIndex() {
+  if (typeof window === 'undefined') return 0
+  const requestedId = new URLSearchParams(window.location.search).get('design')
+  const requestedIndex = designRecipes.findIndex((recipe) => recipe.id === requestedId)
+  return requestedIndex >= 0 ? requestedIndex : 0
+}
+
+function shuffledRecipeIds() {
+  return designRecipes
+    .map((recipe) => recipe.id)
+    .sort(() => Math.random() - 0.5)
 }
 
 function applyDesign(
@@ -92,50 +93,64 @@ function applyDesign(
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [themeIndex, setThemeIndex] = useState(0)
-  const [layout, setLayout] = useState<Layout>(defaultTheme.layout)
-  const [mood, setMood] = useState<Mood>(defaultTheme.mood)
-  const [hero, setHero] = useState<HeroComposition>(defaultTheme.hero)
-  const [radius, setRadius] = useState<RadiusScale>(defaultTheme.radius)
-  const [fontPack, setFontPack] = useState<FontPack>(defaultFontPack)
-  const [typeScale, setTypeScale] = useState<TypeScale>('default')
+  const [recipeIndex, setRecipeIndex] = useState(getInitialRecipeIndex)
   const [generation, setGeneration] = useState(0)
-  const prevIndex = useRef(0)
+  const recipe = designRecipes[recipeIndex] ?? defaultRecipe
+  const theme = getTheme(recipe.themeId)
+  const fontPack = getFontPack(recipe.fontPackId)
+  const remainingRecipeIds = useRef(shuffledRecipeIds())
 
-  useEffect(() => {
-    applyDesign(themes[themeIndex], layout, mood, hero, radius, fontPack, typeScale)
-    prevIndex.current = themeIndex
-  }, [themeIndex, layout, mood, hero, radius, fontPack, typeScale])
+  useLayoutEffect(() => {
+    applyDesign(
+      theme,
+      recipe.layout,
+      recipe.mood,
+      recipe.hero,
+      recipe.radius,
+      fontPack,
+      recipe.typeScale,
+    )
+  }, [theme, recipe, fontPack])
 
   function randomize() {
-    let nextTheme: number
-    do {
-      nextTheme = Math.floor(Math.random() * themes.length)
-    } while (nextTheme === prevIndex.current && themes.length > 1)
+    const isEligible = (candidate: DesignRecipe) =>
+      candidate.themeId !== recipe.themeId && candidate.layout !== recipe.layout
+    let eligibleIds = remainingRecipeIds.current.filter((id) => {
+      const candidate = designRecipes.find((item) => item.id === id)
+      return candidate ? isEligible(candidate) : false
+    })
 
-    // Independently shuffle every surface so colors, type, layout, and mood
-    // recombine — the joke is how interchangeable the “AI design” becomes.
-    setThemeIndex(nextTheme)
-    setLayout(pickDifferent(layouts, layout))
-    setMood(pickDifferent(moods, mood))
-    setHero(pickDifferent(heroes, hero))
-    setRadius(pickDifferent(radii, radius))
-    setFontPack(pickDifferent(fontPacks, fontPack))
-    setTypeScale(pickDifferent(typeScales, typeScale))
+    if (eligibleIds.length === 0) {
+      remainingRecipeIds.current = shuffledRecipeIds()
+      eligibleIds = remainingRecipeIds.current.filter((id) => {
+        const candidate = designRecipes.find((item) => item.id === id)
+        return candidate ? isEligible(candidate) : false
+      })
+    }
+
+    const nextId = eligibleIds[0]
+    const nextIndex = designRecipes.findIndex((candidate) => candidate.id === nextId)
+    const nextRecipe = designRecipes[nextIndex] ?? defaultRecipe
+    remainingRecipeIds.current = remainingRecipeIds.current.filter((id) => id !== nextRecipe.id)
+    const url = new URL(window.location.href)
+    url.searchParams.set('design', nextRecipe.id)
+    window.history.replaceState({}, '', url)
+
+    setRecipeIndex(nextIndex)
     setGeneration((value) => value + 1)
   }
 
   return (
     <ThemeContext.Provider
       value={{
-        theme: themes[themeIndex],
-        themeIndex,
-        layout,
-        mood,
-        hero,
-        radius,
+        recipe,
+        theme,
+        layout: recipe.layout,
+        mood: recipe.mood,
+        hero: recipe.hero,
+        radius: recipe.radius,
         fontPack,
-        typeScale,
+        typeScale: recipe.typeScale,
         generation,
         randomize,
       }}

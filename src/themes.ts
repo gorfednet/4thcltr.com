@@ -4,6 +4,18 @@ export type HeroComposition = 'split' | 'split-reverse' | 'stacked-center' | 'st
 export type RadiusScale = 'sharp' | 'soft' | 'pill'
 export type TypeScale = 'compact' | 'default' | 'airy'
 
+export type DesignRecipe = {
+  id: string
+  name: string
+  themeId: string
+  fontPackId: string
+  layout: Layout
+  mood: Mood
+  hero: HeroComposition
+  radius: RadiusScale
+  typeScale: TypeScale
+}
+
 export type FontPack = {
   id: string
   name: string
@@ -55,7 +67,7 @@ export const heroes: HeroComposition[] = ['split', 'split-reverse', 'stacked-cen
 export const radii: RadiusScale[] = ['sharp', 'soft', 'pill']
 export const typeScales: TypeScale[] = ['compact', 'default', 'airy']
 
-/** Swappable type systems — same page, different “AI font taste.” */
+/** Swappable type systems for the same page. */
 export const fontPacks: FontPack[] = [
   {
     id: 'editorial-serif',
@@ -549,8 +561,8 @@ export const themes: Theme[] = [
       bone: '#1a1a18',
       muted: '#5b5b59',
       faint: '#61615f',
-      accent: '#cc3700',
-      accentDeep: '#a32c00',
+      accent: '#a32c00',
+      accentDeep: '#7f2200',
       onAccent: '#ffffff',
       line: 'rgba(26,26,24,0.12)',
       lineSoft: 'rgba(26,26,24,0.06)',
@@ -630,8 +642,8 @@ export const themes: Theme[] = [
       bone: '#1e2430',
       muted: '#5d6168',
       faint: '#5b5e64',
-      accent: '#c02848',
-      accentDeep: '#9a203a',
+      accent: '#9a203a',
+      accentDeep: '#78182d',
       onAccent: '#ffffff',
       line: 'rgba(30,36,48,0.12)',
       lineSoft: 'rgba(30,36,48,0.06)',
@@ -947,3 +959,47 @@ export const themes: Theme[] = [
 ]
 
 export const defaultTheme = themes[0]
+
+/**
+ * The finite, reviewable design catalog. Each palette keeps its intentionally
+ * paired structural defaults and font system; only known cascade conflicts are
+ * corrected. Dense compositions use compact type, while spacious minimal
+ * compositions can safely use the airy scale.
+ */
+const recipeOverrides: Partial<
+  Record<string, Partial<Pick<DesignRecipe, 'layout' | 'mood' | 'hero' | 'radius' | 'typeScale'>>>
+> = {
+  void: { radius: 'soft' },
+  paper: { radius: 'sharp' },
+}
+
+export const designRecipes: DesignRecipe[] = themes.map((theme) => {
+  const fontPack =
+    fontPacks.find(
+      (pack) => pack.display === theme.fonts.display && pack.sans === theme.fonts.sans,
+    ) ?? fontPacks.find((pack) => pack.display === theme.fonts.display) ?? defaultFontPack
+  const defaults: DesignRecipe = {
+    id: theme.id,
+    name: `${theme.name} / ${fontPack.name}`,
+    themeId: theme.id,
+    fontPackId: fontPack.id,
+    layout: theme.layout,
+    mood: theme.mood,
+    hero: theme.hero,
+    radius: theme.radius,
+    typeScale:
+      theme.layout === 'dense' ? 'compact' : theme.layout === 'minimal' ? 'airy' : 'default',
+  }
+
+  return { ...defaults, ...recipeOverrides[theme.id] }
+})
+
+export const defaultRecipe = designRecipes[0]
+
+export function getTheme(themeId: string): Theme {
+  return themes.find((theme) => theme.id === themeId) ?? defaultTheme
+}
+
+export function getFontPack(fontPackId: string): FontPack {
+  return fontPacks.find((fontPack) => fontPack.id === fontPackId) ?? defaultFontPack
+}

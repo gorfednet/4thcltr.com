@@ -10,9 +10,17 @@ const routes = [
     segment: 'manifesto',
     title: 'The manifesto · 4th Culture',
     description:
-      'Seven positions from 4th Culture on why design is no longer just visual, what differentiation demands, and why a human still holds the pen — over 25+ years of proof.',
+      'Seven positions from 4th Culture on design judgment, differentiation and the useful role AI can play when people remain accountable for the work.',
     url: 'https://4thcltr.com/manifesto',
     type: 'article',
+  },
+  {
+    segment: 'contact',
+    title: 'Contact Michael Duncan McArthur · 4th Culture',
+    description:
+      'Contact 4th Culture about executive design leadership, contract or retained product design, team building, strategy, speaking and advisory work.',
+    url: 'https://4thcltr.com/contact',
+    type: 'website',
   },
 ]
 

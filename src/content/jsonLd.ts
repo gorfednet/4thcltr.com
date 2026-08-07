@@ -89,7 +89,7 @@ export function manifestoJsonLd() {
     '@id': `${siteUrl}/manifesto#article`,
     headline: `The ${studio.name} manifesto`,
     description:
-      'Seven positions on why design is no longer just visual, and why a human still holds the pen.',
+      'Seven positions on design judgment, differentiation and the useful role AI can play when people remain accountable for the work.',
     author: { '@id': `${siteUrl}/#person` },
     publisher: { '@id': `${siteUrl}/#organization` },
     mainEntityOfPage: `${siteUrl}/manifesto`,

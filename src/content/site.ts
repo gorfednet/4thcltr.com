@@ -8,7 +8,7 @@ export const studio = {
   principal: 'Michael Duncan McArthur',
   base: 'Toronto',
   positioning:
-    'A design practice for companies that refuse to feel like everyone else.',
+    'Independent design leadership, strategy and product work for companies with something specific to say.',
   linkedin: 'https://www.linkedin.com/in/gorfed/',
   github: 'https://github.com/gorfednet',
   portfolio: 'https://gorfed.net',
@@ -25,60 +25,60 @@ export type Tenet = {
 export const tenets: Tenet[] = [
   {
     number: '01',
-    title: 'There is a fourth culture, and we are building it.',
+    title: 'The fourth culture is already taking shape.',
     body: [
       'A third-culture kid is formed between places, belonging fully to neither the country of origin nor the country of residence, fluent in the gap between them. That is a literal description of how this practice was built: Vancouver, Surrey, White Rock, Dubai, Cairo, Toronto.',
-      'The fourth culture is the one forming now, between human and machine. Most people are either fleeing it or surrendering to it. We are neither. We are native to the gap, because working in the gap is the only thing we have ever done.',
-      'A culture is made by people. That is the part everyone keeps forgetting. It has taste, memory, argument, intent. A statistical average of everything that came before is not a culture. It is a smear.',
+      'Another overlap now shapes the work: people and machines. Some avoid these tools while others hand over too much. This practice sits between those positions, which is familiar territory.',
+      'People make culture. It carries taste, memory, argument and intent. A statistical average can describe what came before, but it cannot decide what deserves to come next.',
     ],
   },
   {
     number: '02',
-    title: 'A human is always in the loop, and always holds the pen.',
+    title: 'People set the direction and own the result.',
     body: [
-      'Not as a compliance checkbox. Not as a reviewer rubber-stamping a generated deck at the end of the pipeline. In the loop means a person sets the intent, judges the output, and owns the consequence.',
-      'Machines are extraordinary at volume, permutation, and recall. They are structurally incapable of caring whether the result is any good. Judgment is the job. Judgment does not delegate.',
+      'A human in the loop should mean more than a final review of a generated deck. A person sets the intent, judges the work and accepts the consequences.',
+      'Machines are excellent at volume, permutation and recall. Quality still depends on someone who understands the people, the business and the decision being made.',
     ],
   },
   {
     number: '03',
-    title: 'Everything feels the same. That is the real crisis.',
+    title: 'The internet keeps teaching itself the same design.',
     body: [
       'The same rounded card. The same gradient hero. The same three-column feature grid, the same testimonial carousel, the same soft blue. An entire industry converged on one template and called it best practice.',
-      'That convergence has a mechanism, not just a mood. A model trained on the entire internet does not select thoughtfully — it finds whatever pattern occurs most often and returns it as the default. The most common choice gets mistaken for the correct one, and "standard" quietly becomes a synonym for "popular." That is not curation. It is paint-by-numbers, running at the scale of every company, brand, and product that asks it for an answer at once.',
-      'Companies, brands, people, artists, technologies — none of them are interchangeable inputs to a distribution. Each deserves a choice made on purpose, by someone who can defend it. We were nourished during a period of differentiation, back when the web had a point of view, when you could feel a product had been made by a person with an opinion. That has been diminished at a catastrophic scale. We are here to return it.',
+      'Models learn from frequency. Ask for a sensible interface and they return the patterns they have seen most often, then popularity starts to look like a standard. The result may be competent, but the selection was never thoughtful.',
+      'A company, a product and the people using it are specific. Their design should be specific too. The web is better when you can tell that someone made a choice and can explain why.',
     ],
   },
   {
     number: '04',
-    title: 'We are not anti-AI. We are pro-human.',
+    title: 'AI is useful when judgment stays human.',
     body: [
-      'This is not nostalgia and it is not a protest. We use these tools every day, deliberately and well. Refusing them would be its own kind of vanity.',
-      'The objection is not to the machine. It is to mistaking its average for a standard. A model can surface the most common pattern in seconds; it takes a person to decide whether that pattern deserves to exist here, for this brand, this problem. We use AI to aid that judgment — to widen the options, to move faster through the unglamorous parts — never to replace the judgment itself.',
+      'We use these tools every day. They are fast, broad and especially useful for the parts of a project that do not benefit from ceremony.',
+      'A model can surface a common pattern in seconds. A person still has to decide whether that pattern belongs in this product, for this audience, at this moment. We use AI to explore more options and clear routine work faster. The decisions remain ours.',
     ],
   },
   {
     number: '05',
-    title: 'Differentiation is the deliverable.',
+    title: 'Differentiation begins before the interface.',
     body: [
-      'Clients do not actually hire us for screens. They hire us because their product is indistinguishable from four competitors and people cannot remember which one they used.',
-      'Standing apart is not decoration applied at the end. It is a feeling that has to be decided before the first pixel is placed: who you are for, what you refuse to do, what it should feel like to arrive. If the work could carry any other logo without anyone noticing, it failed. However polished it looks.',
+      'Clients hire us when their product is hard to distinguish from four competitors and people cannot remember which one they used.',
+      'The important choices happen before the first pixel: who the product is for, what it should feel like and which familiar conventions do not belong. If another logo could replace yours without anyone noticing, the work has missed something fundamental.',
     ],
   },
   {
     number: '06',
     title: 'Proof over posture.',
     body: [
-      'Over 25+ years of shipping, in regulated industries where the work is measured. Two patents filed. A brokerage ranked best in the country three years running. A health-transport product acquired for $57.5M. Twelve honours on the public record, from an Apple Editors’ Choice to an FWA Mobile of the Day. Apps for Chapters Indigo, Land Rover and C Spire that shipped and were reviewed in public. Eighty-five named clients, from Nike to the Ministry of Transportation of Ontario.',
-      'A manifesto is cheap. This one is backed by a record you can look up.',
+      'More than 25 years of shipped work includes two patent filings, a brokerage ranked best in Canada three years running and a health-transport product acquired for $57.5M. The public record also includes twelve honours and launched apps for Chapters Indigo, Land Rover and C Spire.',
+      'The proof section links the claims to their sources.',
     ],
   },
   {
     number: '07',
-    title: 'Small, senior, and accountable.',
+    title: 'Small, senior and accountable.',
     body: [
-      'No pyramid. No bait-and-switch where the person who won the work vanishes after kickoff. The principal is on the project, and agentic partners extend that reach without diluting the judgment behind it.',
-      'When a project needs more hands, we assemble a team of people we have actually worked with. You always know exactly who is doing the work, and exactly who to hold responsible for it.',
+      'The principal stays on the project from the first conversation through delivery. Specialist partners extend the team without obscuring who made a decision or who owns it.',
+      'When a project needs more hands, we bring in people we have worked with before. You will know who is doing the work and who is responsible for it.',
     ],
   },
 ]
@@ -98,7 +98,7 @@ export const facets: Facet[] = [
   {
     id: 'leadership',
     title: 'Executive design leadership',
-    lede: 'Standing in the room where the decisions are made, translating between the boardroom and the build. Over 25+ years of leading design inside organisations large enough to have real politics.',
+    lede: 'Design leadership for the decisions that connect company strategy to shipped work. More than 25 years inside organisations large enough to have real politics.',
     methods: [
       'Design org design and operating model',
       'Stakeholder alignment and executive narrative',
@@ -110,7 +110,7 @@ export const facets: Facet[] = [
   {
     id: 'strategy',
     title: 'Product & experience strategy',
-    lede: 'Deciding what to build and what to refuse. Framing the opportunity precisely enough that the design work becomes obvious rather than agonising.',
+    lede: 'Clear product choices start with a precise account of the opportunity, the constraints and the work that should wait.',
     methods: [
       'Discovery and opportunity framing',
       'Market, competitive and heuristic evaluation',
@@ -122,7 +122,7 @@ export const facets: Facet[] = [
   {
     id: 'research',
     title: 'Research & evidence',
-    lede: 'Replacing the loudest opinion in the room with something defensible. Evidence that survives contact with a sceptical executive.',
+    lede: 'Research and product evidence give teams a sound basis for decisions, including the ones that face executive scrutiny.',
     methods: [
       'User research and insight synthesis',
       'Behavioural and product analytics',
@@ -134,7 +134,7 @@ export const facets: Facet[] = [
   {
     id: 'craft',
     title: 'Design & build',
-    lede: 'Hands still on the tools, from interaction flows through to shipped front-end. That is why the strategy stays honest about what can actually be built.',
+    lede: 'The work runs from interaction flows to shipped front-end code, keeping strategy grounded in what the team can build and maintain.',
     methods: [
       'Interaction design and prototyping',
       'Interface and visual systems',
@@ -408,7 +408,7 @@ export const engagements: Engagement[] = [
     index: '01',
     name: 'The day',
     duration: 'Single day',
-    lede: 'One senior mind, one hard problem, one day. For teams that are stuck rather than under-resourced.',
+    lede: 'A focused day with a senior practitioner for a decision or design problem that has stalled.',
     points: [
       'Design or product critique with a written verdict',
       'Executive advisory and decision support',

@@ -2,7 +2,6 @@ import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
 import PageMeta from '../components/PageMeta'
 import Reveal from '../components/Reveal'
-import SectionLink from '../components/SectionLink'
 import { manifestoJsonLd, organizationJsonLd, personJsonLd } from '../content/jsonLd'
 import { pageSeo } from '../content/seo'
 import { studio, tenets } from '../content/site'
@@ -20,14 +19,13 @@ export default function Manifesto() {
       <header className="shell">
         <p className="label text-accent">The {studio.name} manifesto</p>
         <h1 className="display-xl mt-8 text-[length:clamp(3rem,10vw,9rem)]">
-          We are not
+          Keep the
           <br />
-          <span className="italic text-accent">replacing</span> anyone.
+          <span className="italic text-accent">judgment</span> human.
         </h1>
         <p className="measure-tight mt-12 font-display text-2xl italic leading-snug text-muted lg:text-3xl">
-          Seven positions on why design is no longer just visual, on what it means
-          to feel different, and on why the most valuable thing in the room is still
-          a person with a point of view.
+          Seven positions on making specific products, using AI with purpose and
+          remaining accountable for every design decision.
         </p>
       </header>
 
@@ -41,7 +39,7 @@ export default function Manifesto() {
             >
               <span
                 aria-hidden
-                className="pointer-events-none absolute -top-4 right-0 select-none font-display italic leading-none text-accent opacity-[0.04]"
+                className="tenet-watermark pointer-events-none absolute -top-4 right-0 select-none font-display italic leading-none"
                 style={{ fontSize: 'clamp(8rem, 18vw, 16rem)' }}
               >
                 {tenet.number}
@@ -84,13 +82,13 @@ export default function Manifesto() {
             </p>
 
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <SectionLink
-                to="contact"
+              <Link
+                to="/contact"
                 className="label inline-flex items-center gap-2 border border-accent bg-accent px-7 py-3.5 text-on-accent transition-opacity duration-300 hover:opacity-85"
               >
-                Put it to work
+                Describe your project
                 <ArrowRight size={13} strokeWidth={1.5} aria-hidden />
-              </SectionLink>
+              </Link>
               <Link
                 to="/"
                 className="label inline-flex items-center gap-2 border border-line px-7 py-3.5 text-bone transition-colors duration-300 hover:border-bone"

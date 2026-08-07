@@ -1,4 +1,4 @@
-/* Inline SVG wireframe — colours reference CSS custom properties via style
+/* Inline SVG wireframe. Colours reference CSS custom properties via style
    attributes so the SVG responds to theme changes automatically. */
 
 const v = {
@@ -18,7 +18,7 @@ export default function HeroVisual() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
-      className="h-full w-full"
+      className="pointer-events-none h-full w-full"
     >
       {Array.from({ length: 12 }, (_, row) =>
         Array.from({ length: 9 }, (_, col) => (

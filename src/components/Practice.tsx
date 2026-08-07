@@ -3,10 +3,10 @@ import { useId, useState } from 'react'
 import { facets } from '../content/site'
 
 const facetIcons = [
-  <Layers size={18} strokeWidth={1.25} aria-hidden />,
-  <LineChart size={18} strokeWidth={1.25} aria-hidden />,
-  <ScanSearch size={18} strokeWidth={1.25} aria-hidden />,
-  <Hammer size={18} strokeWidth={1.25} aria-hidden />,
+  <Layers key="layers" size={18} strokeWidth={1.25} aria-hidden />,
+  <LineChart key="line-chart" size={18} strokeWidth={1.25} aria-hidden />,
+  <ScanSearch key="scan-search" size={18} strokeWidth={1.25} aria-hidden />,
+  <Hammer key="hammer" size={18} strokeWidth={1.25} aria-hidden />,
 ]
 
 export default function Practice() {

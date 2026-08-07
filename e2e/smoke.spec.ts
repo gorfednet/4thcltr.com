@@ -14,4 +14,12 @@ test.describe('smoke', () => {
 
     expect(errors, `page errors: ${errors.join('; ')}`).toEqual([])
   })
+
+  for (const path of ['/manifesto/', '/contact/']) {
+    test(`${path} loads directly`, async ({ page }) => {
+      const response = await page.goto(path)
+      expect(response?.status()).toBeLessThan(400)
+      await expect(page.locator('h1')).toBeVisible()
+    })
+  }
 })

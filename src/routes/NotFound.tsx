@@ -16,8 +16,7 @@ export default function NotFound() {
         Nothing here.
       </h1>
       <p className="measure-tight mt-6 text-lg leading-relaxed text-muted">
-        The page you were looking for does not exist, which is at least a form of
-        differentiation.
+        The page you were looking for does not exist. Check the address or return home.
       </p>
       <Link
         to="/"

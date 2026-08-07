@@ -132,9 +132,10 @@ test.describe('desktop interaction matrix', () => {
       }
 
       await page.getByRole('link', { name: 'Start a project' }).first().click()
-      await expect(page.locator('#contact')).toBeInViewport()
+      await expect(page).toHaveURL(/\/contact$/)
       await expect(page.locator('form')).toHaveCount(1)
 
+      await page.goto(`/?design=${recipe.id}`)
       await page.getByRole('link', { name: 'Read the seven positions' }).click()
       await expect(page).toHaveURL(/\/manifesto$/)
     })
@@ -152,6 +153,29 @@ test.describe('manifesto recipe coverage', () => {
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
       )
       expect(overflow).toBeLessThanOrEqual(1)
+
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze()
+      expect(results.violations).toEqual([])
+    })
+  }
+})
+
+test.describe('contact recipe coverage', () => {
+  for (const recipe of designRecipes) {
+    test(`${recipe.id} contact route remains accessible`, async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 900 })
+      await page.goto(`/contact?design=${recipe.id}`)
+      await page.evaluate(() => document.fonts.ready)
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      )
+      expect(overflow).toBeLessThanOrEqual(1)
+      await expect(page.locator('form.contact-form')).toHaveCount(1)
+      await expect(page.getByLabel('Reason for getting in touch')).not.toContainText(/music/i)
+      await assertVisibleControlsNotCovered(page)
 
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
@@ -218,12 +242,17 @@ test('regeneration never repeats palette or layout consecutively', async ({ page
 test('site has one accessible contact form without DOM botcheck', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await openRecipe(page, designRecipes[0].id)
+  await expect(page.locator('form')).toHaveCount(0)
+  await page.goto(`/contact?design=${designRecipes[0].id}`)
   const form = page.locator('form.contact-form')
 
   await expect(form).toHaveCount(1)
   await expect(form.locator('input[name="botcheck"]')).toHaveCount(0)
   await expect(form.getByLabel('Name')).toHaveAttribute('required', '')
   await expect(form.getByLabel('Email')).toHaveAttribute('type', 'email')
+  await expect(form.getByLabel('Organisation')).toBeVisible()
+  await expect(form.getByLabel('Reason for getting in touch')).toHaveAttribute('required', '')
+  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(7)
   await expect(form.getByLabel('Message')).toHaveAttribute('required', '')
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
 })
@@ -238,16 +267,22 @@ test('contact form submits successfully without losing the design URL', async ({
       body: JSON.stringify({ success: true }),
     })
   })
-  await openRecipe(page, designRecipes[0].id)
+  await page.goto(`/contact?design=${designRecipes[0].id}`)
 
   await page.getByLabel('Name').fill('Test Person')
   await page.getByLabel('Email').fill('test@example.com')
+  await page.getByLabel('Organisation').fill('Example Company')
+  await page
+    .getByLabel('Reason for getting in touch')
+    .selectOption('Build or strengthen a product or design team')
   await page.getByLabel('Message').fill('A useful test enquiry.')
   await page.getByRole('button', { name: 'Send enquiry' }).click()
 
-  await expect(page.getByRole('status')).toHaveText('Thanks. Your message has been sent.')
+  await expect(page.getByRole('status')).toContainText('Thanks. Your message has been sent.')
   expect(submittedBody).toContain('Test Person')
   expect(submittedBody).toContain('test@example.com')
+  expect(submittedBody).toContain('Example Company')
+  expect(submittedBody).toContain('Build or strengthen a product or design team')
   await expect(page).toHaveURL(/design=noir/)
   await expect(page).toHaveURL(/submitted=true/)
 })
@@ -262,6 +297,14 @@ test('public copy and metadata contain no em dashes', async ({ page }) => {
 
   await page.goto('/manifesto')
   expect(await page.locator('body').innerText()).not.toContain('—')
+
+  await page.goto('/contact')
+  expect(await page.locator('body').innerText()).not.toContain('—')
+  await expect(page).toHaveTitle(/Contact Michael Duncan McArthur/)
+  await expect(page.locator('link[rel="canonical"]').last()).toHaveAttribute(
+    'href',
+    'https://4thcltr.com/contact',
+  )
 })
 
 test('keyboard and reduced-motion essentials remain usable', async ({ page }) => {
