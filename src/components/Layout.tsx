@@ -28,7 +28,7 @@ export default function Layout() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
-  const { theme } = useTheme()
+  const { layout, mood, hero, radius, typeScale } = useTheme()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -63,10 +63,10 @@ export default function Layout() {
   const navLinkClass = 'nav-link label text-muted hover:text-bone'
 
   return (
-    <div className="min-h-screen bg-ground" data-layout={theme.layout}>
+    <div className="min-h-screen bg-ground" data-layout={layout} data-mood={mood} data-hero={hero} data-radius={radius} data-type={typeScale}>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-50 focus:bg-accent focus:px-4 focus:py-2 focus:text-white"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-50 focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
       >
         Skip to content
       </a>

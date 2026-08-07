@@ -45,8 +45,8 @@ export const tenets: Tenet[] = [
     title: 'Everything feels the same. That is the real crisis.',
     body: [
       'The same rounded card. The same gradient hero. The same three-column feature grid, the same testimonial carousel, the same soft blue. An entire industry converged on one template and called it best practice.',
-      'It was never best practice. It was risk aversion with a design system bolted on. And the problem is no longer how things look. It is how they feel. Bland, frictionless, forgettable. Designed to offend no one, which means they move no one either.',
-      'We were nourished during a period of differentiation, back when the web had a point of view, when you could feel a product had been made by a person with an opinion. That has been diminished. We are here to return it.',
+      'That convergence has a mechanism, not just a mood. A model trained on the entire internet does not select thoughtfully — it finds whatever pattern occurs most often and returns it as the default. The most common choice gets mistaken for the correct one, and "standard" quietly becomes a synonym for "popular." That is not curation. It is paint-by-numbers, running at the scale of every company, brand, and product that asks it for an answer at once.',
+      'Companies, brands, people, artists, technologies — none of them are interchangeable inputs to a distribution. Each deserves a choice made on purpose, by someone who can defend it. We were nourished during a period of differentiation, back when the web had a point of view, when you could feel a product had been made by a person with an opinion. That has been diminished at a catastrophic scale. We are here to return it.',
     ],
   },
   {
@@ -54,7 +54,7 @@ export const tenets: Tenet[] = [
     title: 'We are not anti-AI. We are pro-human.',
     body: [
       'This is not nostalgia and it is not a protest. We use these tools every day, deliberately and well. Refusing them would be its own kind of vanity.',
-      'The objection is not to the machine. It is to the abdication. Companies replace the people who hold the taste, then wonder why the work stopped mattering. Tools should raise the ceiling on what a person can make. They should never be an excuse to lower the floor on who gets to make it.',
+      'The objection is not to the machine. It is to mistaking its average for a standard. A model can surface the most common pattern in seconds; it takes a person to decide whether that pattern deserves to exist here, for this brand, this problem. We use AI to aid that judgment — to widen the options, to move faster through the unglamorous parts — never to replace the judgment itself.',
     ],
   },
   {
@@ -182,7 +182,7 @@ export const outcomes: Outcome[] = [
     headline: 'Klick’s flagship brand management platform.',
     detail:
       'Directed the UX and UI teams on an omni-channel life sciences platform for marketing automation and rapid commercialisation, alongside client work for Abbott, Allergan, Takeda and the American Medical Association.',
-    citations: [{ label: 'Director, Product Design, 2016 to 2018', source: 'Klick Health' }],
+    citations: [{ label: 'Director, Product Design, 2017 to 2018', source: 'Klick Health' }],
   },
   {
     client: 'TowIt',
@@ -481,7 +481,7 @@ export const career: CareerEntry[] = [
       { title: 'Director, Product Design', period: '2017 to 2018' },
       { title: 'Director, User Experience', period: '2016 to 2017' },
     ],
-    note: 'KINETiQ life sciences platform, and the Circulation medical transport product.',
+    note: 'The Circulation medical transport product (2016 to 2017), then the KINETiQ life sciences platform (2017 to 2018).',
   },
   {
     company: 'TowIt',

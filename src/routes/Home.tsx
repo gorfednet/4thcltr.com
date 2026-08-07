@@ -80,9 +80,9 @@ export default function Home() {
         path={pageSeo.home.path}
         jsonLd={[organizationJsonLd(), personJsonLd(), websiteJsonLd()]}
       />
-      <section className="shell min-h-[92vh] pb-20 pt-36 lg:min-h-screen lg:pt-40">
-        <div className="flex min-h-[inherit] flex-col justify-between gap-16 lg:grid lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0">
-          <div className="flex flex-col justify-center lg:col-span-7 lg:py-12">
+      <section className="hero-section shell pb-8 pt-24 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-between lg:pb-10 lg:pt-28">
+        <div className="hero-grid flex flex-col gap-6 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-6">
+          <div className="hero-copy flex flex-col justify-center lg:col-span-7 lg:py-2">
             <div className="flex items-center gap-3">
               <span aria-hidden className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
@@ -91,14 +91,14 @@ export default function Home() {
               <p className="label text-muted">{studio.base} / available for engagements</p>
             </div>
 
-            <h1 className="display-xl mt-10 text-[length:clamp(3rem,10vw,9rem)] lg:text-[length:clamp(3rem,7.5vw,8rem)]">
+            <h1 className="display-xl hero-title mt-4 text-[length:clamp(1.85rem,4.6vw,3.5rem)] lg:mt-5 lg:text-[length:clamp(2.15rem,3.8vw,3.85rem)]">
               Everything feels <span className="italic text-accent">the same.</span>
               <br />
               Your product doesn't have to.
             </h1>
 
-            <div className="mt-12 lg:mt-16">
-              <p className="measure text-xl leading-relaxed text-muted lg:max-w-[52ch]">
+            <div className="mt-4 lg:mt-5">
+              <p className="measure text-[0.9375rem] leading-relaxed text-muted lg:max-w-[46ch] lg:text-base">
                 {studio.name} is the practice of{' '}
                 <span className="text-bone">{studio.principal}</span>. Design is no longer
                 just visual. Executive leadership, experience strategy, and product design
@@ -109,29 +109,29 @@ export default function Home() {
             <RegenerateButton />
           </div>
 
-          <div className="relative hidden items-center justify-center lg:col-span-5 lg:flex lg:self-stretch">
+          <div className="hero-visual relative hidden items-center justify-center lg:col-span-5 lg:flex lg:self-stretch lg:py-2">
             <div className="absolute inset-0 bg-gradient-to-l from-transparent to-ground/60" />
             <div className="absolute inset-0 bg-gradient-to-t from-ground via-transparent to-transparent" />
             <HeroVisual />
           </div>
+        </div>
 
-          <div className="lg:col-span-12 lg:self-end">
+        <div className="hero-stats mt-8 lg:mt-0">
             <dl className="grid grid-cols-2 gap-px border border-line-soft bg-line-soft lg:grid-cols-4">
               {statItems.map((stat) => (
                 <div
                   key={stat.label}
-                  className="stat-cell flex flex-col justify-between gap-6 bg-ground px-5 py-7 sm:px-6 sm:py-8"
+                  className="stat-cell flex flex-col justify-between gap-3 bg-ground px-4 py-4 sm:px-5 sm:py-5"
                 >
                   <div className="flex items-center gap-2 text-accent">{stat.icon}</div>
                   <div>
-                    <dt className="display-xl text-4xl lg:text-5xl">{stat.value}</dt>
-                    <dd className="label mt-2 text-faint">{stat.label}</dd>
+                    <dt className="display-xl text-2xl lg:text-3xl">{stat.value}</dt>
+                    <dd className="label mt-1.5 text-faint">{stat.label}</dd>
                   </div>
                 </div>
               ))}
             </dl>
           </div>
-        </div>
       </section>
 
       <section className="rule-top bg-ground-lift">
@@ -508,14 +508,14 @@ export default function Home() {
                   rel="noreferrer"
                   className="group flex items-center justify-between gap-4 border border-line px-6 py-5 transition-colors duration-300 hover:border-accent hover:bg-accent"
                 >
-                  <span className="label text-bone group-hover:text-white">
+                  <span className="label text-bone group-hover:text-on-accent">
                     Message on LinkedIn
                   </span>
                   <ArrowRight
                     size={14}
                     strokeWidth={1.5}
                     aria-hidden
-                    className="text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:text-white"
+                    className="text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:text-on-accent"
                   />
                 </a>
                 <a

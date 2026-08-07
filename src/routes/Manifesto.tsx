@@ -86,7 +86,7 @@ export default function Manifesto() {
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <SectionLink
                 to="contact"
-                className="label inline-flex items-center gap-2 border border-accent bg-accent px-7 py-3.5 text-white transition-opacity duration-300 hover:opacity-85"
+                className="label inline-flex items-center gap-2 border border-accent bg-accent px-7 py-3.5 text-on-accent transition-opacity duration-300 hover:opacity-85"
               >
                 Put it to work
                 <ArrowRight size={13} strokeWidth={1.5} aria-hidden />

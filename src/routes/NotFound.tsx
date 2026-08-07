@@ -21,7 +21,7 @@ export default function NotFound() {
       </p>
       <Link
         to="/"
-        className="label mt-10 w-fit border border-line px-6 py-3 text-bone transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-white"
+        className="label mt-10 w-fit border border-line px-6 py-3 text-bone transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-on-accent"
       >
         Back to the start
       </Link>
