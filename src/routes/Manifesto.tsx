@@ -1,0 +1,97 @@
+import { ArrowRight } from 'lucide-react'
+import { Link } from 'react-router'
+import Reveal from '../components/Reveal'
+import SectionLink from '../components/SectionLink'
+import { studio, tenets } from '../content/site'
+
+export default function Manifesto() {
+  return (
+    <article className="pt-40 lg:pt-52">
+      <header className="shell">
+        <p className="label text-accent">The {studio.name} manifesto</p>
+        <h1 className="display-xl mt-8 text-[length:clamp(3rem,10vw,9rem)]">
+          We are not
+          <br />
+          <span className="italic text-accent">replacing</span> anyone.
+        </h1>
+        <p className="measure-tight mt-12 font-display text-2xl italic leading-snug text-muted lg:text-3xl">
+          Seven positions on why design is no longer just visual, on what it means
+          to feel different, and on why the most valuable thing in the room is still
+          a person with a point of view.
+        </p>
+      </header>
+
+      <div className="shell mt-24 lg:mt-36">
+        {tenets.map((tenet, index) => (
+          <Reveal key={tenet.number}>
+            <section
+              className={`relative grid-12 overflow-hidden border-t border-line py-14 lg:py-20 ${
+                index === tenets.length - 1 ? 'border-b' : ''
+              }`}
+            >
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -top-4 right-0 select-none font-display italic leading-none text-accent opacity-[0.04]"
+                style={{ fontSize: 'clamp(8rem, 18vw, 16rem)' }}
+              >
+                {tenet.number}
+              </span>
+
+              <div className="md:col-span-2 lg:col-span-1">
+                <span className="font-display text-4xl italic text-accent lg:text-5xl">
+                  {tenet.number}
+                </span>
+              </div>
+
+              <h2 className="balance font-display text-[length:clamp(1.75rem,3.6vw,2.6rem)] leading-[1.08] tracking-tight md:col-span-10 lg:col-span-6">
+                {tenet.title}
+              </h2>
+
+              <div className="space-y-6 md:col-span-10 md:col-start-3 lg:col-span-4 lg:col-start-9">
+                {tenet.body.map((paragraph) => (
+                  <p
+                    key={paragraph}
+                    className="measure text-[1.0625rem] leading-[1.75] text-muted"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
+          </Reveal>
+        ))}
+      </div>
+
+      <Reveal>
+        <section className="shell mt-24 lg:mt-32">
+          <div className="border border-line bg-ground-lift px-6 py-16 text-center lg:px-20 lg:py-24">
+            <p className="label text-faint">Signed</p>
+            <p className="mt-6 font-display text-3xl italic lg:text-5xl">
+              {studio.principal}
+            </p>
+            <p className="mt-3 text-sm text-muted">
+              Principal, {studio.name} / {studio.base}
+            </p>
+
+            <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <SectionLink
+                to="contact"
+                className="label inline-flex items-center gap-2 border border-accent bg-accent px-7 py-3.5 text-white transition-opacity duration-300 hover:opacity-85"
+              >
+                Put it to work
+                <ArrowRight size={13} strokeWidth={1.5} aria-hidden />
+              </SectionLink>
+              <Link
+                to="/"
+                className="label inline-flex items-center gap-2 border border-line px-7 py-3.5 text-bone transition-colors duration-300 hover:border-bone"
+              >
+                See the practice
+                <ArrowRight size={13} strokeWidth={1.5} aria-hidden />
+              </Link>
+            </div>
+          </div>
+        </section>
+      </Reveal>
+    </article>
+  )
+}
