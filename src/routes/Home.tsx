@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  ArrowUp,
   Award,
   Building2,
   CalendarDays,
@@ -9,13 +8,14 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
-import { Link } from 'react-router'
+import { useId, useState, type FormEvent } from 'react'
+import { Link, useSearchParams } from 'react-router'
+import { submitContactEnquiry } from '../config/contactForm.ts'
 import HeroVisual from '../components/HeroVisual'
 import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
 import RegenerateButton from '../components/RegenerateButton'
 import Reveal from '../components/Reveal'
-import SectionLink from '../components/SectionLink'
 import {
   organizationJsonLd,
   personJsonLd,
@@ -72,6 +72,44 @@ const statItems = [
 ]
 
 export default function Home() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const formId = useId()
+  const [honeypot, setHoneypot] = useState('')
+  const [formError, setFormError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(searchParams.get('submitted') === 'true')
+
+  const handleContactSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setFormError(null)
+
+    if (honeypot.trim() !== '') {
+      setSubmitted(true)
+      return
+    }
+
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    const name = String(formData.get('name') ?? '').trim()
+    const email = String(formData.get('email') ?? '').trim()
+    const message = String(formData.get('message') ?? '').trim()
+
+    setSubmitting(true)
+    const result = await submitContactEnquiry({ name, email, message })
+    setSubmitting(false)
+
+    if (result.ok) {
+      setSubmitted(true)
+      const nextSearchParams = new URLSearchParams(searchParams)
+      nextSearchParams.set('submitted', 'true')
+      setSearchParams(nextSearchParams, { replace: true })
+      form.reset()
+      return
+    }
+
+    setFormError(result.error)
+  }
+
   return (
     <>
       <PageMeta
@@ -80,10 +118,10 @@ export default function Home() {
         path={pageSeo.home.path}
         jsonLd={[organizationJsonLd(), personJsonLd(), websiteJsonLd()]}
       />
-      <section className="hero-section shell pb-8 pt-24 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-between lg:pb-10 lg:pt-28">
+      <section className="hero-section shell pb-8 pt-20 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-between lg:pb-8 lg:pt-24">
         <div className="hero-grid flex flex-col gap-6 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-6">
           <div className="hero-copy flex flex-col justify-center lg:col-span-7 lg:py-2">
-            <div className="flex items-center gap-3">
+            <div className="hero-status flex items-center gap-3">
               <span aria-hidden className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
@@ -91,18 +129,18 @@ export default function Home() {
               <p className="label text-muted">{studio.base} / available for engagements</p>
             </div>
 
-            <h1 className="display-xl hero-title mt-4 text-[length:clamp(1.85rem,4.6vw,3.5rem)] lg:mt-5 lg:text-[length:clamp(2.15rem,3.8vw,3.85rem)]">
-              Everything feels <span className="italic text-accent">the same.</span>
+            <h1 className="display-xl hero-title mt-3.5 lg:mt-4">
+              Design the product
               <br />
-              Your product doesn't have to.
+              <span className="italic text-accent">only you would make.</span>
             </h1>
 
-            <div className="mt-4 lg:mt-5">
-              <p className="measure text-[0.9375rem] leading-relaxed text-muted lg:max-w-[46ch] lg:text-base">
+            <div className="hero-lede mt-3.5 lg:mt-4">
+              <p className="measure text-[0.9375rem] leading-[1.55] text-muted lg:max-w-[46ch] lg:text-base">
                 {studio.name} is the practice of{' '}
-                <span className="text-bone">{studio.principal}</span>. Design is no longer
-                just visual. Executive leadership, experience strategy, and product design
-                combined in one senior mind you can actually hire.
+                <span className="text-bone">{studio.principal}</span>. Executive design
+                leadership, experience strategy and product design from one senior
+                practitioner who stays close to the work.
               </p>
             </div>
 
@@ -110,14 +148,14 @@ export default function Home() {
           </div>
 
           <div className="hero-visual relative hidden items-center justify-center lg:col-span-5 lg:flex lg:self-stretch lg:py-2">
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent to-ground/60" />
-            <div className="absolute inset-0 bg-gradient-to-t from-ground via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-transparent to-ground/60" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ground via-transparent to-transparent" />
             <HeroVisual />
           </div>
         </div>
 
         <div className="hero-stats mt-8 lg:mt-0">
-            <dl className="grid grid-cols-2 gap-px border border-line-soft bg-line-soft lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-px border border-line-soft bg-line-soft lg:grid-cols-4">
               {statItems.map((stat) => (
                 <div
                   key={stat.label}
@@ -125,12 +163,12 @@ export default function Home() {
                 >
                   <div className="flex items-center gap-2 text-accent">{stat.icon}</div>
                   <div>
-                    <dt className="display-xl text-2xl lg:text-3xl">{stat.value}</dt>
-                    <dd className="label mt-1.5 text-faint">{stat.label}</dd>
+                    <p className="display-xl text-2xl lg:text-3xl">{stat.value}</p>
+                    <p className="label mt-1.5 text-faint">{stat.label}</p>
                   </div>
                 </div>
               ))}
-            </dl>
+            </div>
           </div>
       </section>
 
@@ -139,23 +177,21 @@ export default function Home() {
           <Reveal>
             <p className="label text-accent">The manifesto</p>
             <blockquote className="balance mt-10 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:max-w-[30ch]">
-              "Design is no longer just visual. It is the thing people feel before they
-              read a word, and remember long after they've forgotten the interface."
+              "People notice the decisions behind a product before they can explain
+              them. Good design gives those decisions a clear point of view."
             </blockquote>
 
             <div className="grid-12 mt-14 lg:mt-20">
               <div className="space-y-6 md:col-span-6 lg:col-span-5">
                 <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  Every product in your category runs on the same stack, ships on the
-                  same schedule, and lands with the same rounded card on the same gray.
-                  The problem is no longer how things look. It is how they feel, and
-                  whether they feel like anything at all.
+                  Products in the same category increasingly share a stack, a release
+                  cadence and a visual vocabulary. Rounded cards and quiet gradients are
+                  competent defaults. They rarely tell people why this product matters.
                 </p>
                 <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  Differentiation used to be a visual problem. Now it is a strategic
-                  one. We work at the level where that gets decided: intent, voice,
-                  motion, friction, trust. Seven positions on what that means in the
-                  fourth culture.
+                  A memorable product starts with intent. Voice, motion, friction and
+                  trust follow from that. The manifesto sets out seven positions on how
+                  we make those choices while working with AI.
                 </p>
               </div>
 
@@ -165,7 +201,7 @@ export default function Home() {
                   className="group flex items-baseline justify-between gap-6 border-b border-line pb-3 transition-colors duration-300 hover:border-accent"
                 >
                   <span className="balance font-display text-2xl italic lg:text-[1.75rem]">
-                    Read all seven tenets
+                    Read the seven positions
                   </span>
                   <span
                     aria-hidden
@@ -185,8 +221,8 @@ export default function Home() {
           <Reveal>
             <SectionHead
               index="01 / Practice"
-              title="One practice, not three."
-              lede="Most companies separate strategy from design from leadership, then pay a fourth person to translate between them. By the time the work ships, nobody owns how it feels. That is the problem this practice is built to solve."
+              title="Strategy, leadership and craft."
+              lede="These disciplines stay connected from the first decision through delivery. One accountable lead keeps the argument, the interface and the build moving in the same direction."
             />
             <Practice />
           </Reveal>
@@ -257,12 +293,12 @@ export default function Home() {
                   {clients.map((client) => (
                     <li
                       key={client}
-                      className="wrap-name font-display text-[0.95rem] leading-snug text-muted transition-colors duration-300 hover:text-bone lg:text-base"
+                      className="wrap-name font-sans text-[0.95rem] leading-relaxed text-muted transition-colors duration-300 hover:text-bone lg:text-base"
                     >
                       {client}
                     </li>
                   ))}
-                  <li className="font-display text-[0.95rem] italic leading-snug text-faint lg:text-base">
+                  <li className="font-sans text-[0.95rem] italic leading-relaxed text-faint lg:text-base">
                     and many more
                   </li>
                 </ul>
@@ -358,8 +394,8 @@ export default function Home() {
                 decoding="async"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-ground via-transparent to-ground" />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-ground" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ground via-transparent to-ground" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-ground" />
             </div>
           </Reveal>
 
@@ -369,8 +405,8 @@ export default function Home() {
                 <p className="balance font-display text-2xl italic leading-snug text-bone lg:text-[1.875rem]">
                   I am {studio.principal}, and I have spent over {studio.yearsActive} years leading
                   experience design and product strategy across complex, regulated,
-                  heavily scrutinised products — from founding Boardwise in Dubai in 1999
-                  through to executive design leadership today.
+                  heavily scrutinised products. The work runs from founding Boardwise in
+                  Dubai in 1999 to executive design leadership today.
                 </p>
                 <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
                   Most recently Manager, Experience Design at TD, closing eight years
@@ -489,62 +525,89 @@ export default function Home() {
           <Reveal>
             <p className="label text-accent">05 / Start</p>
             <h2 className="display-xl mt-8 text-[length:clamp(2.75rem,9vw,8rem)]">
-              Tell us what
+              Describe the
               <br />
-              <span className="italic">refuses to work.</span>
+              <span className="italic">problem.</span>
             </h2>
 
             <div className="grid-12 mt-16">
-              <p className="measure text-xl leading-relaxed text-muted md:col-span-8 lg:col-span-6">
-                A day, a week, or a team. Bring the problem in whatever shape it is
-                currently in. The first conversation is about whether this is the right
-                practice for it, not a pitch.
-              </p>
-
-              <div className="flex flex-col gap-4 md:col-span-8 lg:col-span-4 lg:col-start-9">
-                <a
-                  href={studio.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex items-center justify-between gap-4 border border-line px-6 py-5 transition-colors duration-300 hover:border-accent hover:bg-accent"
-                >
-                  <span className="label text-bone group-hover:text-on-accent">
-                    Message on LinkedIn
-                  </span>
-                  <ArrowRight
-                    size={14}
-                    strokeWidth={1.5}
-                    aria-hidden
-                    className="text-accent transition-transform duration-300 group-hover:translate-x-1 group-hover:text-on-accent"
-                  />
-                </a>
-                <a
-                  href={`${studio.portfolio}/contact/`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex items-center justify-between gap-4 border border-line px-6 py-5 transition-colors duration-300 hover:border-bone"
-                >
-                  <span className="label text-bone">Send a project enquiry</span>
-                  <ArrowRight
-                    size={14}
-                    strokeWidth={1.5}
-                    aria-hidden
-                    className="text-accent transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </a>
-                <SectionLink
-                  to="engage"
-                  className="group flex items-center justify-between gap-4 border border-line px-6 py-5 transition-colors duration-300 hover:border-bone"
-                >
-                  <span className="label text-bone">Review ways to engage</span>
-                  <ArrowUp
-                    size={14}
-                    strokeWidth={1.5}
-                    aria-hidden
-                    className="text-accent transition-transform duration-300 group-hover:-translate-y-1"
-                  />
-                </SectionLink>
+              <div className="md:col-span-8 lg:col-span-5">
+                <p className="measure text-xl leading-relaxed text-muted">
+                  Share what you are trying to change, where the work is stuck and what
+                  a useful outcome would look like. Michael will reply directly.
+                </p>
+                {submitted && (
+                  <p className="mt-6 border-l-2 border-accent pl-4 text-base text-bone" role="status">
+                    Thanks. Your message has been sent.
+                  </p>
+                )}
               </div>
+
+              <form
+                onSubmit={handleContactSubmit}
+                className="contact-form grid gap-6 md:col-span-10 md:col-start-3 lg:col-span-6 lg:col-start-7"
+              >
+                <div
+                  className="absolute -z-10 h-0 w-0 overflow-hidden opacity-0"
+                  aria-hidden="true"
+                >
+                  <label htmlFor={`${formId}-company`}>Company website</label>
+                  <input
+                    id={`${formId}-company`}
+                    type="text"
+                    name="company_website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
+                {formError ? (
+                  <p className="border-l-2 border-accent pl-4 text-base text-bone" role="alert">
+                    {formError}
+                  </p>
+                ) : null}
+
+                <label className="grid gap-2">
+                  <span className="label text-faint">Name</span>
+                  <input
+                    className="form-field"
+                    type="text"
+                    name="name"
+                    autoComplete="name"
+                    required
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="label text-faint">Email</span>
+                  <input
+                    className="form-field"
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    required
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="label text-faint">Message</span>
+                  <textarea className="form-field min-h-40 resize-y" name="message" required />
+                </label>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 text-left disabled:opacity-60"
+                >
+                  <span className="label">{submitting ? 'Sending…' : 'Send enquiry'}</span>
+                  <ArrowRight
+                    size={14}
+                    strokeWidth={1.5}
+                    aria-hidden
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </button>
+              </form>
             </div>
           </Reveal>
         </div>
