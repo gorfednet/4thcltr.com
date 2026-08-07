@@ -1,12 +1,22 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
+import PageMeta from '../components/PageMeta'
 import Reveal from '../components/Reveal'
 import SectionLink from '../components/SectionLink'
+import { manifestoJsonLd, organizationJsonLd, personJsonLd } from '../content/jsonLd'
+import { pageSeo } from '../content/seo'
 import { studio, tenets } from '../content/site'
 
 export default function Manifesto() {
   return (
     <article className="pt-40 lg:pt-52">
+      <PageMeta
+        title={pageSeo.manifesto.title}
+        description={pageSeo.manifesto.description}
+        path={pageSeo.manifesto.path}
+        type="article"
+        jsonLd={[organizationJsonLd(), personJsonLd(), manifestoJsonLd()]}
+      />
       <header className="shell">
         <p className="label text-accent">The {studio.name} manifesto</p>
         <h1 className="display-xl mt-8 text-[length:clamp(3rem,10vw,9rem)]">

@@ -11,10 +11,17 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router'
 import HeroVisual from '../components/HeroVisual'
+import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
 import RegenerateButton from '../components/RegenerateButton'
 import Reveal from '../components/Reveal'
 import SectionLink from '../components/SectionLink'
+import {
+  organizationJsonLd,
+  personJsonLd,
+  websiteJsonLd,
+} from '../content/jsonLd'
+import { pageSeo } from '../content/seo'
 import {
   awards,
   broadcast,
@@ -67,6 +74,12 @@ const statItems = [
 export default function Home() {
   return (
     <>
+      <PageMeta
+        title={pageSeo.home.title}
+        description={pageSeo.home.description}
+        path={pageSeo.home.path}
+        jsonLd={[organizationJsonLd(), personJsonLd(), websiteJsonLd()]}
+      />
       <section className="shell min-h-[92vh] pb-20 pt-36 lg:min-h-screen lg:pt-40">
         <div className="flex min-h-[inherit] flex-col justify-between gap-16 lg:grid lg:grid-cols-12 lg:gap-x-10 lg:gap-y-0">
           <div className="flex flex-col justify-center lg:col-span-7 lg:py-12">

@@ -1,8 +1,16 @@
 import { Link } from 'react-router'
+import PageMeta from '../components/PageMeta'
+import { pageSeo } from '../content/seo'
 
 export default function NotFound() {
   return (
     <section className="shell flex min-h-screen flex-col justify-center">
+      <PageMeta
+        title={pageSeo.notFound.title}
+        description={pageSeo.notFound.description}
+        path={pageSeo.notFound.path}
+        noIndex
+      />
       <p className="label text-accent">Error 404</p>
       <h1 className="display-xl mt-6 text-[length:clamp(3rem,12vw,9rem)]">
         Nothing here.
