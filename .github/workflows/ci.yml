@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    uses: gorfednet/.github/.github/workflows/pr-check-vite-spa.yml@main
+    with:
+      lint-command: npm run lint
+
+  browser-compat:
+    if: github.event_name == 'pull_request'
+    uses: gorfednet/.github/.github/workflows/browser-compat.yml@main
