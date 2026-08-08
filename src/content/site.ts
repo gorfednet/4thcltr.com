@@ -27,7 +27,7 @@ export const tenets: Tenet[] = [
     number: '01',
     title: 'The fourth culture is already taking shape.',
     body: [
-      'A third-culture kid is formed between places, belonging fully to neither the country of origin nor the country of residence, fluent in the gap between them. That is a literal description of how this practice was built: Vancouver, Surrey, White Rock, Dubai, Cairo, Toronto.',
+      'A third-culture kid is formed between places, belonging fully to neither the country of origin nor the country of residence, fluent in the gap between them. That is a literal description of how this practice was built across Canada, the UAE and Egypt: Vancouver, Surrey, White Rock, Dubai, Cairo and Toronto.',
       'Another overlap now shapes the work: people and machines. Some avoid these tools while others hand over too much. This practice sits between those positions, which is familiar territory.',
       'People make culture. It carries taste, memory, argument and intent. A statistical average can describe what came before, but it cannot decide what deserves to come next.',
     ],

@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import DesignLink from '../components/DesignLink'
 import PageMeta from '../components/PageMeta'
 import { pageSeo } from '../content/seo'
 
@@ -18,12 +18,12 @@ export default function NotFound() {
       <p className="measure-tight mt-6 text-lg leading-relaxed text-muted">
         The page you were looking for does not exist. Check the address or return home.
       </p>
-      <Link
+      <DesignLink
         to="/"
         className="label mt-10 w-fit border border-line px-6 py-3 text-bone transition-colors duration-300 hover:border-accent hover:bg-accent hover:text-on-accent"
       >
         Back to the start
-      </Link>
+      </DesignLink>
     </section>
   )
 }

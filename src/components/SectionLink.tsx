@@ -1,11 +1,14 @@
 import type { ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router'
+import { useTheme } from '../context/ThemeContext'
+import { designAwarePath } from '../utils/designPath'
 
 type SectionLinkProps = {
   to: string
   children: ReactNode
   className?: string
   onNavigate?: () => void
+  current?: boolean
 }
 
 /**
@@ -17,9 +20,11 @@ export default function SectionLink({
   children,
   className = '',
   onNavigate,
+  current,
 }: SectionLinkProps) {
   const navigate = useNavigate()
   const location = useLocation()
+  const { recipe } = useTheme()
 
   const scrollTo = () => {
     document.getElementById(to)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -29,17 +34,17 @@ export default function SectionLink({
     event.preventDefault()
     onNavigate?.()
 
-    if (location.pathname === '/') {
-      scrollTo()
-      return
-    }
-
-    navigate('/')
+    navigate(designAwarePath(`/#${to}`, location.search, recipe.id))
     requestAnimationFrame(() => requestAnimationFrame(scrollTo))
   }
 
   return (
-    <a href={`/#${to}`} onClick={handleClick} className={className}>
+    <a
+      href={designAwarePath(`/#${to}`, location.search, recipe.id)}
+      onClick={handleClick}
+      className={className}
+      aria-current={current ? 'location' : undefined}
+    >
       {children}
     </a>
   )

@@ -1,13 +1,15 @@
 import { ExternalLink } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Link, Outlet, useLocation } from 'react-router'
+import { useEffect, useRef, useState } from 'react'
+import { Outlet, useLocation } from 'react-router'
 import { useTheme } from '../context/ThemeContext'
+import { getNavigationConstruct } from '../navigation'
+import DesignLink from './DesignLink'
 import SectionLink from './SectionLink'
 import { studio } from '../content/site'
 
 function Wordmark({ onClick }: { onClick?: () => void }) {
   return (
-    <Link
+    <DesignLink
       to="/"
       onClick={onClick}
       className="group flex items-baseline gap-2"
@@ -20,15 +22,79 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
       <span className="label pb-[2px] text-bone transition-colors duration-300 group-hover:text-accent">
         Culture
       </span>
-    </Link>
+    </DesignLink>
+  )
+}
+
+function NavigationLinks({
+  className,
+  onNavigate,
+}: {
+  className: string
+  onNavigate?: () => void
+}) {
+  const location = useLocation()
+  const content = (glyph: string, label: string) => (
+    <>
+      <span className="nav-glyph" aria-hidden>{glyph}</span>
+      <span className="nav-label">{label}</span>
+    </>
+  )
+
+  return (
+    <>
+      <SectionLink
+        to="practice"
+        className={className}
+        onNavigate={onNavigate}
+        current={location.pathname === '/' && location.hash === '#practice'}
+      >
+        {content('01', 'Practice')}
+      </SectionLink>
+      <SectionLink
+        to="proof"
+        className={className}
+        onNavigate={onNavigate}
+        current={location.pathname === '/' && location.hash === '#proof'}
+      >
+        {content('02', 'Proof')}
+      </SectionLink>
+      <SectionLink
+        to="engage"
+        className={className}
+        onNavigate={onNavigate}
+        current={location.pathname === '/' && location.hash === '#engage'}
+      >
+        {content('03', 'Engage')}
+      </SectionLink>
+      <DesignLink
+        to="/manifesto"
+        className={className}
+        onClick={onNavigate}
+        aria-current={location.pathname === '/manifesto' ? 'page' : undefined}
+      >
+        {content('04', 'Manifesto')}
+      </DesignLink>
+      <DesignLink
+        to="/contact"
+        className={`${className} nav-contact`}
+        onClick={onNavigate}
+        aria-current={location.pathname === '/contact' ? 'page' : undefined}
+      >
+        {content('05', 'Start a project')}
+      </DesignLink>
+    </>
   )
 }
 
 export default function Layout() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
-  const { layout, mood, hero, radius, typeScale } = useTheme()
+  const { layout, mood, hero, radius, typeScale, navigationId } = useTheme()
+  const navigation = getNavigationConstruct(navigationId)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -45,9 +111,30 @@ export default function Layout() {
   useEffect(() => {
     if (!menuOpen) return
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false)
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+      if (event.key === 'Tab') {
+        const focusable = panelRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled])',
+        )
+        if (!focusable?.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first.focus()
+        }
+      }
     }
     window.addEventListener('keydown', onKeyDown)
+    requestAnimationFrame(() =>
+      panelRef.current?.querySelector<HTMLElement>('a[href]')?.focus(),
+    )
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [menuOpen])
 
@@ -60,10 +147,20 @@ export default function Layout() {
     }
   }, [menuOpen])
 
-  const navLinkClass = 'nav-link label text-muted hover:text-bone'
+  const navLinkClass = 'nav-link label'
 
   return (
-    <div className="min-h-screen bg-ground" data-layout={layout} data-mood={mood} data-hero={hero} data-radius={radius} data-type={typeScale}>
+    <div
+      className="site-frame min-h-screen bg-ground"
+      data-layout={layout}
+      data-mood={mood}
+      data-hero={hero}
+      data-radius={radius}
+      data-type={typeScale}
+      data-navigation={navigation.id}
+      data-navigation-family={navigation.family}
+      data-navigation-menu={navigation.usesMenu ? 'true' : 'false'}
+    >
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-6 focus:top-6 focus:z-50 focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
@@ -72,36 +169,23 @@ export default function Layout() {
       </a>
 
       <header
-        className={`fixed inset-x-0 top-0 z-40 transition-all duration-500 ${
-          scrolled ? 'border-b border-line-soft bg-ground' : ''
+        className={`site-header fixed z-40 transition-all duration-500 ${
+          scrolled ? 'site-header-scrolled' : ''
         }`}
       >
-        <div className="shell flex items-center justify-between py-5">
-          <Wordmark />
-          <nav aria-label="Primary navigation" className="hidden items-center gap-10 lg:flex">
-            <SectionLink to="practice" className={navLinkClass}>
-              Practice
-            </SectionLink>
-            <SectionLink to="proof" className={navLinkClass}>
-              Proof
-            </SectionLink>
-            <SectionLink to="engage" className={navLinkClass}>
-              Engage
-            </SectionLink>
-            <Link to="/manifesto" className={navLinkClass}>
-              Manifesto
-            </Link>
-            <Link to="/contact" className="button-outline label px-5 py-2.5">
-              Start a project
-            </Link>
+        <div className="site-header-inner shell flex items-center justify-between py-5">
+          <Wordmark onClick={() => setMenuOpen(false)} />
+          <nav aria-label="Primary navigation" className="primary-navigation">
+            <NavigationLinks className={navLinkClass} />
           </nav>
 
           <button
+            ref={menuButtonRef}
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="menu-trigger label text-bone lg:hidden"
+            className="menu-trigger label text-bone"
             aria-expanded={menuOpen}
-            aria-controls="mobile-navigation"
+            aria-controls="navigation-panel"
           >
             <span>{menuOpen ? 'Close' : 'Menu'}</span>
             <span aria-hidden className="menu-mark">
@@ -111,54 +195,36 @@ export default function Layout() {
           </button>
         </div>
 
-        <div
-          id="mobile-navigation"
-          className={`mobile-nav lg:hidden ${menuOpen ? 'mobile-nav-open' : ''}`}
-          aria-hidden={!menuOpen}
-        >
-          <nav
-            aria-label="Mobile navigation"
-            className="shell border-t border-line-soft bg-ground pb-8 pt-5"
+        {menuOpen && (
+          <div
+            ref={panelRef}
+            id="navigation-panel"
+            className="navigation-panel navigation-panel-open"
+            aria-hidden="false"
           >
-            <div className="flex flex-col gap-1">
-              <SectionLink
-                to="practice"
-                className="mobile-nav-link"
-                onNavigate={() => setMenuOpen(false)}
-              >
-                Practice
-              </SectionLink>
-              <SectionLink
-                to="proof"
-                className="mobile-nav-link"
-                onNavigate={() => setMenuOpen(false)}
-              >
-                Proof
-              </SectionLink>
-              <SectionLink
-                to="engage"
-                className="mobile-nav-link"
-                onNavigate={() => setMenuOpen(false)}
-              >
-                Engage
-              </SectionLink>
-              <Link
-                to="/manifesto"
-                className="mobile-nav-link"
-                onClick={() => setMenuOpen(false)}
-              >
-                Manifesto
-              </Link>
-              <Link
-                to="/contact"
-                className="button-solid label mt-5 px-5 py-3.5 text-center"
-                onClick={() => setMenuOpen(false)}
-              >
-                Start a project
-              </Link>
-            </div>
-          </nav>
-        </div>
+            <nav
+              aria-label="Menu navigation"
+              className="navigation-panel-inner shell bg-ground pb-8 pt-5"
+            >
+              <div className="navigation-panel-links flex flex-col gap-1">
+                <NavigationLinks
+                  className="mobile-nav-link"
+                  onNavigate={() => setMenuOpen(false)}
+                />
+                <button
+                  type="button"
+                  className="menu-close button-outline label mt-5 min-h-11 px-5 py-3"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    menuButtonRef.current?.focus()
+                  }}
+                >
+                  Close menu
+                </button>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       <main id="main">
@@ -199,9 +265,9 @@ export default function Layout() {
               <p className="label text-faint">Practice</p>
               <ul className="mt-5 space-y-3">
                 <li>
-                  <Link to="/manifesto" className="footer-link">
+                  <DesignLink to="/manifesto" className="footer-link">
                     The manifesto
-                  </Link>
+                  </DesignLink>
                 </li>
                 <li>
                   <SectionLink to="engage" className="footer-link">
@@ -209,9 +275,9 @@ export default function Layout() {
                   </SectionLink>
                 </li>
                 <li>
-                  <Link to="/contact" className="footer-link">
+                  <DesignLink to="/contact" className="footer-link">
                     Start a project
-                  </Link>
+                  </DesignLink>
                 </li>
               </ul>
             </div>

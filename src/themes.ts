@@ -1,3 +1,5 @@
+import { navigationIds, type NavigationId } from './navigation'
+
 export type Layout = 'editorial' | 'magazine' | 'minimal' | 'dense' | 'saas' | 'startup' | 'brutal' | 'swiss'
 export type Mood = 'serious' | 'saas' | 'startup' | 'brutal' | 'pastel' | 'neon' | 'swiss' | 'glow'
 export type HeroComposition = 'split' | 'split-reverse' | 'stacked-center' | 'stacked-flush'
@@ -14,6 +16,7 @@ export type DesignRecipe = {
   hero: HeroComposition
   radius: RadiusScale
   typeScale: TypeScale
+  navigationId: NavigationId
 }
 
 export type FontPack = {
@@ -29,21 +32,26 @@ export type FontPack = {
   }
 }
 
+type ThemeColorBase = {
+  ground: string
+  groundLift: string
+  bone: string
+  muted: string
+  faint: string
+  accent: string
+  accentDeep: string
+  onAccent: string
+  line: string
+  lineSoft: string
+}
+
 export type Theme = {
   id: string
   name: string
   tagline: string
-  colors: {
-    ground: string
-    groundLift: string
-    bone: string
-    muted: string
-    faint: string
-    accent: string
-    accentDeep: string
-    onAccent: string
-    line: string
-    lineSoft: string
+  colors: ThemeColorBase & {
+    card: string
+    cardStrong: string
   }
   fonts: {
     display: string
@@ -145,7 +153,7 @@ export const fontPacks: FontPack[] = [
 
 export const defaultFontPack = fontPacks[0]
 
-export const themes: Theme[] = [
+const baseThemes: Array<Omit<Theme, 'colors'> & { colors: ThemeColorBase }> = [
   {
     id: 'noir',
     name: 'Noir',
@@ -958,6 +966,25 @@ export const themes: Theme[] = [
   },
 ]
 
+function mixHex(from: string, to: string, amount: number) {
+  const read = (value: string, offset: number) => Number.parseInt(value.slice(offset, offset + 2), 16)
+  const channel = (offset: number) =>
+    Math.round(read(from, offset) + (read(to, offset) - read(from, offset)) * amount)
+      .toString(16)
+      .padStart(2, '0')
+
+  return `#${channel(1)}${channel(3)}${channel(5)}`
+}
+
+export const themes: Theme[] = baseThemes.map((theme) => ({
+  ...theme,
+  colors: {
+    ...theme.colors,
+    card: mixHex(theme.colors.ground, theme.colors.groundLift, 0.65),
+    cardStrong: theme.colors.groundLift,
+  },
+}))
+
 export const defaultTheme = themes[0]
 
 /**
@@ -973,7 +1000,7 @@ const recipeOverrides: Partial<
   paper: { radius: 'sharp' },
 }
 
-export const designRecipes: DesignRecipe[] = themes.map((theme) => {
+export const designRecipes: DesignRecipe[] = themes.map((theme, index) => {
   const fontPack =
     fontPacks.find(
       (pack) => pack.display === theme.fonts.display && pack.sans === theme.fonts.sans,
@@ -989,6 +1016,7 @@ export const designRecipes: DesignRecipe[] = themes.map((theme) => {
     radius: theme.radius,
     typeScale:
       theme.layout === 'dense' ? 'compact' : theme.layout === 'minimal' ? 'airy' : 'default',
+    navigationId: navigationIds[index % navigationIds.length],
   }
 
   return { ...defaults, ...recipeOverrides[theme.id] }

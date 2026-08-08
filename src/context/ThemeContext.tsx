@@ -14,6 +14,7 @@ import {
   type Theme,
   type TypeScale,
 } from '../themes'
+import type { NavigationId } from '../navigation'
 
 export type DesignState = {
   recipe: DesignRecipe
@@ -24,6 +25,7 @@ export type DesignState = {
   radius: RadiusScale
   fontPack: FontPack
   typeScale: TypeScale
+  navigationId: NavigationId
   generation: number
   randomize: () => void
 }
@@ -37,6 +39,7 @@ const ThemeContext = createContext<DesignState>({
   radius: defaultRecipe.radius,
   fontPack: getFontPack(defaultRecipe.fontPackId),
   typeScale: defaultRecipe.typeScale,
+  navigationId: defaultRecipe.navigationId,
   generation: 0,
   randomize: () => {},
 })
@@ -45,7 +48,9 @@ function getInitialRecipeIndex() {
   if (typeof window === 'undefined') return 0
   const requestedId = new URLSearchParams(window.location.search).get('design')
   const requestedIndex = designRecipes.findIndex((recipe) => recipe.id === requestedId)
-  return requestedIndex >= 0 ? requestedIndex : 0
+  return requestedIndex >= 0
+    ? requestedIndex
+    : Math.floor(Math.random() * designRecipes.length)
 }
 
 function shuffledRecipeIds() {
@@ -62,12 +67,15 @@ function applyDesign(
   radius: RadiusScale,
   fontPack: FontPack,
   typeScale: TypeScale,
+  navigationId: NavigationId,
 ) {
   const root = document.documentElement
   const { colors } = theme
 
   root.style.setProperty('--color-ground', colors.ground)
   root.style.setProperty('--color-ground-lift', colors.groundLift)
+  root.style.setProperty('--color-card', colors.card)
+  root.style.setProperty('--color-card-strong', colors.cardStrong)
   root.style.setProperty('--color-bone', colors.bone)
   root.style.setProperty('--color-muted', colors.muted)
   root.style.setProperty('--color-faint', colors.faint)
@@ -90,6 +98,7 @@ function applyDesign(
   root.dataset.hero = hero
   root.dataset.radius = radius
   root.dataset.type = typeScale
+  root.dataset.navigation = navigationId
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -109,12 +118,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       recipe.radius,
       fontPack,
       recipe.typeScale,
+      recipe.navigationId,
     )
+
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has('design')) {
+      url.searchParams.set('design', recipe.id)
+      window.history.replaceState({}, '', url)
+    }
   }, [theme, recipe, fontPack])
 
   function randomize() {
     const isEligible = (candidate: DesignRecipe) =>
-      candidate.themeId !== recipe.themeId && candidate.layout !== recipe.layout
+      candidate.themeId !== recipe.themeId &&
+      candidate.layout !== recipe.layout &&
+      candidate.navigationId !== recipe.navigationId
     let eligibleIds = remainingRecipeIds.current.filter((id) => {
       const candidate = designRecipes.find((item) => item.id === id)
       return candidate ? isEligible(candidate) : false
@@ -151,6 +169,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         radius: recipe.radius,
         fontPack,
         typeScale: recipe.typeScale,
+        navigationId: recipe.navigationId,
         generation,
         randomize,
       }}

@@ -26,10 +26,18 @@ export async function submitContactEnquiry(
   )
   body.append('botcheck', 'false')
 
-  const res = await fetch(WEB3FORMS_URL, {
-    method: 'POST',
-    body,
-  })
+  let res: Response
+  try {
+    res = await fetch(WEB3FORMS_URL, {
+      method: 'POST',
+      body,
+    })
+  } catch {
+    return {
+      ok: false,
+      error: 'Could not reach the mail service. Check your connection and try again.',
+    }
+  }
 
   let data: { success?: boolean; message?: string } = {}
   try {

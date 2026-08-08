@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react'
-import { Link } from 'react-router'
+import DesignLink from '../components/DesignLink'
 import PageMeta from '../components/PageMeta'
 import Reveal from '../components/Reveal'
 import { manifestoJsonLd, organizationJsonLd, personJsonLd } from '../content/jsonLd'
@@ -82,20 +82,20 @@ export default function Manifesto() {
             </p>
 
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
+              <DesignLink
                 to="/contact"
                 className="label inline-flex items-center gap-2 border border-accent bg-accent px-7 py-3.5 text-on-accent transition-opacity duration-300 hover:opacity-85"
               >
                 Describe your project
                 <ArrowRight size={13} strokeWidth={1.5} aria-hidden />
-              </Link>
-              <Link
+              </DesignLink>
+              <DesignLink
                 to="/"
                 className="label inline-flex items-center gap-2 border border-line px-7 py-3.5 text-bone transition-colors duration-300 hover:border-bone"
               >
                 See the practice
                 <ArrowRight size={13} strokeWidth={1.5} aria-hidden />
-              </Link>
+              </DesignLink>
             </div>
           </div>
         </section>

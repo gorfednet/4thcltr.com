@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
-import { useSearchParams } from 'react-router'
+import { useRef, useState, type FormEvent } from 'react'
+import DesignLink from '../components/DesignLink'
 import PageMeta from '../components/PageMeta'
 import { submitContactEnquiry } from '../config/contactForm'
 import { organizationJsonLd, personJsonLd } from '../content/jsonLd'
@@ -16,14 +16,16 @@ const enquiryReasons = [
 ]
 
 export default function Contact() {
-  const [searchParams, setSearchParams] = useSearchParams()
   const [honeypot, setHoneypot] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(searchParams.get('submitted') === 'true')
+  const [submitted, setSubmitted] = useState(false)
+  const submissionInFlight = useRef(false)
+  const successRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    if (submissionInFlight.current) return
     setFormError(null)
 
     if (honeypot.trim() !== '') {
@@ -33,6 +35,7 @@ export default function Contact() {
 
     const form = event.currentTarget
     const formData = new FormData(form)
+    submissionInFlight.current = true
     setSubmitting(true)
     const result = await submitContactEnquiry({
       name: String(formData.get('name') ?? ''),
@@ -41,14 +44,13 @@ export default function Contact() {
       reason: String(formData.get('reason') ?? ''),
       message: String(formData.get('message') ?? ''),
     })
+    submissionInFlight.current = false
     setSubmitting(false)
 
     if (result.ok) {
       setSubmitted(true)
-      const nextSearchParams = new URLSearchParams(searchParams)
-      nextSearchParams.set('submitted', 'true')
-      setSearchParams(nextSearchParams, { replace: true })
       form.reset()
+      requestAnimationFrame(() => successRef.current?.focus())
       return
     }
 
@@ -92,103 +94,130 @@ export default function Contact() {
           </aside>
 
           <div className="mt-12 md:col-span-8 md:mt-0 lg:col-span-7 lg:col-start-6">
-            {submitted && (
-              <p
-                className="mb-8 border-l-2 border-accent bg-ground-lift p-5 text-lg text-bone"
+            {submitted ? (
+              <div
+                ref={successRef}
+                className="card-surface flex min-h-[32rem] flex-col justify-center p-8 sm:p-12"
                 role="status"
-              >
-                Thanks. Your message has been sent. Michael will reply directly.
-              </p>
-            )}
-
-            <form onSubmit={handleSubmit} className="contact-form relative grid gap-6">
-              <input
-                hidden
-                type="text"
-                name="company_website"
                 tabIndex={-1}
-                autoComplete="off"
-                value={honeypot}
-                onChange={(event) => setHoneypot(event.target.value)}
-              />
-
-              {formError && (
-                <p className="border-l-2 border-accent pl-4 text-base text-bone" role="alert">
-                  {formError}
+              >
+                <p className="label text-accent">Message sent</p>
+                <h2 className="display-xl mt-5 text-4xl sm:text-5xl">
+                  Thank you for the context.
+                </h2>
+                <p className="measure mt-6 text-lg leading-relaxed text-muted">
+                  Michael will read your note and reply directly. The design you chose
+                  has stayed exactly where you left it.
                 </p>
-              )}
+                <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+                  <button
+                    type="button"
+                    className="button-outline label min-h-12 px-6 py-3"
+                    onClick={() => {
+                      setSubmitted(false)
+                      setHoneypot('')
+                    }}
+                  >
+                    Send another enquiry
+                  </button>
+                  <DesignLink
+                    to="/"
+                    className="button-solid label min-h-12 px-6 py-3"
+                  >
+                    Return to the practice
+                  </DesignLink>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="contact-form relative grid gap-6">
+                <input
+                  hidden
+                  type="text"
+                  name="company_website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(event) => setHoneypot(event.target.value)}
+                />
 
-              <div className="grid gap-6 sm:grid-cols-2">
+                {formError && (
+                  <p className="border-l-2 border-accent pl-4 text-base text-bone" role="alert">
+                    {formError}
+                  </p>
+                )}
+
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <label className="grid gap-2">
+                    <span className="label text-faint">Name</span>
+                    <input
+                      className="form-field"
+                      type="text"
+                      name="name"
+                      autoComplete="name"
+                      required
+                    />
+                  </label>
+                  <label className="grid gap-2">
+                    <span className="label text-faint">Email</span>
+                    <input
+                      className="form-field"
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      inputMode="email"
+                      required
+                    />
+                  </label>
+                </div>
+
                 <label className="grid gap-2">
-                  <span className="label text-faint">Name</span>
+                  <span className="label text-faint">Organisation</span>
                   <input
                     className="form-field"
                     type="text"
-                    name="name"
-                    autoComplete="name"
-                    required
+                    name="organisation"
+                    autoComplete="organization"
                   />
                 </label>
+
                 <label className="grid gap-2">
-                  <span className="label text-faint">Email</span>
-                  <input
-                    className="form-field"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    inputMode="email"
+                  <span className="label text-faint">Reason for getting in touch</span>
+                  <select className="form-field" name="reason" defaultValue="" required>
+                    <option value="" disabled>
+                      Select the closest fit
+                    </option>
+                    {enquiryReasons.map((reason) => (
+                      <option key={reason} value={reason}>
+                        {reason}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="label text-faint">Message</span>
+                  <textarea
+                    className="form-field min-h-48 resize-y"
+                    name="message"
                     required
                   />
                 </label>
-              </div>
 
-              <label className="grid gap-2">
-                <span className="label text-faint">Organisation</span>
-                <input
-                  className="form-field"
-                  type="text"
-                  name="organisation"
-                  autoComplete="organization"
-                />
-              </label>
-
-              <label className="grid gap-2">
-                <span className="label text-faint">Reason for getting in touch</span>
-                <select className="form-field" name="reason" defaultValue="" required>
-                  <option value="" disabled>
-                    Select the closest fit
-                  </option>
-                  {enquiryReasons.map((reason) => (
-                    <option key={reason} value={reason}>
-                      {reason}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="grid gap-2">
-                <span className="label text-faint">Message</span>
-                <textarea
-                  className="form-field min-h-48 resize-y"
-                  name="message"
-                  required
-                />
-              </label>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 text-left disabled:opacity-60"
-              >
-                <span className="label">{submitting ? 'Sending...' : 'Send enquiry'}</span>
-                <ArrowRight
-                  size={14}
-                  strokeWidth={1.5}
-                  aria-hidden
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 text-left disabled:opacity-60"
+                >
+                  <span className="label">{submitting ? 'Sending...' : 'Send enquiry'}</span>
+                  <ArrowRight
+                    size={14}
+                    strokeWidth={1.5}
+                    aria-hidden
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>

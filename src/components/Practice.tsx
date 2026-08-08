@@ -86,7 +86,7 @@ export default function Practice() {
         id={`${uid}-panel`}
         role="tabpanel"
         aria-labelledby={`${uid}-tab-${active}`}
-        className="practice-panel flex flex-col bg-ground p-6 sm:p-8 md:col-span-7 lg:col-span-8 lg:p-14"
+        className="practice-panel card-surface flex flex-col p-6 sm:p-8 md:col-span-7 lg:col-span-8 lg:p-14"
       >
         <p className="measure-tight font-display text-2xl italic leading-snug text-bone lg:text-[1.9rem]">
           {facet.lede}

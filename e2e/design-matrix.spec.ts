@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
+import { getNavigationConstruct, navigationIds } from '../src/navigation'
 import { designRecipes, getTheme } from '../src/themes'
 
 const viewports = [
@@ -45,7 +46,12 @@ async function assertVisibleControlsNotCovered(page: Page) {
   for (let index = 0; index < (await controls.count()); index += 1) {
     const control = controls.nth(index)
     if (!(await control.isVisible())) continue
-    await control.scrollIntoViewIfNeeded()
+    await control.evaluate((element) => {
+      const previous = document.documentElement.style.scrollBehavior
+      document.documentElement.style.scrollBehavior = 'auto'
+      element.scrollIntoView({ block: 'center', inline: 'center' })
+      document.documentElement.style.scrollBehavior = previous
+    })
     const hitTarget = await control.evaluate((element) => {
       const rect = element.getBoundingClientRect()
       const top = document.elementFromPoint(
@@ -131,13 +137,57 @@ test.describe('desktop interaction matrix', () => {
         await expect(tabs.nth(index)).toHaveAttribute('aria-selected', 'true')
       }
 
-      await page.getByRole('link', { name: 'Start a project' }).first().click()
-      await expect(page).toHaveURL(/\/contact$/)
+      const projectLink = page.getByRole('link', { name: 'Start a project', exact: true })
+      if ((await projectLink.count()) === 0) {
+        await page.getByRole('button', { name: 'Menu' }).click()
+      }
+      await page.getByRole('link', { name: 'Start a project', exact: true }).first().click()
+      await expect(page).toHaveURL(new RegExp(`/contact\\?design=${recipe.id}`))
       await expect(page.locator('form')).toHaveCount(1)
 
       await page.goto(`/?design=${recipe.id}`)
       await page.getByRole('link', { name: 'Read the seven positions' }).click()
-      await expect(page).toHaveURL(/\/manifesto$/)
+      await expect(page).toHaveURL(new RegExp(`/manifesto\\?design=${recipe.id}`))
+    })
+  }
+})
+
+test.describe('navigation construct coverage', () => {
+  for (const navigationId of navigationIds) {
+    const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
+    const construct = getNavigationConstruct(navigationId)
+
+    test(`${navigationId} is reachable and keyboard operable`, async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 800 })
+      await openRecipe(page, recipe.id)
+
+      if (construct.usesMenu) {
+        const trigger = page.locator('.menu-trigger')
+        await trigger.focus()
+        await page.keyboard.press('Enter')
+        await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+        await expect(page.locator('#navigation-panel')).toHaveAttribute('aria-hidden', 'false')
+        await page.keyboard.press('Escape')
+        await expect(trigger).toBeFocused()
+        await page.keyboard.press('Enter')
+      }
+
+      const link = page.locator(
+        construct.usesMenu
+          ? '#navigation-panel a[href*="#practice"]'
+          : '.primary-navigation a[href*="#practice"]',
+      )
+      await expect(link).toBeVisible()
+      const box = await link.boundingBox()
+      expect(box?.height).toBeGreaterThanOrEqual(44)
+      await link.focus()
+      await page.keyboard.press('Enter')
+      await expect(page).toHaveURL(/#practice$/)
+
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze()
+      expect(results.violations).toEqual([])
     })
   }
 })
@@ -188,6 +238,11 @@ test.describe('contact recipe coverage', () => {
 test('all palette tokens meet AA contrast thresholds', () => {
   for (const recipe of designRecipes) {
     const { colors } = getTheme(recipe.themeId)
+    expect(colors.card, `${recipe.id}: card differs from ground`).not.toBe(colors.ground)
+    expect(colors.card, `${recipe.id}: card differs from lifted sections`).not.toBe(
+      colors.groundLift,
+    )
+    expect(colors.cardStrong, `${recipe.id}: selected surface differs`).not.toBe(colors.card)
     const checks = [
       ['bone/ground', colors.bone, colors.ground, 4.5],
       ['muted/ground', colors.muted, colors.ground, 4.5],
@@ -195,6 +250,10 @@ test('all palette tokens meet AA contrast thresholds', () => {
       ['bone/groundLift', colors.bone, colors.groundLift, 4.5],
       ['muted/groundLift', colors.muted, colors.groundLift, 4.5],
       ['faint/groundLift', colors.faint, colors.groundLift, 4.5],
+      ['bone/card', colors.bone, colors.card, 4.5],
+      ['muted/card', colors.muted, colors.card, 4.5],
+      ['faint/card', colors.faint, colors.card, 4.5],
+      ['bone/cardStrong', colors.bone, colors.cardStrong, 4.5],
       ['accent/ground', colors.accent, colors.ground, 4.5],
       ['accent/groundLift', colors.accent, colors.groundLift, 4.5],
       ['onAccent/accent', colors.onAccent, colors.accent, 4.5],
@@ -210,7 +269,13 @@ test('all palette tokens meet AA contrast thresholds', () => {
   }
 })
 
-test('regeneration never repeats palette or layout consecutively', async ({ page }) => {
+test('all 20 navigation constructs are assigned to the curated catalog', () => {
+  expect(new Set(designRecipes.map((recipe) => recipe.navigationId))).toEqual(
+    new Set(navigationIds),
+  )
+})
+
+test('regeneration never repeats palette, layout or navigation consecutively', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 760 })
   await openRecipe(page, designRecipes[0].id)
   const root = page.locator('html')
@@ -218,6 +283,7 @@ test('regeneration never repeats palette or layout consecutively', async ({ page
 
   for (let index = 0; index < designRecipes.length * 2; index += 1) {
     const previousLayout = await root.getAttribute('data-layout')
+    const previousNavigation = await root.getAttribute('data-navigation')
     const previousPalette = await root.evaluate((element) =>
       ['--color-ground', '--color-bone', '--color-accent']
         .map((token) => getComputedStyle(element).getPropertyValue(token).trim())
@@ -225,6 +291,7 @@ test('regeneration never repeats palette or layout consecutively', async ({ page
     )
     await regenerate.click()
     await expect.poll(() => root.getAttribute('data-layout')).not.toBe(previousLayout)
+    await expect.poll(() => root.getAttribute('data-navigation')).not.toBe(previousNavigation)
     await expect
       .poll(() =>
         root.evaluate((element) =>
@@ -257,9 +324,11 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
 })
 
-test('contact form submits successfully without losing the design URL', async ({ page }) => {
+test('contact form submits successfully without changing design state or URL', async ({ page }) => {
   let submittedBody = ''
+  let requestCount = 0
   await page.route('https://api.web3forms.com/submit', async (route) => {
+    requestCount += 1
     submittedBody = route.request().postData() ?? ''
     await route.fulfill({
       status: 200,
@@ -268,6 +337,15 @@ test('contact form submits successfully without losing the design URL', async ({
     })
   })
   await page.goto(`/contact?design=${designRecipes[0].id}`)
+  const before = await page.locator('html').evaluate((element) => ({
+    navigation: element.dataset.navigation,
+    layout: element.dataset.layout,
+    colors: [
+      '--color-ground',
+      '--color-card',
+      '--color-accent',
+    ].map((token) => getComputedStyle(element).getPropertyValue(token)),
+  }))
 
   await page.getByLabel('Name').fill('Test Person')
   await page.getByLabel('Email').fill('test@example.com')
@@ -276,15 +354,91 @@ test('contact form submits successfully without losing the design URL', async ({
     .getByLabel('Reason for getting in touch')
     .selectOption('Build or strengthen a product or design team')
   await page.getByLabel('Message').fill('A useful test enquiry.')
-  await page.getByRole('button', { name: 'Send enquiry' }).click()
+  await page.locator('form.contact-form').evaluate((form: HTMLFormElement) => {
+    form.requestSubmit()
+    form.requestSubmit()
+  })
 
-  await expect(page.getByRole('status')).toContainText('Thanks. Your message has been sent.')
+  const status = page.getByRole('status')
+  await expect(status).toContainText('Message sent')
+  await expect(status).toBeFocused()
+  await expect(page.locator('form')).toHaveCount(0)
   expect(submittedBody).toContain('Test Person')
   expect(submittedBody).toContain('test@example.com')
   expect(submittedBody).toContain('Example Company')
   expect(submittedBody).toContain('Build or strengthen a product or design team')
   await expect(page).toHaveURL(/design=noir/)
-  await expect(page).toHaveURL(/submitted=true/)
+  await expect(page).not.toHaveURL(/submitted=/)
+  expect(requestCount).toBe(1)
+  expect(
+    await page.locator('html').evaluate((element) => ({
+      navigation: element.dataset.navigation,
+      layout: element.dataset.layout,
+      colors: [
+        '--color-ground',
+        '--color-card',
+        '--color-accent',
+      ].map((token) => getComputedStyle(element).getPropertyValue(token)),
+    })),
+  ).toEqual(before)
+})
+
+test('contact form failure stays editable and reports the error', async ({ page }) => {
+  await page.route('https://api.web3forms.com/submit', (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: false, message: 'Please try again.' }),
+    }),
+  )
+  await page.goto(`/contact?design=${designRecipes[0].id}`)
+  await page.getByLabel('Name').fill('Test Person')
+  await page.getByLabel('Email').fill('test@example.com')
+  await page.getByLabel('Reason for getting in touch').selectOption('Something else')
+  await page.getByLabel('Message').fill('A useful test enquiry.')
+  await page.getByRole('button', { name: 'Send enquiry' }).click()
+
+  await expect(page.getByRole('alert')).toHaveText('Please try again.')
+  await expect(page.locator('form.contact-form')).toBeVisible()
+  await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
+})
+
+test('a bare route persists one recipe and a direct design link remains deterministic', async ({ page }) => {
+  await page.goto('/contact')
+  await expect(page).toHaveURL(/design=[a-z0-9-]+/)
+  const persisted = new URL(page.url()).searchParams.get('design')
+  expect(designRecipes.some((recipe) => recipe.id === persisted)).toBe(true)
+
+  const requested = designRecipes.at(-1)!
+  await page.goto(`/manifesto?design=${requested.id}`)
+  await expect(page.locator('html')).toHaveAttribute('data-navigation', requested.navigationId)
+})
+
+test('brands and career reflow in chronological readable columns', async ({ page }) => {
+  await page.setViewportSize({ width: 768, height: 900 })
+  await openRecipe(page, designRecipes[0].id)
+
+  const careerCards = page.locator('[aria-labelledby="career-heading"] > ol > li')
+  const tabletBoxes = await careerCards.evaluateAll((elements) =>
+    elements.slice(0, 3).map((element) => element.getBoundingClientRect()),
+  )
+  expect(new Set(tabletBoxes.map((box) => Math.round(box.left))).size).toBe(1)
+
+  const sectorBottom = await page
+    .locator('.brands-sector-band > div')
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().bottom)
+  const brandsTop = await page
+    .locator('.brands-sector-band > div')
+    .nth(1)
+    .evaluate((element) => element.getBoundingClientRect().top)
+  expect(brandsTop).toBeGreaterThan(sectorBottom)
+
+  await page.setViewportSize({ width: 1440, height: 900 })
+  const desktopBoxes = await careerCards.evaluateAll((elements) =>
+    elements.slice(0, 4).map((element) => element.getBoundingClientRect()),
+  )
+  expect(new Set(desktopBoxes.map((box) => Math.round(box.left))).size).toBe(2)
 })
 
 test('public copy and metadata contain no em dashes', async ({ page }) => {

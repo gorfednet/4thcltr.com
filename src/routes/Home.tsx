@@ -8,7 +8,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
-import { Link } from 'react-router'
+import DesignLink from '../components/DesignLink'
 import HeroVisual from '../components/HeroVisual'
 import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
@@ -119,7 +119,7 @@ export default function Home() {
               {statItems.map((stat) => (
                 <div
                   key={stat.label}
-                  className="stat-cell flex flex-col justify-between gap-3 bg-ground px-4 py-4 sm:px-5 sm:py-5"
+                  className="stat-cell card-surface flex flex-col justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5"
                 >
                   <div className="flex items-center gap-2 text-accent">{stat.icon}</div>
                   <div>
@@ -156,7 +156,7 @@ export default function Home() {
               </div>
 
               <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9 lg:self-end">
-                <Link
+                <DesignLink
                   to="/manifesto"
                   className="group flex items-baseline justify-between gap-6 border-b border-line pb-3 transition-colors duration-300 hover:border-accent"
                 >
@@ -169,7 +169,7 @@ export default function Home() {
                   >
                     <ArrowRight size={16} strokeWidth={1.5} />
                   </span>
-                </Link>
+                </DesignLink>
               </div>
             </div>
           </Reveal>
@@ -241,15 +241,31 @@ export default function Home() {
       <section className="rule-top bg-ground-lift">
         <div className="shell py-24 lg:py-32">
           <Reveal>
-            <div className="grid-12">
-              <div className="md:col-span-12 lg:col-span-7">
+            <div className="brands-sector-band grid gap-14 lg:gap-20">
+              <div>
+                <p className="label border-b border-line-soft pb-4 text-faint">
+                  Sectors worked in
+                </p>
+                <ul className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(min(100%,10rem),1fr))] gap-2">
+                  {sectors.map((sector) => (
+                    <li
+                      key={sector}
+                      className="card-surface flex min-h-11 items-center px-4 py-2 text-sm leading-relaxed text-muted"
+                    >
+                      {sector}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
                 <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line-soft pb-4">
                   <p className="label text-faint">
                     Brands delivered for, in-house and through agency partners
                   </p>
                   <p className="label text-accent">{clients.length} named</p>
                 </div>
-                <ul className="mt-8 grid grid-cols-1 gap-x-8 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(min(100%,11rem),1fr))] gap-x-8 gap-y-3">
                   {clients.map((client) => (
                     <li
                       key={client}
@@ -261,19 +277,6 @@ export default function Home() {
                   <li className="font-sans text-[0.95rem] italic leading-relaxed text-faint lg:text-base">
                     and many more
                   </li>
-                </ul>
-              </div>
-
-              <div className="md:col-span-12 lg:col-span-4 lg:col-start-9">
-                <p className="label border-b border-line-soft pb-4 text-faint">
-                  Sectors worked in
-                </p>
-                <ul className="mt-8 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1">
-                  {sectors.map((sector) => (
-                    <li key={sector} className="text-sm leading-relaxed text-muted">
-                      {sector}
-                    </li>
-                  ))}
                 </ul>
               </div>
             </div>
@@ -291,7 +294,7 @@ export default function Home() {
             />
           </Reveal>
 
-          <div className="mt-16 grid gap-px border border-line-soft bg-line-soft sm:grid-cols-2 lg:mt-24 lg:grid-cols-3">
+          <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:mt-24 lg:grid-cols-3">
             {engagements.map((engagement, index) => (
               <Reveal
                 key={engagement.name}
@@ -302,7 +305,7 @@ export default function Home() {
                     : 'h-full'
                 }
               >
-                <div className="engagement-card flex h-full flex-col bg-ground p-7 sm:p-8 lg:p-10">
+                <div className="engagement-card card-surface flex h-full flex-col p-7 sm:p-8 lg:p-10">
                   <div className="flex items-start justify-between gap-4">
                     <span className="text-accent">{engagementIcons[index]}</span>
                     <span className="label text-faint">{engagement.duration}</span>
@@ -344,7 +347,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <div className="relative mt-14 h-[220px] overflow-hidden bg-ground-lift lg:mt-20 lg:h-[300px]">
+            <div className="relative mt-14 aspect-[16/9] max-h-[22rem] overflow-hidden bg-ground-lift sm:aspect-[16/6] sm:min-h-[12rem] lg:mt-20 lg:aspect-[16/5]">
               <img
                 src="/who-texture.jpg"
                 alt="Dark concrete wall texture, abstract surface detail"
@@ -360,93 +363,92 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <div className="grid-12 mt-16 lg:mt-24">
-              <div className="space-y-6 md:col-span-12 lg:col-span-5">
+            <div className="who-content mt-16 lg:mt-24">
+              <div className="grid gap-6 lg:grid-cols-2 lg:gap-x-16">
                 <p className="balance font-display text-2xl italic leading-snug text-bone lg:text-[1.875rem]">
                   I am {studio.principal}, and I have spent over {studio.yearsActive} years leading
                   experience design and product strategy across complex, regulated,
                   heavily scrutinised products. The work runs from founding Boardwise in
                   Dubai in 1999 to executive design leadership today.
                 </p>
-                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  Most recently Manager, Experience Design at TD, closing eight years
-                  inside the Human-Centered Design Practice of TD Invent. I filed two
-                  related patents there, and the brokerage was named best in Canada by
-                  The Globe and Mail three years running. Before that, Director of
-                  Product Design and of User Experience at Klick.
-                </p>
-                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  A third-culture kid raised between Canada, the UAE and Egypt, which is
-                  where the habit of adapting quickly and solving from more than one
-                  angle comes from. Founder three times over, the first as a teenager in
-                  Dubai. I still write front-end code, which is why the strategy stays
-                  honest about what can actually be built.
-                </p>
-                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  Based in {studio.base}.
-                </p>
+                <div className="space-y-6">
+                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                    Most recently Manager, Experience Design at TD, closing eight years
+                    inside the Human-Centered Design Practice of TD Invent. I filed two
+                    related patents there, and the brokerage was named best in Canada by
+                    The Globe and Mail three years running. Before that, Director of
+                    Product Design and of User Experience at Klick.
+                  </p>
+                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                    A third-culture kid raised between Canada, the UAE and Egypt, which is
+                    where the habit of adapting quickly and solving from more than one
+                    angle comes from. Founder three times over, the first as a teenager in
+                    Dubai. I still write front-end code, which is why the strategy stays
+                    honest about what can actually be built.
+                  </p>
+                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                    Based in {studio.base}.
+                  </p>
+                </div>
               </div>
 
-              <div className="grid gap-14 md:col-span-12 md:grid-cols-2 lg:col-span-6 lg:col-start-7 lg:grid-cols-1">
-                <div>
-                  <p className="label border-b border-line-soft pb-4 text-faint">Career</p>
-                  <ul>
-                    {career.map((entry) => (
-                      <li key={entry.company} className="border-b border-line-soft py-5">
-                        <div className="flex items-baseline justify-between gap-4">
-                          <p className="wrap-name font-display text-xl text-bone">
-                            {entry.company}
-                          </p>
-                          {entry.founded && (
-                            <span className="label shrink-0 text-accent">Founded</span>
-                          )}
-                        </div>
-
-                        <ul className="mt-2">
-                          {entry.roles.map((role) => (
-                            <li
-                              key={role.title}
-                              className="flex flex-wrap items-baseline justify-between gap-x-4"
-                            >
-                              <span className="text-sm text-muted">{role.title}</span>
-                              <span className="label shrink-0 text-faint">
-                                {role.period}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-
-                        <p className="measure mt-2 text-sm leading-relaxed text-faint">
-                          {entry.note}
+              <section className="mt-16 lg:mt-24" aria-labelledby="career-heading">
+                <h3 id="career-heading" className="label border-b border-line-soft pb-4 text-faint">
+                  Career
+                </h3>
+                <ol className="mt-4 grid gap-4 lg:grid-cols-2">
+                  {career.map((entry) => (
+                    <li key={entry.company} className="card-surface min-w-0 p-5 sm:p-6">
+                      <div className="flex flex-wrap items-baseline justify-between gap-3">
+                        <p className="wrap-name min-w-0 font-display text-xl text-bone">
+                          {entry.company}
                         </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        {entry.founded && (
+                          <span className="label shrink-0 text-accent">Founded</span>
+                        )}
+                      </div>
 
-                <div>
-                  <p className="label border-b border-line-soft pb-4 text-faint">
+                      <ul className="mt-3 space-y-1">
+                        {entry.roles.map((role) => (
+                          <li key={role.title} className="grid gap-1 sm:grid-cols-[1fr_auto] sm:gap-4">
+                            <span className="min-w-0 text-sm text-muted">{role.title}</span>
+                            <span className="label text-faint sm:text-right">{role.period}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <p className="measure mt-3 text-sm leading-relaxed text-faint">
+                        {entry.note}
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+
+              <div className="mt-16 grid gap-12 lg:mt-24 lg:grid-cols-2">
+                <section>
+                  <h3 className="label border-b border-line-soft pb-4 text-faint">
                     Awards and recognition
-                  </p>
+                  </h3>
                   <ul>
                     {awards.map((award) => (
                       <li
                         key={`${award.title}${award.year}`}
-                        className="flex items-baseline justify-between gap-4 border-b border-line-soft py-4"
+                        className="grid gap-2 border-b border-line-soft py-4 sm:grid-cols-[1fr_auto] sm:gap-4"
                       >
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-sm text-balance text-bone">{award.title}</p>
                           <p className="label mt-1.5 text-faint">
                             {award.source} / {award.detail}
                           </p>
                         </div>
-                        <span className="label shrink-0 text-faint">{award.year}</span>
+                        <span className="label text-faint sm:text-right">{award.year}</span>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </section>
 
-                <div className="grid gap-10 sm:grid-cols-2 md:col-span-2 lg:col-span-1">
+                <div className="grid content-start gap-10 sm:grid-cols-2">
                   <div>
                     <p className="label border-b border-line-soft pb-4 text-faint">
                       Selected speaking
@@ -498,7 +500,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <Link
+              <DesignLink
                 to="/contact"
                 className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 md:col-span-6 md:col-start-3 lg:col-span-4 lg:col-start-9"
               >
@@ -509,7 +511,7 @@ export default function Home() {
                   aria-hidden
                   className="transition-transform duration-300 group-hover:translate-x-1"
                 />
-              </Link>
+              </DesignLink>
             </div>
           </Reveal>
         </div>
