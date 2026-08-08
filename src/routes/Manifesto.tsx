@@ -4,11 +4,11 @@ import PageMeta from '../components/PageMeta'
 import Reveal from '../components/Reveal'
 import { manifestoJsonLd, organizationJsonLd, personJsonLd } from '../content/jsonLd'
 import { pageSeo } from '../content/seo'
-import { studio, tenets } from '../content/site'
+import { brandStory, studio, tenets } from '../content/site'
 
 export default function Manifesto() {
   return (
-    <article className="pt-40 lg:pt-52">
+    <article>
       <PageMeta
         title={pageSeo.manifesto.title}
         description={pageSeo.manifesto.description}
@@ -16,7 +16,7 @@ export default function Manifesto() {
         type="article"
         jsonLd={[organizationJsonLd(), personJsonLd(), manifestoJsonLd()]}
       />
-      <header className="shell">
+      <header className="page-intro shell">
         <p className="label text-accent">The {studio.name} manifesto</p>
         <h1 className="display-xl mt-8 text-[length:clamp(3rem,10vw,9rem)]">
           Keep the
@@ -29,7 +29,36 @@ export default function Manifesto() {
         </p>
       </header>
 
-      <div className="shell mt-24 lg:mt-36">
+      <section className="rule-top">
+        <div className="section-shell shell">
+          <Reveal>
+            <div className="grid-12">
+              <p className="label text-accent md:col-span-2">{brandStory.eyebrow}</p>
+              <h2 className="display-xl balance mt-4 text-[length:clamp(2.4rem,6vw,5rem)] md:col-span-9 md:col-start-3 md:mt-0">
+                {brandStory.title}
+              </h2>
+            </div>
+            <div className="section-content grid-12">
+              <div className="space-y-7 md:col-span-8 md:col-start-3 lg:col-span-6">
+                {brandStory.manifesto.map((paragraph) => (
+                  <p key={paragraph} className="text-lg leading-[1.75] text-muted">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+              <aside className="card-surface mt-10 p-6 md:col-span-8 md:col-start-3 lg:col-span-3 lg:col-start-10 lg:mt-0">
+                <p className="label text-accent">{brandStory.result.index}</p>
+                <p className="mt-4 font-display text-2xl">{brandStory.result.name}</p>
+                <p className="mt-3 text-sm leading-relaxed text-bone">
+                  {brandStory.result.detail}
+                </p>
+              </aside>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <div className="shell">
         {tenets.map((tenet, index) => (
           <Reveal key={tenet.number}>
             <section
@@ -71,7 +100,7 @@ export default function Manifesto() {
       </div>
 
       <Reveal>
-        <section className="shell mt-24 lg:mt-32">
+        <section className="section-shell shell mt-24 lg:mt-32">
           <div className="border border-line bg-ground-lift px-6 py-16 text-center lg:px-20 lg:py-24">
             <p className="label text-faint">Signed</p>
             <p className="mt-6 font-display text-3xl italic lg:text-5xl">

@@ -16,6 +16,42 @@ export const studio = {
   yearsActive: '25+',
 } as const
 
+export const brandStory = {
+  eyebrow: 'Why 4th Culture',
+  title: 'A practice built between worlds.',
+  summary:
+    'Raised between cultures, shaped by the internet and working at the edge of agentic intelligence, 4th Culture is a shared space for making what comes next without surrendering human judgment.',
+  inputs: [
+    {
+      index: '01',
+      name: 'Lived culture',
+      detail: 'The fluency that comes from growing up across Canada, the UAE and Egypt.',
+    },
+    {
+      index: '02',
+      name: 'The network',
+      detail: 'The internet as a place where language, behaviour and belonging keep being remade.',
+    },
+    {
+      index: '03',
+      name: 'Agentic intelligence',
+      detail: 'Systems that increasingly evaluate, create, interact and transact alongside us.',
+    },
+  ],
+  result: {
+    index: '04',
+    name: 'The fourth space',
+    detail:
+      'A deliberate common ground where cultural fluency, human character and computational capability produce something none owns alone.',
+  },
+  manifesto: [
+    'I am a third-culture kid, raised across Canada, the UAE and Egypt. Long before design became the work, translation was the habit: reading context, moving between systems and resisting the idea that one inherited baseline must be the only correct one.',
+    'The internet is crossing another boundary. People still browse, search and publish, but agents increasingly evaluate options, generate media, operate workflows and transact behind the interface. That shift changes more than software. It reshapes language, behaviour, trust and who remains accountable when action happens at machine speed.',
+    'Fourth Culture is not one fixed academic category here. It is the name for a deliberate shared space: neither a single home culture nor a statistical machine average, but a place cultural fluency, human character and computational capability can meet and make something specific together.',
+    'That is the promise of the practice: use advanced tools without handing over judgment; make the people, context and consequences visible; and build products distinct enough to belong to those they serve.',
+  ],
+} as const
+
 export type Tenet = {
   number: string
   title: string
@@ -25,11 +61,11 @@ export type Tenet = {
 export const tenets: Tenet[] = [
   {
     number: '01',
-    title: 'The fourth culture is already taking shape.',
+    title: 'Design for the space between systems.',
     body: [
-      'A third-culture kid is formed between places, belonging fully to neither the country of origin nor the country of residence, fluent in the gap between them. That is a literal description of how this practice was built: Vancouver, Surrey, White Rock, Dubai, Cairo, Toronto.',
-      'Another overlap now shapes the work: people and machines. Some avoid these tools while others hand over too much. This practice sits between those positions, which is familiar territory.',
-      'People make culture. It carries taste, memory, argument and intent. A statistical average can describe what came before, but it cannot decide what deserves to come next.',
+      'Products now operate between people, organisations, cultures and autonomous systems. The interface is only one visible part of a larger relationship that has to be understood and designed.',
+      'Working between systems requires translation rather than compromise by default: knowing which conventions create trust, which assumptions exclude and where a genuinely new model is more useful than an inherited one.',
+      'People make culture. It carries taste, memory, argument and intent. Models can extend the work, but deciding what deserves to exist remains a human responsibility.',
     ],
   },
   {

@@ -67,7 +67,7 @@ export default function Contact() {
         jsonLd={[organizationJsonLd(), personJsonLd()]}
       />
 
-      <section className="shell pb-20 pt-32 lg:pb-28 lg:pt-40">
+      <section className="page-intro shell pb-20 pt-32 lg:pb-28 lg:pt-40">
         <div className="grid-12">
           <div className="md:col-span-10 lg:col-span-7">
             <p className="label text-accent">Start a conversation</p>
@@ -84,7 +84,7 @@ export default function Contact() {
           </div>
         </div>
 
-        <div className="grid-12 mt-16 lg:mt-24">
+        <div className="section-content grid-12 mt-16 lg:mt-24">
           <aside className="md:col-span-4 lg:col-span-3">
             <p className="label text-faint">Useful context</p>
             <ul className="mt-6 space-y-4 text-base leading-relaxed text-muted">

@@ -23,6 +23,7 @@ import {
 import { pageSeo } from '../content/seo'
 import {
   awards,
+  brandStory,
   broadcast,
   career,
   clients,
@@ -93,10 +94,10 @@ export default function Home() {
           <div
             className={
               isStackedHero
-                ? `hero-copy flex flex-col justify-center gap-3 lg:w-full lg:py-2${
+                ? `hero-copy flex flex-col justify-center lg:w-full lg:py-2${
                     hero === 'stacked-center' ? ' items-center text-center' : ''
                   }`
-                : 'hero-copy flex flex-col justify-center gap-3 lg:col-span-7 lg:py-2'
+                : 'hero-copy flex flex-col justify-center lg:col-span-7 lg:py-2'
             }
           >
             <div className="hero-status flex items-center gap-3">
@@ -140,7 +141,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hero-stats mt-8 lg:mt-8">
+        <div className="hero-stats">
             <div className="hero-stats-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {statItems.map((stat) => (
                 <div
@@ -159,7 +160,7 @@ export default function Home() {
       </section>
 
       <section className="rule-top bg-ground-lift">
-        <div className="shell py-24 lg:py-36">
+        <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <p className="label text-accent">The manifesto</p>
             <blockquote className="balance mt-10 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:max-w-[30ch]">
@@ -167,18 +168,10 @@ export default function Home() {
               them. Good design gives those decisions a clear point of view."
             </blockquote>
 
-            <div className="grid-12 mt-14 lg:mt-20">
+            <div className="section-content grid-12 mt-14 lg:mt-20">
               <div className="space-y-6 md:col-span-6 lg:col-span-5">
                 <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  Products in the same category increasingly share a stack, a release
-                  cadence and a visual vocabulary. Rounded cards and quiet gradients are
-                  competent defaults. They rarely tell people why this product matters.
-                </p>
-                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  A memorable utility platform starts with intent: who it is for, what it
-                  helps them do and why it needs to exist. Voice, motion, friction and
-                  trust follow from that. The manifesto sets out seven positions on how we
-                  make those choices while working with AI.
+                  {brandStory.summary}
                 </p>
               </div>
 
@@ -199,12 +192,30 @@ export default function Home() {
                 </DesignLink>
               </div>
             </div>
+
+            <div className="brand-story-flow section-content" aria-label="The four parts of 4th Culture">
+              {brandStory.inputs.map((input) => (
+                <article key={input.index} className="brand-story-card card-surface">
+                  <p className="label text-accent">{input.index}</p>
+                  <h3 className="font-display text-2xl">{input.name}</h3>
+                  <p className="text-sm leading-relaxed text-bone">{input.detail}</p>
+                </article>
+              ))}
+              <span aria-hidden className="brand-story-arrow">
+                →
+              </span>
+              <article className="brand-story-card brand-story-result">
+                <p className="label text-accent">{brandStory.result.index}</p>
+                <h3 className="font-display text-2xl">{brandStory.result.name}</h3>
+                <p className="text-sm leading-relaxed text-bone">{brandStory.result.detail}</p>
+              </article>
+            </div>
           </Reveal>
         </div>
       </section>
 
-      <section id="practice" className="rule-top scroll-mt-24">
-        <div className="shell py-24 lg:py-36">
+      <section id="practice" className="section-anchor rule-top scroll-mt-24">
+        <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
               index="01 / Practice"
@@ -216,8 +227,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="proof" className="rule-top scroll-mt-24">
-        <div className="shell py-24 lg:py-36">
+      <section id="proof" className="section-anchor rule-top scroll-mt-24">
+        <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
               index="02 / Proof"
@@ -226,7 +237,7 @@ export default function Home() {
             />
           </Reveal>
 
-          <div className="mt-16 lg:mt-24">
+          <div className="section-content mt-16 lg:mt-24">
             {outcomes.map((outcome, index) => (
               <Reveal key={outcome.client} delay={index * 60}>
                 <article className="proof-row grid-12 group border-t border-line py-10 lg:py-14">
@@ -266,7 +277,7 @@ export default function Home() {
       </section>
 
       <section className="rule-top bg-ground-lift">
-        <div className="shell py-24 lg:py-32">
+        <div className="section-shell shell py-24 lg:py-32">
           <Reveal>
             <div className="brands-sector-band grid gap-14 lg:gap-20">
               <div>
@@ -311,8 +322,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="engage" className="rule-top scroll-mt-24">
-        <div className="shell py-24 lg:py-36">
+      <section id="engage" className="section-anchor rule-top scroll-mt-24">
+        <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
               index="03 / Engage"
@@ -321,7 +332,7 @@ export default function Home() {
             />
           </Reveal>
 
-          <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:mt-24 lg:grid-cols-3">
+          <div className="section-content mt-16 grid gap-4 sm:grid-cols-2 lg:mt-24 lg:grid-cols-3">
             {engagements.map((engagement, index) => (
               <Reveal
                 key={engagement.name}
@@ -368,7 +379,7 @@ export default function Home() {
       </section>
 
       <section className="rule-top">
-        <div className="shell py-24 lg:py-36">
+        <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead index="04 / Who" title="Who you are hiring." />
           </Reveal>
@@ -390,7 +401,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <div className="who-content mt-16 lg:mt-24">
+            <div className="section-content who-content mt-16 lg:mt-24">
               <div className="grid gap-6 lg:grid-cols-2 lg:gap-x-16">
                 <p className="balance font-display text-2xl italic leading-snug text-bone lg:text-[1.875rem]">
                   I am {studio.principal}, and I have spent over {studio.yearsActive} years leading
@@ -510,8 +521,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="contact" className="rule-top scroll-mt-24 bg-ground-lift">
-        <div className="shell py-28 lg:py-40">
+      <section id="contact" className="section-anchor rule-top scroll-mt-24 bg-ground-lift">
+        <div className="section-shell shell py-28 lg:py-40">
           <Reveal>
             <p className="label text-accent">05 / Start</p>
             <h2 className="display-xl mt-8 text-[length:clamp(2.75rem,9vw,8rem)]">
@@ -520,7 +531,7 @@ export default function Home() {
               <span className="italic">problem.</span>
             </h2>
 
-            <div className="grid-12 mt-16">
+            <div className="section-content grid-12 mt-16">
               <div className="md:col-span-8 lg:col-span-6">
                 <p className="measure text-xl leading-relaxed text-muted">
                   Share what you are trying to make, change or unstick, and what a useful

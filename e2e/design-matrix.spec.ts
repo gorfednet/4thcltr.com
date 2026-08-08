@@ -458,6 +458,55 @@ test('top headers never cover the hero proposition', async ({ page }) => {
   }
 })
 
+test('measured header spacing clears route intros across mobile treatments', async ({ page }) => {
+  const representatives = mobileHeaderIds.map(
+    (mobileHeaderId) =>
+      designRecipes.find((recipe) => recipe.mobileHeaderId === mobileHeaderId)!,
+  )
+
+  await page.setViewportSize({ width: 375, height: 812 })
+  for (const recipe of representatives) {
+    await page.goto(`/contact?design=${recipe.id}`)
+    await page.evaluate(() => document.fonts.ready)
+
+    const geometry = await page.evaluate(() => {
+      const frame = document.querySelector<HTMLElement>('.site-frame')!
+      const header = document.querySelector<HTMLElement>('.site-header')!
+      const headerInner = document.querySelector<HTMLElement>('.site-header-inner')!
+      const heading = document.querySelector<HTMLElement>('.page-intro h1')!
+      const intro = document.querySelector<HTMLElement>('.page-intro')!
+      const headerStyle = getComputedStyle(header)
+
+      return {
+        measuredToken: Number.parseFloat(
+          getComputedStyle(frame).getPropertyValue('--site-header-block-size'),
+        ),
+        expectedChrome:
+          headerInner.getBoundingClientRect().height +
+          Number.parseFloat(headerStyle.paddingTop) +
+          Number.parseFloat(headerStyle.paddingBottom),
+        headerBottom: header.getBoundingClientRect().bottom,
+        headingTop: heading.getBoundingClientRect().top,
+        sectionPadding: Number.parseFloat(getComputedStyle(intro).paddingBottom),
+      }
+    })
+
+    expect(
+      Math.abs(geometry.measuredToken - geometry.expectedChrome),
+      `${recipe.mobileHeaderId} measured chrome`,
+    ).toBeLessThanOrEqual(1)
+    expect(geometry.headingTop, `${recipe.mobileHeaderId} intro clearance`).toBeGreaterThan(
+      geometry.headerBottom,
+    )
+    expect(geometry.sectionPadding).toBeGreaterThanOrEqual(44)
+    expect(geometry.sectionPadding).toBeLessThanOrEqual(132)
+  }
+
+  await page.goto(`/manifesto?design=${representatives[0].id}`)
+  await expect(page.getByRole('heading', { name: 'A practice built between worlds.' })).toBeVisible()
+  await expect(page.getByText('The fourth space', { exact: true })).toBeVisible()
+})
+
 test('shared route, theme, and section URLs load directly', async ({ page }) => {
   const theme = designRecipes.find((recipe) => recipe.id === 'noir')!
 
@@ -1252,6 +1301,8 @@ test('hero stat cards separate from the body and use gutter spacing', async ({ p
 
   for (const recipe of designRecipes) {
     await openRecipe(page, recipe.id)
+    await page.mouse.move(0, 0)
+    await page.waitForTimeout(350)
 
     const gridGap = await page.locator('.hero-stats-grid').evaluate((element) => {
       const style = getComputedStyle(element)
@@ -1259,9 +1310,9 @@ test('hero stat cards separate from the body and use gutter spacing', async ({ p
     })
     expect(gridGap).toBeGreaterThanOrEqual(8)
 
-    const cellUsesCardSurface = await page.locator('.stat-cell').first().evaluate(() => {
+    const cellSurface = await page.locator('.stat-cell').first().evaluate(() => {
       const cell = document.querySelector('.stat-cell')
-      if (!cell) return false
+      if (!cell) return null
 
       const probe = document.createElement('div')
       probe.style.background = 'var(--color-card)'
@@ -1269,9 +1320,12 @@ test('hero stat cards separate from the body and use gutter spacing', async ({ p
       const cardBg = getComputedStyle(probe).backgroundColor
       probe.remove()
 
-      return getComputedStyle(cell).backgroundColor === cardBg
+      return {
+        actual: getComputedStyle(cell).backgroundColor,
+        expected: cardBg,
+      }
     })
-    expect(cellUsesCardSurface).toBe(true)
+    expect(cellSurface?.actual, `${recipe.id} stat cell surface`).toBe(cellSurface?.expected)
 
     const { colors } = getTheme(recipe.themeId)
     const tokenSeparation = Math.abs(luminance(colors.ground) - luminance(colors.card))

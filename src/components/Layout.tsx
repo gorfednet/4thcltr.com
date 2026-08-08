@@ -1,5 +1,5 @@
 import { ExternalLink } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useTheme } from '../context/ThemeContext'
 import {
@@ -114,6 +114,8 @@ function NavigationLinks({
 export default function Layout() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const frameRef = useRef<HTMLDivElement>(null)
+  const headerInnerRef = useRef<HTMLDivElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
@@ -138,6 +140,38 @@ export default function Layout() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useLayoutEffect(() => {
+    const frame = frameRef.current
+    const headerInner = headerInnerRef.current
+    if (!frame || !headerInner) return
+    let active = true
+
+    const updateHeaderSize = () => {
+      if (!active) return
+      const header = headerInner.parentElement
+      const headerStyle = header ? window.getComputedStyle(header) : null
+      const safeArea =
+        Number.parseFloat(headerStyle?.paddingTop ?? '0') +
+        Number.parseFloat(headerStyle?.paddingBottom ?? '0')
+      frame.style.setProperty(
+        '--site-header-block-size',
+        `${headerInner.getBoundingClientRect().height + safeArea}px`,
+      )
+    }
+    updateHeaderSize()
+
+    const observer = new ResizeObserver(updateHeaderSize)
+    observer.observe(headerInner)
+    window.addEventListener('resize', updateHeaderSize)
+    document.fonts.ready.then(updateHeaderSize)
+
+    return () => {
+      active = false
+      observer.disconnect()
+      window.removeEventListener('resize', updateHeaderSize)
+    }
+  }, [recipe.id])
 
   useEffect(() => {
     setMenuOpen(false)
@@ -206,6 +240,7 @@ export default function Layout() {
 
   return (
     <div
+      ref={frameRef}
       className="site-frame min-h-screen bg-ground"
       data-layout={layout}
       data-mood={mood}
@@ -232,7 +267,10 @@ export default function Layout() {
           scrolled ? 'site-header-scrolled' : ''
         }`}
       >
-        <div className="site-header-inner shell flex items-center justify-between py-5">
+        <div
+          ref={headerInnerRef}
+          className="site-header-inner shell flex items-center justify-between py-5"
+        >
           <Wordmark onClick={() => setMenuOpen(false)} />
           <nav aria-label="Primary navigation" className="primary-navigation">
             <NavigationLinks className={navLinkClass} />
