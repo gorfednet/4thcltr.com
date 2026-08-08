@@ -381,13 +381,12 @@ test('interactive controls use a pointer cursor and the logo returns home', asyn
   await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}$`))
 })
 
-test('flow imagery is present in every mobile design recipe', async ({ page }) => {
+test('flow imagery is hidden on mobile for every design recipe', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
 
   for (const recipe of designRecipes) {
     await openRecipe(page, recipe.id)
-    await expect(page.locator('.hero-visual')).toBeVisible()
-    await expect(page.locator('.hero-visual svg')).toBeVisible()
+    await expect(page.locator('.hero-visual')).toBeHidden()
   }
 })
 
