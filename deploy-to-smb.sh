@@ -49,7 +49,7 @@ else
   exit 1
 fi
 
-rsync -av --delete "$DIST/" "$DEST/"
+rsync -av --delete-after "$DIST/" "$DEST/"
 # Ensure nginx (www-data) can traverse and read the docroot on Linux SMB targets.
 chmod -R u=rwX,go=rX "$DEST" 2>/dev/null || true
 echo "Deploy complete."
