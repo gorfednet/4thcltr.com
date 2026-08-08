@@ -281,6 +281,7 @@ test('top navigation preserves its intended brand and nav hierarchy', async ({ p
   for (const viewport of [
     { width: 1024, height: 768 },
     { width: 1280, height: 800 },
+    { width: 1600, height: 1000 },
   ]) {
     await page.setViewportSize(viewport)
 
@@ -288,12 +289,14 @@ test('top navigation preserves its intended brand and nav hierarchy', async ({ p
       const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
       await openRecipe(page, recipe.id)
 
-      const wordmarkBox = await page.locator('.site-header-inner > a').first().boundingBox()
+      const wordmarkBox = await page.locator('.site-header .wordmark-label').boundingBox()
+      const navLabelBox = await page.locator('.primary-navigation .nav-label').first().boundingBox()
       const navBox = await page.locator('.site-header .primary-navigation').boundingBox()
       expect(wordmarkBox).not.toBeNull()
+      expect(navLabelBox).not.toBeNull()
       expect(navBox).not.toBeNull()
       expect(
-        Math.abs(wordmarkBox!.y + wordmarkBox!.height - (navBox!.y + navBox!.height)),
+        Math.abs(wordmarkBox!.y + wordmarkBox!.height - (navLabelBox!.y + navLabelBox!.height)),
       ).toBeLessThanOrEqual(2)
 
       if (navigationId === 'top-os-menu') {
@@ -733,6 +736,34 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(7)
   await expect(form.getByLabel('Message')).toHaveAttribute('required', '')
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
+})
+
+test('contact writing controls remain restrained in every recipe', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  for (const recipe of designRecipes) {
+    await page.goto(`/contact?design=${recipe.id}`)
+    const message = page.getByLabel('Message')
+    const metrics = await message.evaluate((element) => {
+      const style = getComputedStyle(element)
+      return { radius: Number.parseFloat(style.borderRadius), height: element.getBoundingClientRect().height }
+    })
+    expect(metrics.radius).toBeLessThanOrEqual(8)
+    expect(metrics.radius).toBeLessThan(metrics.height)
+  }
+})
+
+test('hero outcome stage is a clean interface card', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  for (const recipe of designRecipes) {
+    await openRecipe(page, recipe.id)
+    const outcome = page.locator('[data-flow-stage="outcome"]')
+    if (!(await outcome.isVisible())) continue
+    await expect(outcome).toHaveCount(1)
+    await expect(outcome.locator('line')).toHaveCount(0)
+  }
+  expect(new Set(designRecipes.map((recipe) => recipe.hero))).toEqual(
+    new Set(['split', 'split-reverse', 'stacked-center', 'stacked-flush']),
+  )
 })
 
 test('contact form submits successfully without changing design state or URL', async ({ page }) => {

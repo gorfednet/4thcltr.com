@@ -84,30 +84,24 @@ function HeroVisualVertical() {
       <line x1="258" y1="378" x2="258" y2="416" strokeWidth="0.75" strokeDasharray="3 3" opacity="0.6" style={{ stroke: v.accent }} />
       <polyline points="253,408 258,416 263,408" strokeWidth="0.75" fill="none" opacity="0.6" style={{ stroke: v.accent }} />
 
-      <rect x="32" y="416" width="376" height="58" rx="2" strokeWidth="1" style={{ stroke: v.box, fill: v.boxFill }} />
-      <rect x="32" y="416" width="94" height="58" rx="2" stroke="none" style={{ fill: v.box }} />
-      <rect x="32" y="470" width="94" height="4" style={{ fill: v.accent }} />
-      <rect x="48" y="432" width="32" height="7" rx="1" style={{ fill: v.line }} />
-      <rect x="48" y="446" width="46" height="6" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="142" y="432" width="36" height="7" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="142" y="446" width="50" height="6" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="252" y="432" width="28" height="7" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="252" y="446" width="44" height="6" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="348" y="432" width="28" height="7" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="348" y="446" width="36" height="6" rx="1" style={{ fill: v.lineFaint }} />
-      <line x1="126" y1="424" x2="126" y2="466" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-      <line x1="236" y1="424" x2="236" y2="466" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-      <line x1="332" y1="424" x2="332" y2="466" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-
-      <line x1="32" y1="500" x2="32" y2="516" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-      <line x1="408" y1="500" x2="408" y2="516" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-      <line x1="32" y1="508" x2="408" y2="508" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-      <circle cx="128" cy="508" r="2" style={{ fill: v.dot }} />
-      <circle cx="220" cy="508" r="2" style={{ fill: v.accent }} />
-      <circle cx="312" cy="508" r="2" style={{ fill: v.dot }} />
-      <line x1="128" y1="504" x2="128" y2="512" strokeWidth="0.75" style={{ stroke: v.dot }} />
-      <line x1="220" y1="503" x2="220" y2="513" strokeWidth="1" style={{ stroke: v.accent }} />
-      <line x1="312" y1="504" x2="312" y2="512" strokeWidth="0.75" style={{ stroke: v.dot }} />
+      <g data-flow-stage="outcome">
+        <rect x="32" y="416" width="376" height="72" rx="2" strokeWidth="1" style={{ stroke: v.box, fill: v.boxFill }} />
+        <rect x="32" y="416" width="376" height="16" rx="2" stroke="none" style={{ fill: v.box }} />
+        <rect x="48" y="421" width="46" height="5" rx="1" style={{ fill: v.line }} />
+        <rect x="48" y="444" width="100" height="28" rx="2" strokeWidth="0.75" style={{ stroke: v.box, fill: 'transparent' }} />
+        <rect x="60" y="451" width="28" height="5" rx="1" style={{ fill: v.line }} />
+        <rect x="60" y="462" width="42" height="4" rx="1" style={{ fill: v.lineFaint }} />
+        <rect x="160" y="444" width="100" height="28" rx="2" strokeWidth="0.75" style={{ stroke: v.box, fill: 'transparent' }} />
+        <rect x="172" y="451" width="28" height="5" rx="1" style={{ fill: v.line }} />
+        <rect x="172" y="462" width="42" height="4" rx="1" style={{ fill: v.lineFaint }} />
+        <rect x="272" y="444" width="120" height="28" rx="2" strokeWidth="0.75" style={{ stroke: v.accent, fill: v.accent }} opacity="0.15" />
+        <rect x="284" y="451" width="32" height="5" rx="1" style={{ fill: v.accent }} />
+        <rect x="284" y="462" width="54" height="4" rx="1" style={{ fill: v.line }} />
+        <rect x="348" y="462" width="28" height="4" rx="1" style={{ fill: v.accent }} />
+        <rect x="48" y="478" width="148" height="3" rx="1" style={{ fill: v.lineFaint }} />
+        <rect x="206" y="478" width="86" height="3" rx="1" style={{ fill: v.line }} />
+        <rect x="302" y="478" width="62" height="3" rx="1" style={{ fill: v.accent }} />
+      </g>
     </svg>
   )
 }
@@ -170,22 +164,22 @@ function HeroVisualHorizontal() {
       <line x1="508" y1="110" x2="524" y2="110" strokeWidth="0.75" strokeDasharray="3 3" opacity="0.6" style={{ stroke: v.accent }} />
       <polyline points="518,105 524,110 518,115" strokeWidth="0.75" fill="none" opacity="0.6" style={{ stroke: v.accent }} />
 
-      <rect x="532" y="64" width="88" height="92" rx="2" strokeWidth="1" style={{ stroke: v.box, fill: v.boxFill }} />
-      <rect x="532" y="64" width="22" height="92" rx="2" stroke="none" style={{ fill: v.box }} />
-      <rect x="532" y="152" width="22" height="4" style={{ fill: v.accent }} />
-      <rect x="544" y="76" width="16" height="5" rx="1" style={{ fill: v.line }} />
-      <rect x="544" y="88" width="24" height="4" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="568" y="76" width="14" height="5" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="568" y="88" width="20" height="4" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="592" y="76" width="12" height="5" rx="1" style={{ fill: v.lineFaint }} />
-      <rect x="592" y="88" width="18" height="4" rx="1" style={{ fill: v.lineFaint }} />
-      <line x1="556" y1="68" x2="556" y2="156" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-      <line x1="580" y1="68" x2="580" y2="156" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-
-      <line x1="24" y1="192" x2="616" y2="192" strokeWidth="0.75" style={{ stroke: v.lineFaint }} />
-      <circle cx="180" cy="192" r="2" style={{ fill: v.dot }} />
-      <circle cx="320" cy="192" r="2" style={{ fill: v.accent }} />
-      <circle cx="460" cy="192" r="2" style={{ fill: v.dot }} />
+      <g data-flow-stage="outcome">
+        <rect x="532" y="64" width="88" height="92" rx="2" strokeWidth="1" style={{ stroke: v.box, fill: v.boxFill }} />
+        <rect x="532" y="64" width="88" height="14" rx="2" stroke="none" style={{ fill: v.box }} />
+        <rect x="542" y="69" width="24" height="4" rx="1" style={{ fill: v.line }} />
+        <rect x="542" y="88" width="22" height="22" rx="2" strokeWidth="0.75" style={{ stroke: v.box, fill: 'transparent' }} />
+        <rect x="547" y="94" width="11" height="4" rx="1" style={{ fill: v.line }} />
+        <rect x="547" y="102" width="13" height="3" rx="1" style={{ fill: v.lineFaint }} />
+        <rect x="570" y="88" width="22" height="22" rx="2" strokeWidth="0.75" style={{ stroke: v.box, fill: 'transparent' }} />
+        <rect x="575" y="94" width="11" height="4" rx="1" style={{ fill: v.line }} />
+        <rect x="575" y="102" width="13" height="3" rx="1" style={{ fill: v.lineFaint }} />
+        <rect x="598" y="88" width="12" height="22" rx="2" strokeWidth="0.75" style={{ stroke: v.accent, fill: v.accent }} opacity="0.18" />
+        <rect x="601" y="94" width="6" height="4" rx="1" style={{ fill: v.accent }} />
+        <rect x="542" y="122" width="40" height="3" rx="1" style={{ fill: v.lineFaint }} />
+        <rect x="542" y="130" width="58" height="3" rx="1" style={{ fill: v.line }} />
+        <rect x="542" y="138" width="30" height="3" rx="1" style={{ fill: v.accent }} />
+      </g>
     </svg>
   )
 }

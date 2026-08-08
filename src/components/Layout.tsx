@@ -34,14 +34,14 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
     <a
       href={destination}
       onClick={handleClick}
-      className="group flex items-baseline gap-2"
+      className="wordmark group flex items-baseline gap-2"
       aria-label={`${studio.name}, home`}
     >
-      <span className="display-xl text-[1.65rem] leading-none transition-colors duration-300 group-hover:text-accent">
+      <span className="wordmark-mark display-xl text-[1.65rem] leading-none transition-colors duration-300 group-hover:text-accent">
         4
         <span className="align-super text-[0.55em] italic">th</span>
       </span>
-      <span className="label pb-[2px] text-bone transition-colors duration-300 group-hover:text-accent">
+      <span className="wordmark-label label text-bone transition-colors duration-300 group-hover:text-accent">
         Culture
       </span>
     </a>
