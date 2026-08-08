@@ -2,7 +2,7 @@ import { ExternalLink } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useTheme } from '../context/ThemeContext'
-import { getNavigationConstruct } from '../navigation'
+import { getNavigationConstruct, mobileMenuIds } from '../navigation'
 import DesignLink from './DesignLink'
 import SectionLink from './SectionLink'
 import { studio } from '../content/site'
@@ -93,7 +93,8 @@ export default function Layout() {
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
-  const { layout, mood, hero, radius, typeScale, navigationId } = useTheme()
+  const { layout, mood, hero, radius, typeScale, navigationId, mobileNavigationId } =
+    useTheme()
   const navigation = getNavigationConstruct(navigationId)
 
   useEffect(() => {
@@ -160,6 +161,8 @@ export default function Layout() {
       data-navigation={navigation.id}
       data-navigation-family={navigation.family}
       data-navigation-menu={navigation.usesMenu ? 'true' : 'false'}
+      data-mobile-navigation={mobileNavigationId}
+      data-mobile-navigation-menu={mobileMenuIds.has(mobileNavigationId) ? 'true' : 'false'}
     >
       <a
         href="#main"
@@ -187,7 +190,9 @@ export default function Layout() {
             aria-expanded={menuOpen}
             aria-controls="navigation-panel"
           >
-            <span>{menuOpen ? 'Close' : 'Menu'}</span>
+            <span className="menu-trigger-label">
+              {menuOpen ? 'Close' : 'Menu'}
+            </span>
             <span aria-hidden className="menu-mark">
               <i />
               <i />

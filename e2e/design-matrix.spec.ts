@@ -1,6 +1,11 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
-import { getNavigationConstruct, navigationIds } from '../src/navigation'
+import {
+  getNavigationConstruct,
+  mobileMenuIds,
+  mobileNavigationIds,
+  navigationIds,
+} from '../src/navigation'
 import { designRecipes, getTheme } from '../src/themes'
 
 const viewports = [
@@ -281,10 +286,109 @@ test('all palette tokens meet AA contrast thresholds', () => {
   }
 })
 
-test('all 20 navigation constructs are assigned to the curated catalog', () => {
-  expect(new Set(designRecipes.map((recipe) => recipe.navigationId))).toEqual(
-    new Set(navigationIds),
+test('desktop and mobile navigation constructs are independently balanced', () => {
+  const desktopCounts = navigationIds.map((navigationId) =>
+    designRecipes.filter((recipe) => recipe.navigationId === navigationId).length,
   )
+  const mobileCounts = mobileNavigationIds.map((mobileNavigationId) =>
+    designRecipes.filter((recipe) => recipe.mobileNavigationId === mobileNavigationId).length,
+  )
+
+  expect(Math.max(...desktopCounts) - Math.min(...desktopCounts)).toBeLessThanOrEqual(1)
+  expect(Math.max(...mobileCounts) - Math.min(...mobileCounts)).toBeLessThanOrEqual(1)
+  expect(new Set(designRecipes.map((recipe) => recipe.navigationId))).toEqual(new Set(navigationIds))
+  expect(new Set(designRecipes.map((recipe) => recipe.mobileNavigationId))).toEqual(
+    new Set(mobileNavigationIds),
+  )
+})
+
+test('every mobile navigation construct is usable and preserves drawer side', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+
+  for (const mobileNavigationId of mobileNavigationIds) {
+    const recipe = designRecipes.find(
+      (candidate) => candidate.mobileNavigationId === mobileNavigationId,
+    )!
+    await openRecipe(page, recipe.id)
+    await expect(page.locator('.site-frame')).toHaveAttribute(
+      'data-mobile-navigation',
+      mobileNavigationId,
+    )
+
+    const menu = page.locator('.menu-trigger')
+    const primaryNavigation = page.locator('.primary-navigation')
+    if (mobileMenuIds.has(mobileNavigationId)) {
+      await expect(menu).toBeVisible()
+      await menu.click()
+      const panel = page.locator('#navigation-panel')
+      await expect(panel).toBeVisible()
+
+      if (mobileNavigationId.startsWith('hamburger-')) {
+        const box = await panel.boundingBox()
+        expect(box).not.toBeNull()
+        if (mobileNavigationId === 'hamburger-left') {
+          expect(box!.x).toBeLessThanOrEqual(1)
+        } else {
+          expect(Math.abs(box!.x + box!.width - 375)).toBeLessThanOrEqual(1)
+        }
+      }
+
+      await page.keyboard.press('Escape')
+      await expect(menu).toBeFocused()
+    } else {
+      await expect(menu).toBeHidden()
+      await expect(primaryNavigation).toBeVisible()
+    }
+  }
+})
+
+test('desktop hamburger panels open on their trigger side', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+
+  for (const [navigationId, side] of [
+    ['side-collapsible', 'left'],
+    ['menu-dropdown', 'right'],
+    ['corner-launcher', 'right'],
+  ] as const) {
+    const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
+    await openRecipe(page, recipe.id)
+    await page.locator('.menu-trigger').click()
+    const box = await page.locator('#navigation-panel').boundingBox()
+    expect(box).not.toBeNull()
+    if (side === 'left') {
+      expect(box!.x).toBeLessThanOrEqual(1)
+    } else {
+      expect(box!.x + box!.width).toBeGreaterThan(1280 / 2)
+    }
+  }
+})
+
+test('interactive controls use a pointer cursor and the logo returns home', async ({ page }) => {
+  const recipe = designRecipes[0]
+  await page.goto(`/contact?design=${recipe.id}`)
+
+  const controls = page.locator(
+    'a[href], button:not(:disabled), [role="button"], [role="link"], [role="tab"], summary, label[for], select, input[type="checkbox"], input[type="radio"], input[type="submit"]',
+  )
+  for (let index = 0; index < (await controls.count()); index += 1) {
+    const control = controls.nth(index)
+    if (await control.isVisible()) {
+      await expect(control).toHaveCSS('cursor', 'pointer')
+    }
+  }
+
+  await page.getByRole('link', { name: '4th Culture, home' }).first().click()
+  await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}$`))
+})
+
+test('flow imagery is present in every mobile design recipe', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+
+  for (const recipe of designRecipes) {
+    await openRecipe(page, recipe.id)
+    await expect(page.locator('.hero-visual')).toBeVisible()
+    await expect(page.locator('.hero-visual svg')).toBeVisible()
+  }
 })
 
 test('regeneration never repeats palette, layout or navigation consecutively', async ({ page }) => {

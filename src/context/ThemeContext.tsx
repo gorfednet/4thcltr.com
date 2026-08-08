@@ -14,7 +14,7 @@ import {
   type Theme,
   type TypeScale,
 } from '../themes'
-import type { NavigationId } from '../navigation'
+import type { MobileNavigationId, NavigationId } from '../navigation'
 
 export type DesignState = {
   recipe: DesignRecipe
@@ -26,6 +26,7 @@ export type DesignState = {
   fontPack: FontPack
   typeScale: TypeScale
   navigationId: NavigationId
+  mobileNavigationId: MobileNavigationId
   generation: number
   randomize: () => void
 }
@@ -40,6 +41,7 @@ const ThemeContext = createContext<DesignState>({
   fontPack: getFontPack(defaultRecipe.fontPackId),
   typeScale: defaultRecipe.typeScale,
   navigationId: defaultRecipe.navigationId,
+  mobileNavigationId: defaultRecipe.mobileNavigationId,
   generation: 0,
   randomize: () => {},
 })
@@ -66,6 +68,7 @@ function applyDesign(
   fontPack: FontPack,
   typeScale: TypeScale,
   navigationId: NavigationId,
+  mobileNavigationId: MobileNavigationId,
 ) {
   const root = document.documentElement
   const { colors } = theme
@@ -97,6 +100,7 @@ function applyDesign(
   root.dataset.radius = radius
   root.dataset.type = typeScale
   root.dataset.navigation = navigationId
+  root.dataset.mobileNavigation = mobileNavigationId
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -117,6 +121,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       fontPack,
       recipe.typeScale,
       recipe.navigationId,
+      recipe.mobileNavigationId,
     )
 
     const url = new URL(window.location.href)
@@ -130,7 +135,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const isEligible = (candidate: DesignRecipe) =>
       candidate.themeId !== recipe.themeId &&
       candidate.layout !== recipe.layout &&
-      candidate.navigationId !== recipe.navigationId
+      candidate.navigationId !== recipe.navigationId &&
+      candidate.mobileNavigationId !== recipe.mobileNavigationId
     let eligibleIds = remainingRecipeIds.current.filter((id) => {
       const candidate = designRecipes.find((item) => item.id === id)
       return candidate ? isEligible(candidate) : false
@@ -168,6 +174,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         fontPack,
         typeScale: recipe.typeScale,
         navigationId: recipe.navigationId,
+        mobileNavigationId: recipe.mobileNavigationId,
         generation,
         randomize,
       }}

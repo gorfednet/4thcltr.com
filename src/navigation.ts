@@ -24,6 +24,16 @@ export const navigationIds = [
 export type NavigationId = (typeof navigationIds)[number]
 export type NavigationFamily = 'top' | 'side' | 'menu' | 'bottom'
 
+export const mobileNavigationIds = [
+  'hamburger-left',
+  'hamburger-right',
+  'button-grid',
+  'tabs',
+  'bottom-dock',
+] as const
+
+export type MobileNavigationId = (typeof mobileNavigationIds)[number]
+
 export type NavigationConstruct = {
   id: NavigationId
   family: NavigationFamily
@@ -53,3 +63,9 @@ export const navigationConstructs: NavigationConstruct[] = navigationIds.map((id
 export function getNavigationConstruct(id: NavigationId) {
   return navigationConstructs.find((construct) => construct.id === id) ?? navigationConstructs[0]
 }
+
+export const mobileMenuIds = new Set<MobileNavigationId>([
+  'hamburger-left',
+  'hamburger-right',
+  'button-grid',
+])

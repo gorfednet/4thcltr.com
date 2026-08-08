@@ -1,4 +1,9 @@
-import { navigationIds, type NavigationId } from './navigation'
+import {
+  mobileNavigationIds,
+  navigationIds,
+  type MobileNavigationId,
+  type NavigationId,
+} from './navigation'
 
 export type Layout = 'editorial' | 'magazine' | 'minimal' | 'dense' | 'saas' | 'startup' | 'brutal' | 'swiss'
 export type Mood = 'serious' | 'saas' | 'startup' | 'brutal' | 'pastel' | 'neon' | 'swiss' | 'glow'
@@ -17,6 +22,7 @@ export type DesignRecipe = {
   radius: RadiusScale
   typeScale: TypeScale
   navigationId: NavigationId
+  mobileNavigationId: MobileNavigationId
 }
 
 export type FontPack = {
@@ -1031,6 +1037,7 @@ export const designRecipes: DesignRecipe[] = themes.map((theme, index) => {
     typeScale:
       theme.layout === 'dense' ? 'compact' : theme.layout === 'minimal' ? 'airy' : 'default',
     navigationId: navigationIds[index % navigationIds.length],
+    mobileNavigationId: mobileNavigationIds[(index * 2 + 1) % mobileNavigationIds.length],
   }
 
   return { ...defaults, ...recipeOverrides[theme.id] }
