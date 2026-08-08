@@ -154,11 +154,11 @@ test.describe('desktop interaction matrix', () => {
         await expect(tabs.nth(index)).toHaveAttribute('aria-selected', 'true')
       }
 
-      const projectLink = page.getByRole('link', { name: 'Start a project', exact: true })
+      const projectLink = page.getByRole('link', { name: 'Contact', exact: true })
       if ((await projectLink.count()) === 0) {
         await page.getByRole('button', { name: 'Menu' }).click()
       }
-      await page.getByRole('link', { name: 'Start a project', exact: true }).first().click()
+      await page.getByRole('link', { name: 'Contact', exact: true }).first().click()
       await expect(page).toHaveURL(new RegExp(`/contact\\?design=${recipe.id}`))
       await expect(page.locator('form')).toHaveCount(1)
 
@@ -387,6 +387,89 @@ test('flow imagery is hidden on mobile for every design recipe', async ({ page }
   for (const recipe of designRecipes) {
     await openRecipe(page, recipe.id)
     await expect(page.locator('.hero-visual')).toBeHidden()
+  }
+})
+
+test('mobile tab navigation scrolls horizontally with card-backed links', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  const tabsRecipes = designRecipes.filter((recipe) => recipe.mobileNavigationId === 'tabs')
+
+  for (const recipe of tabsRecipes) {
+    await openRecipe(page, recipe.id)
+    await expect(page.locator('.site-frame')).toHaveAttribute('data-mobile-navigation', 'tabs')
+
+    const nav = page.locator('[data-mobile-navigation="tabs"] .primary-navigation')
+    const metrics = await nav.evaluate((element) => ({
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+    }))
+    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth)
+
+    const scrolled = await nav.evaluate((element) => {
+      element.scrollLeft = 48
+      return element.scrollLeft
+    })
+    expect(scrolled).toBeGreaterThan(0)
+
+    const linkCount = await nav.locator('.nav-link').count()
+    for (let index = 0; index < linkCount; index += 1) {
+      const background = await nav.locator('.nav-link').nth(index).evaluate((element) =>
+        getComputedStyle(element).backgroundColor,
+      )
+      expect(background).not.toBe('transparent')
+      expect(background).not.toMatch(/rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)/)
+    }
+  }
+})
+
+test('primary navigation includes Contact link to contact route', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await openRecipe(page, designRecipes[0].id)
+
+  const contactLink = page.getByRole('link', { name: 'Contact', exact: true }).first()
+  await expect(contactLink).toBeVisible()
+  await expect(contactLink).toHaveAttribute('href', expect.stringContaining('/contact'))
+})
+
+test('navigation links do not overlap hero wireframe imagery', async ({ page }) => {
+  const tabsRecipes = designRecipes.filter((recipe) => recipe.mobileNavigationId === 'tabs')
+
+  await page.setViewportSize({ width: 375, height: 812 })
+  for (const recipe of tabsRecipes) {
+    await openRecipe(page, recipe.id)
+
+    const headerBox = await page.locator('.site-header').boundingBox()
+    const visual = page.locator('.hero-visual')
+    expect(headerBox).not.toBeNull()
+
+    if (await visual.isVisible()) {
+      const visualBox = await visual.boundingBox()
+      expect(visualBox).not.toBeNull()
+      expect(headerBox!.y + headerBox!.height).toBeLessThanOrEqual(visualBox!.y + 1)
+    } else {
+      await expect(visual).toBeHidden()
+    }
+  }
+
+  await page.setViewportSize({ width: 1280, height: 800 })
+  for (const recipe of designRecipes) {
+    await openRecipe(page, recipe.id)
+
+    const visual = page.locator('.hero-visual')
+    if (!(await visual.isVisible())) continue
+
+    const visualBox = await visual.boundingBox()
+    expect(visualBox).not.toBeNull()
+
+    const navLinks = page.locator('.primary-navigation .nav-link')
+    for (let index = 0; index < (await navLinks.count()); index += 1) {
+      const link = navLinks.nth(index)
+      if (!(await link.isVisible())) continue
+
+      const linkBox = await link.boundingBox()
+      if (!linkBox) continue
+      expect(boxesOverlap(linkBox, visualBox!)).toBe(false)
+    }
   }
 })
 

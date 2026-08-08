@@ -1008,16 +1008,42 @@ function resolveHero(theme: Theme): HeroComposition {
 }
 
 /**
+ * Remap bare inline nav constructs when the hero wireframe band sits at page top.
+ */
+function resolveNavigation(hero: HeroComposition, navigationId: NavigationId): NavigationId {
+  const isStackedHero = hero === 'stacked-center' || hero === 'stacked-flush'
+  const isSplitHero = hero === 'split' || hero === 'split-reverse'
+
+  if (isStackedHero && (navigationId === 'top-inline' || navigationId === 'top-split')) {
+    return 'top-tabs'
+  }
+
+  if (isSplitHero && navigationId === 'top-two-tier') {
+    return 'top-tabs'
+  }
+
+  return navigationId
+}
+
+function resolveMobileNavigation(mobileNavigationId: MobileNavigationId): MobileNavigationId {
+  return mobileNavigationId
+}
+
+/**
  * The finite, reviewable design catalog. Each palette keeps its intentionally
  * paired structural defaults and font system; only known cascade conflicts are
  * corrected. Dense compositions use compact type, while spacious minimal
  * compositions can safely use the airy scale.
  */
 const recipeOverrides: Partial<
-  Record<string, Partial<Pick<DesignRecipe, 'layout' | 'mood' | 'hero' | 'radius' | 'typeScale'>>>
+  Record<string, Partial<Pick<DesignRecipe, 'layout' | 'mood' | 'hero' | 'radius' | 'typeScale' | 'navigationId'>>>
 > = {
   void: { radius: 'soft' },
   paper: { radius: 'sharp' },
+  ember: { navigationId: 'top-centered' },
+  earthywarm: { navigationId: 'top-split' },
+  neonhype: { navigationId: 'bottom-bar' },
+  lavenderglow: { navigationId: 'menu-command' },
 }
 
 export const designRecipes: DesignRecipe[] = themes.map((theme, index) => {
@@ -1036,8 +1062,13 @@ export const designRecipes: DesignRecipe[] = themes.map((theme, index) => {
     radius: theme.radius,
     typeScale:
       theme.layout === 'dense' ? 'compact' : theme.layout === 'minimal' ? 'airy' : 'default',
-    navigationId: navigationIds[index % navigationIds.length],
-    mobileNavigationId: mobileNavigationIds[(index * 2 + 1) % mobileNavigationIds.length],
+    navigationId: resolveNavigation(
+      resolveHero(theme),
+      navigationIds[index % navigationIds.length],
+    ),
+    mobileNavigationId: resolveMobileNavigation(
+      mobileNavigationIds[(index * 2 + 1) % mobileNavigationIds.length],
+    ),
   }
 
   return { ...defaults, ...recipeOverrides[theme.id] }

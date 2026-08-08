@@ -81,7 +81,7 @@ function NavigationLinks({
         onClick={onNavigate}
         aria-current={location.pathname === '/contact' ? 'page' : undefined}
       >
-        {content('05', 'Start a project')}
+        {content('05', 'Contact')}
       </DesignLink>
     </>
   )
