@@ -14,7 +14,7 @@ import {
   type Theme,
   type TypeScale,
 } from '../themes'
-import type { MobileNavigationId, NavigationId } from '../navigation'
+import type { MobileHeaderId, MobileNavigationId, NavigationId } from '../navigation'
 
 export type DesignState = {
   recipe: DesignRecipe
@@ -27,6 +27,7 @@ export type DesignState = {
   typeScale: TypeScale
   navigationId: NavigationId
   mobileNavigationId: MobileNavigationId
+  mobileHeaderId: MobileHeaderId
   generation: number
   randomize: () => void
 }
@@ -42,6 +43,7 @@ const ThemeContext = createContext<DesignState>({
   typeScale: defaultRecipe.typeScale,
   navigationId: defaultRecipe.navigationId,
   mobileNavigationId: defaultRecipe.mobileNavigationId,
+  mobileHeaderId: defaultRecipe.mobileHeaderId,
   generation: 0,
   randomize: () => {},
 })
@@ -69,6 +71,7 @@ function applyDesign(
   typeScale: TypeScale,
   navigationId: NavigationId,
   mobileNavigationId: MobileNavigationId,
+  mobileHeaderId: MobileHeaderId,
 ) {
   const root = document.documentElement
   const { colors } = theme
@@ -101,6 +104,7 @@ function applyDesign(
   root.dataset.type = typeScale
   root.dataset.navigation = navigationId
   root.dataset.mobileNavigation = mobileNavigationId
+  root.dataset.mobileHeader = mobileHeaderId
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -122,6 +126,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       recipe.typeScale,
       recipe.navigationId,
       recipe.mobileNavigationId,
+      recipe.mobileHeaderId,
     )
 
     const url = new URL(window.location.href)
@@ -136,7 +141,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       candidate.themeId !== recipe.themeId &&
       candidate.layout !== recipe.layout &&
       candidate.navigationId !== recipe.navigationId &&
-      candidate.mobileNavigationId !== recipe.mobileNavigationId
+      candidate.mobileNavigationId !== recipe.mobileNavigationId &&
+      candidate.mobileHeaderId !== recipe.mobileHeaderId
     let eligibleIds = remainingRecipeIds.current.filter((id) => {
       const candidate = designRecipes.find((item) => item.id === id)
       return candidate ? isEligible(candidate) : false
@@ -175,6 +181,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         typeScale: recipe.typeScale,
         navigationId: recipe.navigationId,
         mobileNavigationId: recipe.mobileNavigationId,
+        mobileHeaderId: recipe.mobileHeaderId,
         generation,
         randomize,
       }}

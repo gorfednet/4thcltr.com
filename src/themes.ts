@@ -1,6 +1,8 @@
 import {
+  mobileHeaderIds,
   mobileNavigationIds,
   navigationIds,
+  type MobileHeaderId,
   type MobileNavigationId,
   type NavigationId,
 } from './navigation'
@@ -23,6 +25,7 @@ export type DesignRecipe = {
   typeScale: TypeScale
   navigationId: NavigationId
   mobileNavigationId: MobileNavigationId
+  mobileHeaderId: MobileHeaderId
 }
 
 export type FontPack = {
@@ -1029,6 +1032,17 @@ function resolveMobileNavigation(mobileNavigationId: MobileNavigationId): Mobile
   return mobileNavigationId
 }
 
+function resolveMobileHeader(
+  mobileNavigationId: MobileNavigationId,
+  mobileHeaderId: MobileHeaderId,
+): MobileHeaderId {
+  if (mobileNavigationId === 'tabs' && mobileHeaderId === 'scroll-away') {
+    return 'fixed-solid'
+  }
+
+  return mobileHeaderId
+}
+
 /**
  * The finite, reviewable design catalog. Each palette keeps its intentionally
  * paired structural defaults and font system; only known cascade conflicts are
@@ -1068,6 +1082,10 @@ export const designRecipes: DesignRecipe[] = themes.map((theme, index) => {
     ),
     mobileNavigationId: resolveMobileNavigation(
       mobileNavigationIds[(index * 2 + 1) % mobileNavigationIds.length],
+    ),
+    mobileHeaderId: resolveMobileHeader(
+      mobileNavigationIds[(index * 2 + 1) % mobileNavigationIds.length],
+      mobileHeaderIds[(index * 3 + 2) % mobileHeaderIds.length],
     ),
   }
 

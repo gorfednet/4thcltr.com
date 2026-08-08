@@ -1,17 +1,39 @@
 import { ExternalLink } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { Outlet, useLocation } from 'react-router'
+import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useTheme } from '../context/ThemeContext'
-import { getNavigationConstruct, mobileMenuIds } from '../navigation'
+import {
+  getNavigationConstruct,
+  mobileMenuCloseAtTriggerIds,
+  mobileMenuIds,
+} from '../navigation'
 import DesignLink from './DesignLink'
 import SectionLink from './SectionLink'
 import { studio } from '../content/site'
+import { designAwarePath } from '../utils/designPath'
 
 function Wordmark({ onClick }: { onClick?: () => void }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { recipe } = useTheme()
+  const destination = designAwarePath('/', location.search, recipe.id)
+
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+
+    event.preventDefault()
+    onClick?.()
+    navigate(destination)
+    window.scrollTo({
+      top: 0,
+      behavior: location.pathname === '/' ? 'smooth' : 'auto',
+    })
+  }
+
   return (
-    <DesignLink
-      to="/"
-      onClick={onClick}
+    <a
+      href={destination}
+      onClick={handleClick}
       className="group flex items-baseline gap-2"
       aria-label={`${studio.name}, home`}
     >
@@ -22,7 +44,7 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
       <span className="label pb-[2px] text-bone transition-colors duration-300 group-hover:text-accent">
         Culture
       </span>
-    </DesignLink>
+    </a>
   )
 }
 
@@ -93,9 +115,19 @@ export default function Layout() {
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
-  const { layout, mood, hero, radius, typeScale, navigationId, mobileNavigationId } =
+  const {
+    layout,
+    mood,
+    hero,
+    radius,
+    typeScale,
+    navigationId,
+    mobileNavigationId,
+    mobileHeaderId,
+  } =
     useTheme()
   const navigation = getNavigationConstruct(navigationId)
+  const mobileMenuClosesAtTrigger = mobileMenuCloseAtTriggerIds.has(mobileNavigationId)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -167,6 +199,8 @@ export default function Layout() {
       data-navigation-menu={navigation.usesMenu ? 'true' : 'false'}
       data-mobile-navigation={mobileNavigationId}
       data-mobile-navigation-menu={mobileMenuIds.has(mobileNavigationId) ? 'true' : 'false'}
+      data-mobile-header={mobileHeaderId}
+      data-mobile-menu-close-at-trigger={mobileMenuClosesAtTrigger ? 'true' : 'false'}
     >
       <a
         href="#main"
@@ -191,6 +225,9 @@ export default function Layout() {
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
             className="menu-trigger label text-bone"
+            aria-label={
+              mobileMenuClosesAtTrigger && menuOpen ? 'Close menu' : 'Open menu'
+            }
             aria-expanded={menuOpen}
             aria-controls="navigation-panel"
           >
@@ -220,16 +257,18 @@ export default function Layout() {
                   className="mobile-nav-link"
                   onNavigate={() => setMenuOpen(false)}
                 />
-                <button
-                  type="button"
-                  className="menu-close button-outline label mt-5 min-h-11 px-5 py-3"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    menuButtonRef.current?.focus()
-                  }}
-                >
-                  Close menu
-                </button>
+                {!mobileMenuClosesAtTrigger && (
+                  <button
+                    type="button"
+                    className="menu-close button-outline label mt-5 min-h-11 px-5 py-3"
+                    onClick={() => {
+                      setMenuOpen(false)
+                      menuButtonRef.current?.focus()
+                    }}
+                  >
+                    Close menu
+                  </button>
+                )}
               </div>
             </nav>
           </div>

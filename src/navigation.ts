@@ -34,6 +34,16 @@ export const mobileNavigationIds = [
 
 export type MobileNavigationId = (typeof mobileNavigationIds)[number]
 
+export const mobileHeaderIds = [
+  'fixed-solid',
+  'reveal-solid',
+  'fixed-glass',
+  'scroll-away',
+  'floating-island',
+] as const
+
+export type MobileHeaderId = (typeof mobileHeaderIds)[number]
+
 export type NavigationConstruct = {
   id: NavigationId
   family: NavigationFamily
@@ -68,4 +78,8 @@ export const mobileMenuIds = new Set<MobileNavigationId>([
   'hamburger-left',
   'hamburger-right',
   'button-grid',
+])
+
+export const mobileMenuCloseAtTriggerIds = new Set<MobileNavigationId>([
+  'hamburger-right',
 ])

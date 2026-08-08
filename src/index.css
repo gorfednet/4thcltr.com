@@ -344,6 +344,74 @@
 
 /* Five mobile constructs are assigned independently and evenly across recipes. */
 @media (max-width: 1023px) {
+  /* Mobile header treatments stay independent from the navigation construct. */
+  [data-mobile-header] .site-header {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  [data-mobile-header='fixed-solid'] .site-header {
+    border-bottom: 1px solid var(--color-line-soft);
+    background: var(--color-ground);
+  }
+
+  [data-mobile-header='reveal-solid'] .site-header {
+    border-bottom: 1px solid transparent;
+    background: transparent;
+  }
+  [data-mobile-header='reveal-solid'] .site-header.site-header-scrolled {
+    border-bottom-color: var(--color-line-soft);
+    background: var(--color-ground);
+  }
+
+  [data-mobile-header='fixed-glass'] .site-header {
+    border-bottom: 1px solid color-mix(in srgb, var(--color-line) 72%, transparent);
+    background: color-mix(in srgb, var(--color-ground) 78%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(135%);
+    backdrop-filter: blur(14px) saturate(135%);
+  }
+
+  [data-mobile-header='scroll-away'] .site-header {
+    position: relative;
+    background: var(--color-ground);
+  }
+
+  [data-mobile-header='floating-island'] .site-header {
+    inset: env(safe-area-inset-top) 1rem auto;
+    width: auto;
+  }
+  [data-mobile-header='floating-island'] .site-header-inner {
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: var(--color-card);
+    padding: 0.625rem 1rem;
+    box-shadow: 0 14px 36px rgba(0,0,0,.18);
+  }
+  [data-mobile-header='floating-island'] main {
+    padding-top: calc(4.5rem + env(safe-area-inset-top));
+  }
+
+  [data-mobile-header='reveal-solid'] .menu-trigger,
+  [data-mobile-header='fixed-glass'] .menu-trigger {
+    border: 1px solid var(--color-line-soft);
+    background: var(--color-card);
+    padding-inline: 0.75rem;
+  }
+
+  [data-mobile-menu-close-at-trigger='true'] .menu-trigger[aria-expanded='true'] {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    justify-content: center;
+    padding-inline: 0;
+  }
+  [data-mobile-menu-close-at-trigger='true'] .menu-trigger[aria-expanded='true'] .menu-trigger-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
   [data-mobile-navigation='hamburger-left'] .navigation-panel,
   [data-mobile-navigation='hamburger-right'] .navigation-panel {
     position: fixed;

@@ -2,6 +2,8 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import {
   getNavigationConstruct,
+  mobileHeaderIds,
+  mobileMenuCloseAtTriggerIds,
   mobileMenuIds,
   mobileNavigationIds,
   navigationIds,
@@ -286,20 +288,29 @@ test('all palette tokens meet AA contrast thresholds', () => {
   }
 })
 
-test('desktop and mobile navigation constructs are independently balanced', () => {
+test('desktop navigation, mobile navigation, and mobile headers are independently balanced', () => {
   const desktopCounts = navigationIds.map((navigationId) =>
     designRecipes.filter((recipe) => recipe.navigationId === navigationId).length,
   )
   const mobileCounts = mobileNavigationIds.map((mobileNavigationId) =>
     designRecipes.filter((recipe) => recipe.mobileNavigationId === mobileNavigationId).length,
   )
+  const mobileHeaderCounts = mobileHeaderIds.map((mobileHeaderId) =>
+    designRecipes.filter((recipe) => recipe.mobileHeaderId === mobileHeaderId).length,
+  )
 
   expect(Math.max(...desktopCounts) - Math.min(...desktopCounts)).toBeLessThanOrEqual(1)
   expect(Math.max(...mobileCounts) - Math.min(...mobileCounts)).toBeLessThanOrEqual(1)
+  expect(Math.max(...mobileHeaderCounts) - Math.min(...mobileHeaderCounts)).toBeLessThanOrEqual(1)
   expect(new Set(designRecipes.map((recipe) => recipe.navigationId))).toEqual(new Set(navigationIds))
   expect(new Set(designRecipes.map((recipe) => recipe.mobileNavigationId))).toEqual(
     new Set(mobileNavigationIds),
   )
+  expect(new Set(designRecipes.map((recipe) => recipe.mobileHeaderId))).toEqual(
+    new Set(mobileHeaderIds),
+  )
+  expect(mobileMenuCloseAtTriggerIds.size / mobileMenuIds.size).toBeGreaterThanOrEqual(0.3)
+  expect(mobileMenuCloseAtTriggerIds.size / mobileMenuIds.size).toBeLessThanOrEqual(0.5)
 })
 
 test('every mobile navigation construct is usable and preserves drawer side', async ({ page }) => {
@@ -323,6 +334,13 @@ test('every mobile navigation construct is usable and preserves drawer side', as
       const panel = page.locator('#navigation-panel')
       await expect(panel).toBeVisible()
 
+      if (mobileMenuCloseAtTriggerIds.has(mobileNavigationId)) {
+        await expect(menu).toHaveAttribute('aria-label', 'Close menu')
+        await expect(panel.getByRole('button', { name: 'Close menu' })).toHaveCount(0)
+      } else {
+        await expect(panel.getByRole('button', { name: 'Close menu' })).toBeVisible()
+      }
+
       if (mobileNavigationId.startsWith('hamburger-')) {
         const box = await panel.boundingBox()
         expect(box).not.toBeNull()
@@ -338,6 +356,35 @@ test('every mobile navigation construct is usable and preserves drawer side', as
     } else {
       await expect(menu).toBeHidden()
       await expect(primaryNavigation).toBeVisible()
+    }
+  }
+})
+
+test('mobile header constructs apply their intended behavior', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+
+  for (const mobileHeaderId of mobileHeaderIds) {
+    const recipe = designRecipes.find(
+      (candidate) => candidate.mobileHeaderId === mobileHeaderId,
+    )!
+    await openRecipe(page, recipe.id)
+    const frame = page.locator('.site-frame')
+    const header = page.locator('.site-header')
+
+    await expect(frame).toHaveAttribute('data-mobile-header', mobileHeaderId)
+
+    if (mobileHeaderId === 'fixed-glass') {
+      const backdropFilter = await header.evaluate((element) =>
+        getComputedStyle(element).backdropFilter,
+      )
+      expect(backdropFilter).not.toBe('none')
+    }
+
+    if (mobileHeaderId === 'scroll-away') {
+      await page.evaluate(() => window.scrollBy(0, 400))
+      await expect
+        .poll(async () => (await header.boundingBox())?.y ?? 0)
+        .toBeLessThan(0)
     }
   }
 })
@@ -379,6 +426,14 @@ test('interactive controls use a pointer cursor and the logo returns home', asyn
 
   await page.getByRole('link', { name: '4th Culture, home' }).first().click()
   await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}$`))
+
+  await page.goto(`/?design=${recipe.id}#engage`)
+  await page.evaluate(() => window.scrollTo(0, 500))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+
+  await page.getByRole('link', { name: '4th Culture, home' }).first().click()
+  await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}$`))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1)
 })
 
 test('flow imagery is hidden on mobile for every design recipe', async ({ page }) => {
@@ -482,6 +537,7 @@ test('regeneration never repeats palette, layout or navigation consecutively', a
   for (let index = 0; index < designRecipes.length * 2; index += 1) {
     const previousLayout = await root.getAttribute('data-layout')
     const previousNavigation = await root.getAttribute('data-navigation')
+    const previousMobileHeader = await root.getAttribute('data-mobile-header')
     const previousPalette = await root.evaluate((element) =>
       ['--color-ground', '--color-bone', '--color-accent']
         .map((token) => getComputedStyle(element).getPropertyValue(token).trim())
@@ -490,6 +546,9 @@ test('regeneration never repeats palette, layout or navigation consecutively', a
     await regenerate.click()
     await expect.poll(() => root.getAttribute('data-layout')).not.toBe(previousLayout)
     await expect.poll(() => root.getAttribute('data-navigation')).not.toBe(previousNavigation)
+    await expect
+      .poll(() => root.getAttribute('data-mobile-header'))
+      .not.toBe(previousMobileHeader)
     await expect
       .poll(() =>
         root.evaluate((element) =>
