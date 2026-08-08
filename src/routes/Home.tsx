@@ -82,7 +82,7 @@ export default function Home() {
         path={pageSeo.home.path}
         jsonLd={[organizationJsonLd(), personJsonLd(), websiteJsonLd()]}
       />
-      <section className="hero-section shell pb-8 pt-20 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-between lg:pb-8 lg:pt-24">
+      <section className="hero-section shell pb-8 pt-0 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-between lg:pb-8 lg:pt-0">
         <div
           className={
             isStackedHero
@@ -351,9 +351,9 @@ export default function Home() {
                     {engagement.points.map((point) => (
                       <li
                         key={point}
-                        className="flex items-start gap-3 text-sm leading-relaxed text-muted"
+                        className="flex items-center gap-3 text-sm leading-relaxed text-muted"
                       >
-                        <span aria-hidden className="mt-2 h-px w-3 shrink-0 bg-accent" />
+                        <span aria-hidden className="h-px w-3 shrink-0 bg-accent" />
                         {point}
                       </li>
                     ))}

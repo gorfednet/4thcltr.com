@@ -34,7 +34,7 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
     <a
       href={destination}
       onClick={handleClick}
-      className="wordmark group flex items-baseline gap-2"
+      className="wordmark group flex items-center gap-2"
       aria-label={`${studio.name}, home`}
     >
       <span className="wordmark-mark display-xl text-[1.65rem] leading-none transition-colors duration-300 group-hover:text-accent">
@@ -140,6 +140,21 @@ export default function Layout() {
     setMenuOpen(false)
     window.scrollTo(0, 0)
   }, [location.pathname])
+
+  useEffect(() => {
+    if (!location.hash) return
+
+    const targetId = decodeURIComponent(location.hash.slice(1))
+    const frame = requestAnimationFrame(() => {
+      const target = document.getElementById(targetId)
+      if (!target) return
+      const previous = document.documentElement.style.scrollBehavior
+      document.documentElement.style.scrollBehavior = 'auto'
+      target.scrollIntoView({ block: 'start' })
+      document.documentElement.style.scrollBehavior = previous
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [location.hash, location.pathname])
 
   useEffect(() => {
     setMenuOpen(false)

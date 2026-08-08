@@ -268,7 +268,7 @@ test('desktop side rails keep brand and navigation top aligned', async ({ page }
   }
 })
 
-test('top navigation preserves its intended brand and nav hierarchy', async ({ page }) => {
+test('top navigation keeps brand and nav vertically centered', async ({ page }) => {
   const sameRowIds = [
     'top-inline',
     'top-split',
@@ -289,14 +289,25 @@ test('top navigation preserves its intended brand and nav hierarchy', async ({ p
       const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
       await openRecipe(page, recipe.id)
 
-      const wordmarkBox = await page.locator('.site-header .wordmark-label').boundingBox()
-      const navLabelBox = await page.locator('.primary-navigation .nav-label').first().boundingBox()
+      const wordmarkBox = await page.locator('.site-header .wordmark').boundingBox()
+      const navLinkBox = await page.locator('.primary-navigation .nav-link').first().boundingBox()
       const navBox = await page.locator('.site-header .primary-navigation').boundingBox()
+      const headerInnerBox = await page.locator('.site-header-inner').boundingBox()
       expect(wordmarkBox).not.toBeNull()
-      expect(navLabelBox).not.toBeNull()
+      expect(navLinkBox).not.toBeNull()
       expect(navBox).not.toBeNull()
+      expect(headerInnerBox).not.toBeNull()
       expect(
-        Math.abs(wordmarkBox!.y + wordmarkBox!.height - (navLabelBox!.y + navLabelBox!.height)),
+        Math.abs(
+          wordmarkBox!.y + wordmarkBox!.height / 2 -
+            (navLinkBox!.y + navLinkBox!.height / 2),
+        ),
+      ).toBeLessThanOrEqual(2)
+      expect(
+        Math.abs(
+          wordmarkBox!.y + wordmarkBox!.height / 2 -
+            (headerInnerBox!.y + headerInnerBox!.height / 2),
+        ),
       ).toBeLessThanOrEqual(2)
 
       if (navigationId === 'top-os-menu') {
@@ -323,6 +334,139 @@ test('top navigation preserves its intended brand and nav hierarchy', async ({ p
     expect(Math.abs(navBox!.x + navBox!.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(2)
     expect(heroStatusBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height)
   }
+})
+
+test('header wordmarks and menu triggers share a vertical center', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+
+  for (const navigationId of navigationIds) {
+    const construct = getNavigationConstruct(navigationId)
+    if (!construct.usesMenu || navigationId === 'corner-launcher') continue
+
+    const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
+    await openRecipe(page, recipe.id)
+
+    const [wordmarkBox, triggerBox, headerInnerBox] = await Promise.all([
+      page.locator('.site-header .wordmark').boundingBox(),
+      page.locator('.site-header .menu-trigger').boundingBox(),
+      page.locator('.site-header-inner').boundingBox(),
+    ])
+    expect(wordmarkBox).not.toBeNull()
+    expect(triggerBox).not.toBeNull()
+    expect(headerInnerBox).not.toBeNull()
+    expect(
+      Math.abs(wordmarkBox!.y + wordmarkBox!.height / 2 - (triggerBox!.y + triggerBox!.height / 2)),
+    ).toBeLessThanOrEqual(2)
+    expect(
+      Math.abs(
+        wordmarkBox!.y + wordmarkBox!.height / 2 -
+          (headerInnerBox!.y + headerInnerBox!.height / 2),
+      ),
+    ).toBeLessThanOrEqual(2)
+  }
+})
+
+test('mobile header wordmarks and menu triggers share a vertical center', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+
+  for (const mobileNavigationId of mobileNavigationIds) {
+    if (mobileNavigationId === 'tabs') continue
+
+    const recipe = designRecipes.find(
+      (candidate) => candidate.mobileNavigationId === mobileNavigationId,
+    )!
+    await openRecipe(page, recipe.id)
+
+    const wordmarkBox = await page.locator('.site-header .wordmark').boundingBox()
+    const headerInnerBox = await page.locator('.site-header-inner').boundingBox()
+    expect(wordmarkBox).not.toBeNull()
+    expect(headerInnerBox).not.toBeNull()
+    expect(
+      Math.abs(
+        wordmarkBox!.y + wordmarkBox!.height / 2 -
+          (headerInnerBox!.y + headerInnerBox!.height / 2),
+      ),
+    ).toBeLessThanOrEqual(2)
+
+    if (mobileMenuIds.has(mobileNavigationId)) {
+      const triggerBox = await page.locator('.site-header .menu-trigger').boundingBox()
+      expect(triggerBox).not.toBeNull()
+      expect(
+        Math.abs(
+          wordmarkBox!.y + wordmarkBox!.height / 2 - (triggerBox!.y + triggerBox!.height / 2),
+        ),
+      ).toBeLessThanOrEqual(2)
+    }
+  }
+})
+
+test('top headers never cover the hero proposition', async ({ page }) => {
+  const desktopRecipes = navigationIds
+    .map((navigationId) => designRecipes.find((recipe) => recipe.navigationId === navigationId)!)
+    .filter((recipe) => ['top', 'menu', 'bottom'].includes(getNavigationConstruct(recipe.navigationId).family))
+
+  for (const viewport of [
+    { width: 1024, height: 768 },
+    { width: 1280, height: 800 },
+    { width: 1600, height: 1000 },
+  ]) {
+    await page.setViewportSize(viewport)
+    for (const recipe of desktopRecipes) {
+      await openRecipe(page, recipe.id)
+      const [headerBox, statusBox] = await Promise.all([
+        page.locator('.site-header').boundingBox(),
+        page.locator('.hero-status').boundingBox(),
+      ])
+      expect(headerBox).not.toBeNull()
+      expect(statusBox).not.toBeNull()
+      expect(statusBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height - 1)
+    }
+  }
+
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 375, height: 812 },
+  ]) {
+    await page.setViewportSize(viewport)
+    for (const recipe of designRecipes) {
+      await openRecipe(page, recipe.id)
+      const [headerBox, statusBox] = await Promise.all([
+        page.locator('.site-header').boundingBox(),
+        page.locator('.hero-status').boundingBox(),
+      ])
+      expect(headerBox).not.toBeNull()
+      expect(statusBox).not.toBeNull()
+      expect(statusBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height - 1)
+    }
+  }
+})
+
+test('shared route, theme, and section URLs load directly', async ({ page }) => {
+  const theme = designRecipes.find((recipe) => recipe.id === 'noir')!
+
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await page.goto(`/?design=${theme.id}`)
+  await expect(page.locator('.hero-title')).toBeVisible()
+  await expect(page).toHaveURL(new RegExp(`\\?design=${theme.id}$`))
+
+  await page.goto(`/?design=${theme.id}#engage`)
+  await expect(page.locator('#engage')).toBeVisible()
+  const [engageBox, headerBox] = await Promise.all([
+    page.locator('#engage').boundingBox(),
+    page.locator('.site-header').boundingBox(),
+  ])
+  expect(engageBox).not.toBeNull()
+  expect(headerBox).not.toBeNull()
+  expect(engageBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height - 1)
+  expect(engageBox!.y).toBeLessThanOrEqual(160)
+
+  await page.goto(`/contact?design=${theme.id}`)
+  await expect(page.locator('form.contact-form')).toBeVisible()
+  await expect(page).toHaveURL(new RegExp(`/contact\\?design=${theme.id}$`))
+
+  await page.goto(`/manifesto?design=${theme.id}`)
+  await expect(page.locator('article > header h1')).toBeVisible()
+  await expect(page).toHaveURL(new RegExp(`/manifesto\\?design=${theme.id}$`))
 })
 
 test.describe('manifesto recipe coverage', () => {

@@ -98,9 +98,9 @@ export default function Practice() {
           {facet.methods.map((method) => (
             <li
               key={method}
-              className="flex items-start gap-3 text-[0.95rem] leading-relaxed text-muted"
+              className="flex items-center gap-3 text-[0.95rem] leading-relaxed text-muted"
             >
-              <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-accent" />
+              <span aria-hidden className="h-px w-4 shrink-0 bg-accent" />
               {method}
             </li>
           ))}
