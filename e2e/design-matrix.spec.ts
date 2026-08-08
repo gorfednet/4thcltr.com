@@ -970,6 +970,43 @@ test('regeneration never repeats palette, layout or navigation consecutively', a
   await expect(page.getByText(/Generated:/)).toHaveCount(0)
 })
 
+test('design swaps suppress inherited motion and close open menus', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await openRecipe(page, designRecipes[0].id)
+
+  const swapState = await page.evaluate(() => {
+    document
+      .querySelector<HTMLButtonElement>('[aria-label="Regenerate design colors and layout"]')
+      ?.click()
+    const header = document.querySelector<HTMLElement>('.site-header')!
+    const stat = document.querySelector<HTMLElement>('.stat-cell')!
+    return {
+      transitioning: document.documentElement.dataset.designTransitioning,
+      headerTransition: getComputedStyle(header).transitionDuration,
+      statTransition: getComputedStyle(stat).transitionDuration,
+    }
+  })
+  expect(swapState.transitioning).toBe('true')
+  expect(swapState.headerTransition).toBe('0s')
+  expect(swapState.statTransition).toBe('0s')
+  await expect.poll(() => page.locator('html').getAttribute('data-design-transitioning')).toBeNull()
+
+  const headerTransitionProperty = await page.locator('.site-header').evaluate((element) =>
+    getComputedStyle(element).transitionProperty,
+  )
+  expect(headerTransitionProperty).not.toBe('all')
+
+  await page.setViewportSize({ width: 375, height: 812 })
+  await openRecipe(page, designRecipes[0].id)
+  const trigger = page.locator('.menu-trigger')
+  await trigger.click()
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+  await page
+    .getByRole('button', { name: 'Regenerate design colors and layout' })
+    .evaluate((element) => (element as HTMLButtonElement).click())
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+})
+
 test('site has one accessible contact form without DOM botcheck', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await openRecipe(page, designRecipes[0].id)
@@ -1006,11 +1043,22 @@ test('hero opening and outcome stages are clean interface cards', async ({ page 
   await page.setViewportSize({ width: 1280, height: 800 })
   for (const recipe of designRecipes) {
     await openRecipe(page, recipe.id)
+    const opening = page.locator('[data-flow-stage="opening"]')
+    const outcome = page.locator('[data-flow-stage="outcome"]')
     for (const stageName of ['opening', 'outcome']) {
       const stage = page.locator(`[data-flow-stage="${stageName}"]`)
       if (!(await stage.isVisible())) continue
       await expect(stage).toHaveCount(1)
       expect(await stage.locator('line').count()).toBe(0)
+    }
+    if ((await opening.isVisible()) && (await outcome.isVisible())) {
+      const [openingBox, outcomeBox] = await Promise.all([
+        opening.boundingBox(),
+        outcome.boundingBox(),
+      ])
+      expect(openingBox).not.toBeNull()
+      expect(outcomeBox).not.toBeNull()
+      expect(outcomeBox!.height).toBeGreaterThanOrEqual(openingBox!.height * 0.6)
     }
   }
   expect(new Set(designRecipes.map((recipe) => recipe.hero))).toEqual(

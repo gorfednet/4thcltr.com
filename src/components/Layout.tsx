@@ -126,6 +126,7 @@ export default function Layout() {
     navigationId,
     mobileNavigationId,
     mobileHeaderId,
+    recipe,
   } =
     useTheme()
   const navigation = getNavigationConstruct(navigationId)
@@ -160,7 +161,7 @@ export default function Layout() {
 
   useEffect(() => {
     setMenuOpen(false)
-  }, [mobileNavigationId])
+  }, [recipe.id, mobileNavigationId])
 
   useEffect(() => {
     if (!menuOpen) return
@@ -227,7 +228,7 @@ export default function Layout() {
       </a>
 
       <header
-        className={`site-header fixed z-40 transition-all duration-500 ${
+        className={`site-header fixed z-40 transition-[background-color,border-color] duration-300 ${
           scrolled ? 'site-header-scrolled' : ''
         }`}
       >

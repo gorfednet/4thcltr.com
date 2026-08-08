@@ -6,15 +6,26 @@ export default function RegenerateButton() {
   const { randomize, generation } = useTheme()
   const [active, setActive] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const activateTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function handleClick() {
     randomize()
-    setActive(true)
+    if (activateTimer.current) clearTimeout(activateTimer.current)
     if (timer.current) clearTimeout(timer.current)
-    timer.current = setTimeout(() => setActive(false), 2200)
+    setActive(false)
+    activateTimer.current = setTimeout(() => {
+      setActive(true)
+      timer.current = setTimeout(() => setActive(false), 2200)
+    }, 80)
   }
 
-  useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, [])
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current)
+      if (activateTimer.current) clearTimeout(activateTimer.current)
+    },
+    [],
+  )
 
   return (
     <div className="hero-cta mt-4 lg:mt-5">

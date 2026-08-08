@@ -114,8 +114,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = getTheme(recipe.themeId)
   const fontPack = getFontPack(recipe.fontPackId)
   const remainingRecipeIds = useRef(shuffledRecipeIds())
+  const transitionFrames = useRef<number[]>([])
 
   useLayoutEffect(() => {
+    const root = document.documentElement
     applyDesign(
       theme,
       recipe.layout,
@@ -133,6 +135,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (!url.searchParams.has('design')) {
       url.searchParams.set('design', recipe.id)
       window.history.replaceState({}, '', url)
+    }
+
+    if (root.dataset.designTransitioning !== 'true') return
+
+    const firstFrame = window.requestAnimationFrame(() => {
+      const secondFrame = window.requestAnimationFrame(() => {
+        delete root.dataset.designTransitioning
+      })
+      transitionFrames.current.push(secondFrame)
+    })
+    transitionFrames.current.push(firstFrame)
+
+    return () => {
+      transitionFrames.current.forEach((frame) => window.cancelAnimationFrame(frame))
+      transitionFrames.current = []
     }
   }, [theme, recipe, fontPack])
 
@@ -164,6 +181,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     url.searchParams.set('design', nextRecipe.id)
     window.history.replaceState({}, '', url)
 
+    document.documentElement.dataset.designTransitioning = 'true'
     setRecipeIndex(nextIndex)
     setGeneration((value) => value + 1)
   }
