@@ -48,9 +48,7 @@ function getInitialRecipeIndex() {
   if (typeof window === 'undefined') return 0
   const requestedId = new URLSearchParams(window.location.search).get('design')
   const requestedIndex = designRecipes.findIndex((recipe) => recipe.id === requestedId)
-  return requestedIndex >= 0
-    ? requestedIndex
-    : Math.floor(Math.random() * designRecipes.length)
+  return requestedIndex >= 0 ? requestedIndex : 0
 }
 
 function shuffledRecipeIds() {

@@ -403,11 +403,11 @@ test('contact form failure stays editable and reports the error', async ({ page 
   await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
 })
 
-test('a bare route persists one recipe and a direct design link remains deterministic', async ({ page }) => {
+test('a bare route loads the default recipe and a direct design link remains deterministic', async ({ page }) => {
   await page.goto('/contact')
-  await expect(page).toHaveURL(/design=[a-z0-9-]+/)
+  await expect(page).toHaveURL(new RegExp(`design=${designRecipes[0].id}`))
   const persisted = new URL(page.url()).searchParams.get('design')
-  expect(designRecipes.some((recipe) => recipe.id === persisted)).toBe(true)
+  expect(persisted).toBe(designRecipes[0].id)
 
   const requested = designRecipes.at(-1)!
   await page.goto(`/manifesto?design=${requested.id}`)
