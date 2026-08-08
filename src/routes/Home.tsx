@@ -117,8 +117,7 @@ export default function Home() {
               <p className="measure text-[0.9375rem] leading-[1.55] text-muted lg:max-w-[46ch] lg:text-base">
                 {studio.name} is the practice of{' '}
                 <span className="text-bone">{studio.principal}</span>. Executive design
-                leadership, experience strategy and product design from one senior
-                practitioner who stays close to the work.
+                leadership, experience strategy and product design.
               </p>
             </div>
 
