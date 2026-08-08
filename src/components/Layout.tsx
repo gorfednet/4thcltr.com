@@ -240,9 +240,7 @@ export default function Layout() {
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
             className="menu-trigger label text-bone"
-            aria-label={
-              mobileMenuClosesAtTrigger && menuOpen ? 'Close menu' : 'Open menu'
-            }
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
             aria-controls="navigation-panel"
           >
@@ -262,6 +260,11 @@ export default function Layout() {
             id="navigation-panel"
             className="navigation-panel navigation-panel-open"
             aria-hidden="false"
+            onClick={(event) => {
+              if (event.target !== event.currentTarget) return
+              setMenuOpen(false)
+              menuButtonRef.current?.focus()
+            }}
           >
             <nav
               aria-label="Menu navigation"
@@ -272,18 +275,16 @@ export default function Layout() {
                   className="mobile-nav-link"
                   onNavigate={() => setMenuOpen(false)}
                 />
-                {!mobileMenuClosesAtTrigger && (
-                  <button
-                    type="button"
-                    className="menu-close button-outline label mt-5 min-h-11 px-5 py-3"
-                    onClick={() => {
-                      setMenuOpen(false)
-                      menuButtonRef.current?.focus()
-                    }}
-                  >
-                    Close menu
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="menu-close button-outline label mt-5 min-h-11 px-5 py-3"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    menuButtonRef.current?.focus()
+                  }}
+                >
+                  Close menu
+                </button>
               </div>
             </nav>
           </div>

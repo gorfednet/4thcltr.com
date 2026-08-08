@@ -351,9 +351,9 @@ export default function Home() {
                     {engagement.points.map((point) => (
                       <li
                         key={point}
-                        className="flex items-center gap-3 text-sm leading-relaxed text-muted"
+                        className="flex items-start gap-3 text-sm leading-relaxed text-muted"
                       >
-                        <span aria-hidden className="h-px w-3 shrink-0 bg-accent" />
+                        <span aria-hidden className="list-marker h-px w-3 shrink-0 bg-accent" />
                         {point}
                       </li>
                     ))}

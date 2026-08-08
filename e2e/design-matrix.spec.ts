@@ -594,7 +594,7 @@ test('every mobile navigation construct is usable and preserves drawer side', as
 
       if (mobileMenuCloseAtTriggerIds.has(mobileNavigationId)) {
         await expect(menu).toHaveAttribute('aria-label', 'Close menu')
-        await expect(panel.getByRole('button', { name: 'Close menu' })).toHaveCount(0)
+        await expect(panel.getByRole('button', { name: 'Close menu' })).toBeHidden()
       } else {
         await expect(panel.getByRole('button', { name: 'Close menu' })).toBeVisible()
       }
@@ -640,14 +640,16 @@ test('expanded mobile menus expose every destination without clipping', async ({
       expect(panelBox!.y + panelBox!.height).toBeGreaterThanOrEqual(viewport.height - 1)
 
       const visibleControls = await panel.locator('a, button').evaluateAll((elements) =>
-        elements.map((element) => {
+        elements
+          .filter((element) => getComputedStyle(element).display !== 'none')
+          .map((element) => {
           const box = element.getBoundingClientRect()
           return {
             height: box.height,
             top: box.top,
             bottom: box.bottom,
           }
-        }),
+          }),
       )
       expect(visibleControls).toHaveLength(
         mobileMenuCloseAtTriggerIds.has(mobileNavigationId) ? 5 : 6,
@@ -709,6 +711,76 @@ test('desktop hamburger panels open on their trigger side', async ({ page }) => 
       expect(box!.x + box!.width).toBeGreaterThan(1280 / 2)
     }
   }
+})
+
+test('every desktop menu keeps a visible, reachable close path', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+
+  for (const navigationId of navigationIds) {
+    if (!getNavigationConstruct(navigationId).usesMenu) continue
+
+    const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
+    await openRecipe(page, recipe.id)
+
+    const trigger = page.locator('.menu-trigger')
+    await trigger.click()
+    const panel = page.locator('#navigation-panel')
+    await expect(panel).toBeVisible()
+    await expect(trigger).toHaveAttribute('aria-label', 'Close menu')
+
+    const triggerReachable = await trigger.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const target = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+      return Boolean(target && (target === element || element.contains(target)))
+    })
+    expect(triggerReachable).toBe(true)
+    await expect(panel.getByRole('button', { name: 'Close menu' })).toBeVisible()
+
+    if (navigationId === 'corner-launcher') {
+      const [triggerBox, headerBox] = await Promise.all([
+        trigger.boundingBox(),
+        page.locator('.site-header').boundingBox(),
+      ])
+      expect(triggerBox).not.toBeNull()
+      expect(headerBox).not.toBeNull()
+      expect(triggerBox!.y).toBeGreaterThanOrEqual(headerBox!.y)
+      expect(triggerBox!.y + triggerBox!.height).toBeLessThanOrEqual(
+        headerBox!.y + headerBox!.height,
+      )
+    }
+
+    if (navigationId === 'menu-fullscreen' || navigationId === 'menu-command') {
+      await panel.click({ position: { x: 8, y: 8 } })
+      await expect(panel).toBeHidden()
+      await expect(trigger).toBeFocused()
+    } else {
+      await panel.getByRole('button', { name: 'Close menu' }).click()
+      await expect(panel).toBeHidden()
+      await expect(trigger).toBeFocused()
+    }
+  }
+})
+
+test('practice tabs signal hover without moving the layout', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await openRecipe(page, designRecipes[0].id)
+
+  const tab = page.getByRole('tab', { name: 'Product & experience strategy' })
+  const before = await tab.evaluate((element) => {
+    const box = element.getBoundingClientRect()
+    return { x: box.x + window.scrollX, y: box.y + window.scrollY }
+  })
+  await tab.hover()
+  const { after, transform } = await tab.evaluate((element) => {
+    const box = element.getBoundingClientRect()
+    return {
+      after: { x: box.x + window.scrollX, y: box.y + window.scrollY },
+      transform: getComputedStyle(element).transform,
+    }
+  })
+  expect(after.x).toBe(before.x)
+  expect(after.y).toBe(before.y)
+  expect(transform).toBe('none')
 })
 
 test('interactive controls use a pointer cursor and the logo returns home', async ({ page }) => {
