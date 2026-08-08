@@ -23,7 +23,7 @@ export default function Practice() {
   }
 
   return (
-    <div className="mt-16 grid gap-px overflow-hidden border border-line-soft bg-line-soft md:grid-cols-12 lg:mt-24">
+    <div className="practice-shell mt-16 grid gap-3 md:grid-cols-12 lg:mt-24">
       <div
         role="tablist"
         aria-label="4th Culture practice areas"
@@ -60,7 +60,7 @@ export default function Practice() {
                   move(facets.length - 1)
                 }
               }}
-              className={`practice-tab group flex w-full items-center gap-4 border-b border-line-soft px-6 py-6 text-left lg:gap-5 lg:px-9 lg:py-7 ${
+              className={`practice-tab group flex w-full items-center gap-4 border border-line-soft px-6 py-6 text-left lg:gap-5 lg:px-9 lg:py-7 ${
                 selected ? 'bg-ground-lift' : 'bg-ground'
               }`}
             >

@@ -980,12 +980,26 @@ export const themes: Theme[] = baseThemes.map((theme) => ({
   ...theme,
   colors: {
     ...theme.colors,
-    card: mixHex(theme.colors.ground, theme.colors.groundLift, 0.65),
-    cardStrong: theme.colors.groundLift,
+    card: theme.colors.groundLift,
+    cardStrong: mixHex(theme.colors.groundLift, theme.colors.bone, 0.12),
   },
 }))
 
 export const defaultTheme = themes[0]
+
+/**
+ * Remap hero compositions that collide with cramped layout systems.
+ */
+function resolveHero(theme: Theme): HeroComposition {
+  if (
+    (theme.layout === 'brutal' && theme.hero === 'stacked-center') ||
+    (theme.layout === 'dense' && theme.hero === 'stacked-flush')
+  ) {
+    return 'split'
+  }
+
+  return theme.hero
+}
 
 /**
  * The finite, reviewable design catalog. Each palette keeps its intentionally
@@ -1012,7 +1026,7 @@ export const designRecipes: DesignRecipe[] = themes.map((theme, index) => {
     fontPackId: fontPack.id,
     layout: theme.layout,
     mood: theme.mood,
-    hero: theme.hero,
+    hero: resolveHero(theme),
     radius: theme.radius,
     typeScale:
       theme.layout === 'dense' ? 'compact' : theme.layout === 'minimal' ? 'airy' : 'default',

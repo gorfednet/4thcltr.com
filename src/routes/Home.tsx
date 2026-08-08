@@ -14,6 +14,7 @@ import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
 import RegenerateButton from '../components/RegenerateButton'
 import Reveal from '../components/Reveal'
+import { useTheme } from '../context/ThemeContext'
 import {
   organizationJsonLd,
   personJsonLd,
@@ -70,6 +71,9 @@ const statItems = [
 ]
 
 export default function Home() {
+  const { hero } = useTheme()
+  const isStackedHero = hero === 'stacked-center' || hero === 'stacked-flush'
+
   return (
     <>
       <PageMeta
@@ -79,8 +83,22 @@ export default function Home() {
         jsonLd={[organizationJsonLd(), personJsonLd(), websiteJsonLd()]}
       />
       <section className="hero-section shell pb-8 pt-20 lg:flex lg:min-h-[100svh] lg:flex-col lg:justify-between lg:pb-8 lg:pt-24">
-        <div className="hero-grid flex flex-col gap-6 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-6">
-          <div className="hero-copy flex flex-col justify-center lg:col-span-7 lg:py-2">
+        <div
+          className={
+            isStackedHero
+              ? 'hero-grid flex flex-col gap-6 lg:flex lg:flex-col lg:items-center lg:gap-8'
+              : 'hero-grid flex flex-col gap-6 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-6'
+          }
+        >
+          <div
+            className={
+              isStackedHero
+                ? `hero-copy flex flex-col justify-center gap-3 lg:w-full lg:py-2${
+                    hero === 'stacked-center' ? ' items-center text-center' : ''
+                  }`
+                : 'hero-copy flex flex-col justify-center gap-3 lg:col-span-7 lg:py-2'
+            }
+          >
             <div className="hero-status flex items-center gap-3">
               <span aria-hidden className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
@@ -107,19 +125,27 @@ export default function Home() {
             <RegenerateButton />
           </div>
 
-          <div className="hero-visual relative hidden items-center justify-center lg:col-span-5 lg:flex lg:self-stretch lg:py-2">
+          <div
+            className={
+              isStackedHero
+                ? hero === 'stacked-flush'
+                  ? 'hero-visual relative order-first hidden shrink-0 items-center justify-center overflow-hidden lg:flex lg:max-h-[min(180px,22vh)] lg:w-full lg:py-2'
+                  : 'hero-visual relative hidden shrink-0 items-center justify-center self-center overflow-hidden lg:flex lg:max-h-[min(200px,24vh)] lg:max-w-[min(48rem,100%)] lg:w-full lg:py-2'
+                : 'hero-visual relative hidden items-center justify-center overflow-hidden lg:col-span-5 lg:flex lg:self-stretch lg:py-2'
+            }
+          >
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-transparent to-ground/60" />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ground via-transparent to-transparent" />
-            <HeroVisual />
+            <HeroVisual orientation={isStackedHero ? 'horizontal' : 'vertical'} />
           </div>
         </div>
 
-        <div className="hero-stats mt-8 lg:mt-0">
-            <div className="grid grid-cols-2 gap-px border border-line-soft bg-line-soft lg:grid-cols-4">
+        <div className="hero-stats mt-8 lg:mt-8">
+            <div className="hero-stats-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {statItems.map((stat) => (
                 <div
                   key={stat.label}
-                  className="stat-cell card-surface flex flex-col justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5"
+                  className="stat-cell card-surface flex flex-col justify-between gap-3 px-5 py-5 lg:px-6 lg:py-6"
                 >
                   <div className="flex items-center gap-2 text-accent">{stat.icon}</div>
                   <div>

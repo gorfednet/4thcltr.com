@@ -38,6 +38,18 @@ async function openRecipe(page: Page, recipeId: string) {
   await page.evaluate(() => document.fonts.ready)
 }
 
+function boxesOverlap(
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number },
+) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  )
+}
+
 async function assertVisibleControlsNotCovered(page: Page) {
   const controls = page.locator(
     'a[href]:not(.sr-only), button, input:not([type="hidden"]), textarea, [role="tab"]',
@@ -239,10 +251,10 @@ test('all palette tokens meet AA contrast thresholds', () => {
   for (const recipe of designRecipes) {
     const { colors } = getTheme(recipe.themeId)
     expect(colors.card, `${recipe.id}: card differs from ground`).not.toBe(colors.ground)
-    expect(colors.card, `${recipe.id}: card differs from lifted sections`).not.toBe(
+    expect(colors.cardStrong, `${recipe.id}: selected surface differs`).not.toBe(colors.card)
+    expect(colors.cardStrong, `${recipe.id}: strong surface differs from lift`).not.toBe(
       colors.groundLift,
     )
-    expect(colors.cardStrong, `${recipe.id}: selected surface differs`).not.toBe(colors.card)
     const checks = [
       ['bone/ground', colors.bone, colors.ground, 4.5],
       ['muted/ground', colors.muted, colors.ground, 4.5],
@@ -477,4 +489,61 @@ test('keyboard and reduced-motion essentials remain usable', async ({ page }) =>
 
   const revealDuration = await page.locator('.reveal').first().evaluate((element) => getComputedStyle(element).transitionDuration)
   expect(Number.parseFloat(revealDuration)).toBeLessThanOrEqual(0.001)
+})
+
+test('hero copy, CTA, and visual do not overlap at desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+
+  for (const recipe of designRecipes) {
+    await openRecipe(page, recipe.id)
+
+    const titleBox = await page.locator('.hero-title').boundingBox()
+    const ctaBox = await page.locator('.hero-cta').boundingBox()
+
+    if (titleBox && ctaBox) {
+      expect(titleBox.y + titleBox.height).toBeLessThanOrEqual(ctaBox.y + 1)
+    }
+
+    const visual = page.locator('.hero-visual')
+    if (await visual.isVisible()) {
+      const copyBox = await page.locator('.hero-copy').boundingBox()
+      const visualBox = await visual.boundingBox()
+
+      if (copyBox && visualBox) {
+        expect(boxesOverlap(copyBox, visualBox)).toBe(false)
+      }
+    }
+  }
+})
+
+test('hero stat cards separate from the body and use gutter spacing', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+
+  for (const recipe of designRecipes) {
+    await openRecipe(page, recipe.id)
+
+    const gridGap = await page.locator('.hero-stats-grid').evaluate((element) => {
+      const style = getComputedStyle(element)
+      return Math.max(Number.parseFloat(style.gap), Number.parseFloat(style.columnGap))
+    })
+    expect(gridGap).toBeGreaterThanOrEqual(8)
+
+    const cellUsesCardSurface = await page.locator('.stat-cell').first().evaluate(() => {
+      const cell = document.querySelector('.stat-cell')
+      if (!cell) return false
+
+      const probe = document.createElement('div')
+      probe.style.background = 'var(--color-card)'
+      document.body.appendChild(probe)
+      const cardBg = getComputedStyle(probe).backgroundColor
+      probe.remove()
+
+      return getComputedStyle(cell).backgroundColor === cardBg
+    })
+    expect(cellUsesCardSurface).toBe(true)
+
+    const { colors } = getTheme(recipe.themeId)
+    const tokenSeparation = Math.abs(luminance(colors.ground) - luminance(colors.card))
+    expect(tokenSeparation).toBeGreaterThan(0)
+  }
 })
