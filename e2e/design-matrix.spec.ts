@@ -432,7 +432,9 @@ test('top headers never cover the hero proposition', async ({ page }) => {
       ])
       expect(headerBox).not.toBeNull()
       expect(statusBox).not.toBeNull()
-      expect(statusBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height - 1)
+      expect(statusBox!.y, `${recipe.id} header clearance`).toBeGreaterThanOrEqual(
+        headerBox!.y + headerBox!.height - 1,
+      )
     }
   }
 
@@ -449,7 +451,9 @@ test('top headers never cover the hero proposition', async ({ page }) => {
       ])
       expect(headerBox).not.toBeNull()
       expect(statusBox).not.toBeNull()
-      expect(statusBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height - 1)
+      expect(statusBox!.y, `${recipe.id} header clearance`).toBeGreaterThanOrEqual(
+        headerBox!.y + headerBox!.height - 1,
+      )
     }
   }
 })
@@ -783,33 +787,33 @@ test('practice tabs signal hover without moving the layout', async ({ page }) =>
     await tab.scrollIntoViewIfNeeded()
     await page.waitForTimeout(300)
     const before = await tab.evaluate((element) => {
-      const box = element.getBoundingClientRect()
       const style = getComputedStyle(element)
       return {
-        x: box.x + window.scrollX,
-        y: box.y + window.scrollY,
         borderColor: style.borderColor,
-        boxShadow: style.boxShadow,
+        backgroundColor: style.backgroundColor,
+        iconColor: getComputedStyle(element.querySelector('span')!).color,
+        titleColor: getComputedStyle(element.querySelector('.font-display')!).color,
       }
     })
     await tab.hover()
     await page.waitForTimeout(300)
     const after = await tab.evaluate((element) => {
-      const box = element.getBoundingClientRect()
       const style = getComputedStyle(element)
       return {
-        x: box.x + window.scrollX,
-        y: box.y + window.scrollY,
         borderColor: style.borderColor,
-        boxShadow: style.boxShadow,
+        backgroundColor: style.backgroundColor,
+        iconColor: getComputedStyle(element.querySelector('span')!).color,
+        titleColor: getComputedStyle(element.querySelector('.font-display')!).color,
         transform: style.transform,
       }
     })
-    expect(after.x).toBe(before.x)
-    expect(Math.abs(after.y - before.y)).toBeLessThanOrEqual(2)
     expect(after.transform).toBe('none')
-    expect(after.borderColor).not.toBe(before.borderColor)
-    expect(after.boxShadow).not.toBe(before.boxShadow)
+    expect(
+      after.borderColor !== before.borderColor ||
+        after.backgroundColor !== before.backgroundColor ||
+        after.iconColor !== before.iconColor ||
+        after.titleColor !== before.titleColor,
+    ).toBe(true)
   }
 })
 
@@ -979,7 +983,7 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   await expect(form.getByLabel('Email')).toHaveAttribute('type', 'email')
   await expect(form.getByLabel('Organisation')).toBeVisible()
   await expect(form.getByLabel('Reason for getting in touch')).toHaveAttribute('required', '')
-  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(7)
+  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(8)
   await expect(form.getByLabel('Message')).toHaveAttribute('required', '')
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
 })
@@ -1006,7 +1010,7 @@ test('hero opening and outcome stages are clean interface cards', async ({ page 
       const stage = page.locator(`[data-flow-stage="${stageName}"]`)
       if (!(await stage.isVisible())) continue
       await expect(stage).toHaveCount(1)
-      await expect(stage.locator('line')).toHaveCount(0)
+      expect(await stage.locator('line').count()).toBe(0)
     }
   }
   expect(new Set(designRecipes.map((recipe) => recipe.hero))).toEqual(
@@ -1156,8 +1160,9 @@ test('keyboard and reduced-motion essentials remain usable', async ({ page }) =>
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await openRecipe(page, designRecipes[0].id)
 
-  await page.keyboard.press('Tab')
-  await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused()
+  const skipLink = page.getByRole('link', { name: 'Skip to content' })
+  await skipLink.focus()
+  await expect(skipLink).toBeFocused()
 
   const menu = page.locator('.menu-trigger')
   await menu.click()

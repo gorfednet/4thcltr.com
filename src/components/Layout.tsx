@@ -24,9 +24,11 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
     event.preventDefault()
     onClick?.()
     navigate(destination)
-    window.scrollTo({
-      top: 0,
-      behavior: location.pathname === '/' ? 'smooth' : 'auto',
+    window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: location.pathname === '/' ? 'smooth' : 'auto',
+      })
     })
   }
 

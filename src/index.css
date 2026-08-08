@@ -330,17 +330,18 @@
   }
   .practice-tab:hover,
   .practice-tab:focus-visible {
-    border-color: var(--color-accent);
-    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card));
+    border-color: var(--color-accent) !important;
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card)) !important;
     box-shadow: inset 3px 0 0 var(--color-accent);
     outline: 0;
   }
   .practice-tab span { transition: color 240ms ease; }
   .practice-tab:hover > span:first-child,
-  .practice-tab:focus-visible > span:first-child { color: var(--color-accent); }
-  .practice-tab:hover { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card)); }
+  .practice-tab:focus-visible > span:first-child { color: var(--color-accent) !important; }
+  .practice-tab:hover { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card)) !important; }
   .practice-tab[aria-selected='true'] { background: var(--color-card-strong); }
-  .practice-tab:hover .font-display { color: var(--color-bone); }
+  .practice-tab:hover .font-display,
+  .practice-tab:focus-visible .font-display { color: var(--color-bone) !important; }
   .list-marker {
     align-self: flex-start;
     margin-top: calc((1.625em - 1px) / 2);
@@ -1318,6 +1319,25 @@
   .hero-cta-button {
     padding-block: 0.625rem !important;
   }
+}
+
+@media (max-width: 767px) and (max-height: 760px) {
+  .site-frame { --header-clearance: 5.25rem; }
+  .hero-copy { gap: 0.5rem; }
+  .hero-title { margin-top: 0.5rem !important; }
+  .hero-lede { margin-top: 0.5rem !important; }
+  .site-frame[data-mobile-navigation='tabs'] { --header-clearance: 5.25rem; }
+  [data-mobile-navigation='tabs'] .hero-copy { gap: 0; }
+  [data-mobile-navigation='tabs'] .hero-title {
+    margin-top: 0.25rem !important;
+    font-size: clamp(1.5rem, min(3.2vw, 5.15dvh), 2.7rem) !important;
+  }
+  [data-mobile-navigation='tabs'] .hero-lede { margin-top: 0 !important; }
+  [data-mobile-navigation='tabs'] .hero-lede .measure {
+    font-size: 0.875rem !important;
+    line-height: 1.35 !important;
+  }
+  [data-mobile-navigation='tabs'] .hero-cta { margin-top: 0.5rem !important; }
 }
 
 @media (min-width: 1024px) and (max-height: 800px) {
