@@ -11,6 +11,7 @@ const enquiryReasons = [
   'Contract or retained design leadership',
   'Build or strengthen a product or design team',
   'Product, brand or experience strategy',
+  'Net-new product or utility platform design',
   'Speaking, advisory or collaboration',
   'Something else',
 ]
@@ -76,8 +77,9 @@ export default function Contact() {
               <span className="italic text-accent">to change?</span>
             </h1>
             <p className="measure mt-10 text-xl leading-relaxed text-muted">
-              Share the situation, the stakes and what a useful outcome would look like.
-              Michael reads every enquiry and replies directly.
+              Share what you are making, changing or unblocking, the stakes and what a
+              useful outcome would look like. Michael reads every enquiry and replies
+              directly.
             </p>
           </div>
         </div>
@@ -88,6 +90,7 @@ export default function Contact() {
             <ul className="mt-6 space-y-4 text-base leading-relaxed text-muted">
               <li>Your role and organisation</li>
               <li>The decision or problem at hand</li>
+              <li>Where the product is today: concept, launch, live or scaling</li>
               <li>Any timing, team or regulatory constraints</li>
               <li>What a strong result would make possible</li>
             </ul>

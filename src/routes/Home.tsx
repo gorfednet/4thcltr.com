@@ -117,7 +117,8 @@ export default function Home() {
               <p className="measure text-[0.9375rem] leading-[1.55] text-muted lg:max-w-[46ch] lg:text-base">
                 {studio.name} is the practice of{' '}
                 <span className="text-bone">{studio.principal}</span>. Executive design
-                leadership, experience strategy and product design.
+                leadership, experience strategy and product design for purpose-built utility
+                platforms, from first idea to established product.
               </p>
             </div>
 
@@ -174,9 +175,10 @@ export default function Home() {
                   competent defaults. They rarely tell people why this product matters.
                 </p>
                 <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  A memorable product starts with intent. Voice, motion, friction and
-                  trust follow from that. The manifesto sets out seven positions on how
-                  we make those choices while working with AI.
+                  A memorable utility platform starts with intent: who it is for, what it
+                  helps them do and why it needs to exist. Voice, motion, friction and
+                  trust follow from that. The manifesto sets out seven positions on how we
+                  make those choices while working with AI.
                 </p>
               </div>
 
@@ -207,7 +209,7 @@ export default function Home() {
             <SectionHead
               index="01 / Practice"
               title="Strategy, leadership and craft."
-              lede="These disciplines stay connected from the first decision through delivery. One accountable lead keeps the argument, the interface and the build moving in the same direction."
+              lede="From a first sketch to an established product, these disciplines stay connected through delivery. One accountable lead keeps the argument, the interface and the build moving in the same direction."
             />
             <Practice />
           </Reveal>
@@ -315,7 +317,7 @@ export default function Home() {
             <SectionHead
               index="03 / Engage"
               title="Three ways in."
-              lede="Day and week rates for direct work, or an assembled team for something larger. Rates on request. Tell us the problem first."
+              lede="Join us at the first idea, a launch, a live product or a rethink. Day and week rates for direct work, or an assembled team for something larger. Rates on request."
             />
           </Reveal>
 
@@ -409,7 +411,8 @@ export default function Home() {
                     where the habit of adapting quickly and solving from more than one
                     angle comes from. Founder three times over, the first as a teenager in
                     Dubai. I still write front-end code, which is why the strategy stays
-                    honest about what can actually be built.
+                    honest about what can actually be built. I especially like the moment
+                    before a product has a template, when it needs its first useful shape.
                   </p>
                   <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
                     Based in {studio.base}.
@@ -520,8 +523,8 @@ export default function Home() {
             <div className="grid-12 mt-16">
               <div className="md:col-span-8 lg:col-span-6">
                 <p className="measure text-xl leading-relaxed text-muted">
-                  Share what you are trying to change, where the work is stuck and what
-                  a useful outcome would look like. Michael will reply directly.
+                  Share what you are trying to make, change or unstick, and what a useful
+                  outcome would look like. Michael will reply directly.
                 </p>
               </div>
 

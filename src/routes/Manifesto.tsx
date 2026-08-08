@@ -24,8 +24,8 @@ export default function Manifesto() {
           <span className="italic text-accent">judgment</span> human.
         </h1>
         <p className="measure-tight mt-12 font-display text-2xl italic leading-snug text-muted lg:text-3xl">
-          Seven positions on making specific products, using AI with purpose and
-          remaining accountable for every design decision.
+          Seven positions on making specific, useful products, using AI with purpose and
+          remaining accountable for every decision from first concept to delivery.
         </p>
       </header>
 

@@ -10,7 +10,7 @@ const routes = [
     segment: 'manifesto',
     title: 'The manifesto · 4th Culture',
     description:
-      'Seven positions from 4th Culture on design judgment, differentiation and the useful role AI can play when people remain accountable for the work.',
+      'Seven positions from 4th Culture on design judgment, differentiation and making specific, useful products from first concept to delivery.',
     url: 'https://4thcltr.com/manifesto',
     type: 'article',
   },
@@ -18,7 +18,7 @@ const routes = [
     segment: 'contact',
     title: 'Contact Michael Duncan McArthur · 4th Culture',
     description:
-      'Contact 4th Culture about executive design leadership, contract or retained product design, team building, strategy, speaking and advisory work.',
+      'Contact 4th Culture about executive design leadership, net-new utility platforms, retained product design, team building, strategy, speaking and advisory work.',
     url: 'https://4thcltr.com/contact',
     type: 'website',
   },

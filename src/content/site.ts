@@ -8,7 +8,7 @@ export const studio = {
   principal: 'Michael Duncan McArthur',
   base: 'Toronto',
   positioning:
-    'Independent design leadership, strategy and product work for companies with something specific to say.',
+    'Independent design leadership, strategy and product work for purpose-built utility platforms, from first idea to established product.',
   linkedin: 'https://www.linkedin.com/in/gorfed/',
   github: 'https://github.com/gorfednet',
   portfolio: 'https://gorfed.net',
@@ -46,7 +46,7 @@ export const tenets: Tenet[] = [
     body: [
       'The same rounded card. The same gradient hero. The same three-column feature grid, the same testimonial carousel, the same soft blue. An entire industry converged on one template and called it best practice.',
       'Models learn from frequency. Ask for a sensible interface and they return the patterns they have seen most often, then popularity starts to look like a standard. The result may be competent, but the selection was never thoughtful.',
-      'A company, a product and the people using it are specific. Their design should be specific too. The web is better when you can tell that someone made a choice and can explain why.',
+      'A company, its product and the people using it are specific. Their utility, workflows and design should be specific too. The web is better when you can tell that someone made a choice and can explain why.',
     ],
   },
   {
@@ -61,8 +61,8 @@ export const tenets: Tenet[] = [
     number: '05',
     title: 'Differentiation begins before the interface.',
     body: [
-      'Clients hire us when their product is hard to distinguish from four competitors and people cannot remember which one they used.',
-      'The important choices happen before the first pixel: who the product is for, what it should feel like and which familiar conventions do not belong. If another logo could replace yours without anyone noticing, the work has missed something fundamental.',
+      'Some clients arrive with a product that blurs into the category. Others arrive with a new utility platform that has no category pattern to borrow. Both need a reason to exist that people can recognise and use.',
+      'The important choices happen before the first pixel: who the product is for, what it helps them do and which familiar conventions do not belong. We love being first to give a new platform its useful shape, then carrying that intent through launch, growth or a rethink. If another logo could replace yours without anyone noticing, the work has missed something fundamental.',
     ],
   },
   {
@@ -98,7 +98,7 @@ export const facets: Facet[] = [
   {
     id: 'leadership',
     title: 'Executive design leadership',
-    lede: 'Design leadership for the decisions that connect company strategy to shipped work. More than 25 years inside organisations large enough to have real politics.',
+    lede: 'Design leadership for the decisions that connect company strategy to shipped work, from a new venture finding its shape to an established organisation with real politics.',
     methods: [
       'Design org design and operating model',
       'Stakeholder alignment and executive narrative',
@@ -110,13 +110,13 @@ export const facets: Facet[] = [
   {
     id: 'strategy',
     title: 'Product & experience strategy',
-    lede: 'Clear product choices start with a precise account of the opportunity, the constraints and the work that should wait.',
+    lede: 'Clear product choices start with a precise account of the opportunity, the constraints and the useful thing people need to do. That matters most when a platform is net new.',
     methods: [
       'Discovery and opportunity framing',
       'Market, competitive and heuristic evaluation',
       'Service and system mapping',
-      'Product definition and roadmap shaping',
-      'Positioning and differentiation strategy',
+      'Net-new product and platform definition',
+      'Differentiation and platform strategy',
     ],
   },
   {
@@ -134,12 +134,12 @@ export const facets: Facet[] = [
   {
     id: 'craft',
     title: 'Design & build',
-    lede: 'The work runs from interaction flows to shipped front-end code, keeping strategy grounded in what the team can build and maintain.',
+    lede: 'The work runs from the first interaction flow to shipped front-end code, keeping strategy grounded in what a team can build, maintain and use.',
     methods: [
       'Interaction design and prototyping',
       'Interface and visual systems',
       'Front-end implementation',
-      'Design systems and component libraries',
+      'Purpose-built platforms, design systems and component libraries',
       'AI-assisted workflow design, human-directed',
     ],
   },
@@ -408,7 +408,7 @@ export const engagements: Engagement[] = [
     index: '01',
     name: 'The day',
     duration: 'Single day',
-    lede: 'A focused day with a senior practitioner for a decision or design problem that has stalled.',
+    lede: 'A focused day with a senior practitioner for a first-principles product question or a decision that has stalled.',
     points: [
       'Design or product critique with a written verdict',
       'Executive advisory and decision support',
@@ -420,11 +420,11 @@ export const engagements: Engagement[] = [
     index: '02',
     name: 'The week',
     duration: 'One to four weeks',
-    lede: 'Enough time to frame a problem properly and leave you with something you can act on. The most common way to start.',
+    lede: 'Enough time to frame a new platform or an existing problem properly and leave you with something you can act on. The most common way to start.',
     points: [
       'Discovery and opportunity framing',
       'Strategy sprint with a defensible recommendation',
-      'Concept and prototype development',
+      'Net-new concept and prototype development',
       'Fractional design leadership, retained',
     ],
   },
@@ -432,10 +432,10 @@ export const engagements: Engagement[] = [
     index: '03',
     name: 'The assembled team',
     duration: 'Project length',
-    lede: 'For work that needs more than one pair of hands. A team pulled together for your problem specifically, led directly and never handed off.',
+    lede: 'For net-new platforms, launches and larger product work that needs more than one pair of hands. A team pulled together for your problem specifically, led directly and never handed off.',
     points: [
-      'End-to-end product design and delivery',
-      'Design system and platform work',
+      'End-to-end utility platform design and delivery',
+      'Purpose-built platform and design system work',
       'Human-directed, AI-extended production',
       'Principal stays on the project throughout',
     ],

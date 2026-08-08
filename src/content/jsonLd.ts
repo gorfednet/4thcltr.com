@@ -36,6 +36,8 @@ export function organizationJsonLd() {
       'Executive design leadership',
       'Product strategy',
       'Design systems',
+      'Utility platform design',
+      'Net-new product design',
       'Human-centered design',
     ],
   }
@@ -63,6 +65,8 @@ export function personJsonLd() {
       'Experience design',
       'Product strategy',
       'Design leadership',
+      'Utility platform design',
+      'Net-new product design',
       'Fintech UX',
       'Health product design',
     ],
@@ -89,7 +93,7 @@ export function manifestoJsonLd() {
     '@id': `${siteUrl}/manifesto#article`,
     headline: `The ${studio.name} manifesto`,
     description:
-      'Seven positions on design judgment, differentiation and the useful role AI can play when people remain accountable for the work.',
+      'Seven positions on design judgment, differentiation and making specific, useful products from first concept to delivery.',
     author: { '@id': `${siteUrl}/#person` },
     publisher: { '@id': `${siteUrl}/#organization` },
     mainEntityOfPage: `${siteUrl}/manifesto`,

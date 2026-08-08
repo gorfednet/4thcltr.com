@@ -331,13 +331,14 @@
   .practice-tab:hover,
   .practice-tab:focus-visible {
     border-color: var(--color-accent);
-    background: var(--color-card-strong);
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card));
+    box-shadow: inset 3px 0 0 var(--color-accent);
     outline: 0;
   }
   .practice-tab span { transition: color 240ms ease; }
-  .practice-tab:hover span,
-  .practice-tab:focus-visible span { color: var(--color-bone); }
-  .practice-tab:hover { background: var(--color-card-strong); }
+  .practice-tab:hover > span:first-child,
+  .practice-tab:focus-visible > span:first-child { color: var(--color-accent); }
+  .practice-tab:hover { background: color-mix(in srgb, var(--color-accent) 10%, var(--color-card)); }
   .practice-tab[aria-selected='true'] { background: var(--color-card-strong); }
   .practice-tab:hover .font-display { color: var(--color-bone); }
   .list-marker {
@@ -730,8 +731,8 @@
   }
   [data-navigation='side-left'] .site-header-inner > a:first-child,
   [data-navigation='side-left-compact'] .site-header-inner > a:first-child,
-  [data-navigation='side-chapter'] .site-header-inner > a:first-child {
-    align-self: flex-end;
+  [data-navigation='side-chapter-index'] .site-header-inner > a:first-child {
+    align-self: flex-start;
   }
   [data-navigation='side-right'] .site-header-inner > a:first-child {
     align-self: flex-start;

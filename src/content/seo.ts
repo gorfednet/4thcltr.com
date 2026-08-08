@@ -5,7 +5,7 @@ export const defaultSeo = {
   title: '4th Culture | Independent design practice in Toronto',
   titleTemplate: '%s · 4th Culture',
   description:
-    'Michael Duncan McArthur leads 4th Culture, an independent Toronto practice for executive design leadership, experience strategy and product design. More than 25 years of work spans regulated industries and public product launches.',
+    'Michael Duncan McArthur leads 4th Culture, a Toronto practice for design leadership, strategy and purpose-built utility platforms, from first idea to established product.',
   keywords: [
     '4th Culture',
     'design practice',
@@ -16,6 +16,9 @@ export const defaultSeo = {
     'Toronto design consultancy',
     'Michael Duncan McArthur',
     'differentiation',
+    'utility platform design',
+    'net-new product design',
+    'early-stage product design',
     'human-centered design',
   ],
   image: `${siteUrl}/og-image.png`,
@@ -37,13 +40,13 @@ export const pageSeo = {
     path: '/manifesto',
     title: 'The manifesto',
     description:
-      'Seven positions from 4th Culture on design judgment, differentiation and the useful role AI can play when people remain accountable for the work.',
+      'Seven positions from 4th Culture on design judgment, differentiation and making specific, useful products from first concept to delivery.',
   },
   contact: {
     path: '/contact',
     title: 'Contact Michael Duncan McArthur',
     description:
-      'Contact 4th Culture about executive design leadership, contract or retained product design, team building, strategy, speaking and advisory work.',
+      'Contact 4th Culture about executive design leadership, net-new utility platforms, retained product design, team building, strategy, speaking and advisory work.',
   },
   notFound: {
     path: '/404',

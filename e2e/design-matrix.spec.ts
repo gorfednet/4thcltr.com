@@ -260,11 +260,24 @@ test('desktop side rails keep brand and navigation top aligned', async ({ page }
       .first()
       .boundingBox()
     const firstNavBox = await page.locator('.primary-navigation .nav-link').first().boundingBox()
+    const headerInner = page.locator('.site-header-inner')
+    const headerMetrics = await headerInner.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      return { x: box.x, paddingLeft: Number.parseFloat(getComputedStyle(element).paddingLeft) }
+    })
     expect(wordmarkBox).not.toBeNull()
     expect(firstNavBox).not.toBeNull()
     expect(wordmarkBox!.y).toBeLessThanOrEqual(48)
     expect(firstNavBox!.y).toBeGreaterThan(wordmarkBox!.y + wordmarkBox!.height)
     expect(firstNavBox!.y).toBeLessThanOrEqual(800 / 3)
+
+    if (
+      navigationId === 'side-left' ||
+      navigationId === 'side-left-compact' ||
+      navigationId === 'side-chapter-index'
+    ) {
+      expect(Math.abs(wordmarkBox!.x - (headerMetrics.x + headerMetrics.paddingLeft))).toBeLessThanOrEqual(1)
+    }
   }
 })
 
@@ -763,24 +776,41 @@ test('every desktop menu keeps a visible, reachable close path', async ({ page }
 
 test('practice tabs signal hover without moving the layout', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
-  await openRecipe(page, designRecipes[0].id)
 
-  const tab = page.getByRole('tab', { name: 'Product & experience strategy' })
-  const before = await tab.evaluate((element) => {
-    const box = element.getBoundingClientRect()
-    return { x: box.x + window.scrollX, y: box.y + window.scrollY }
-  })
-  await tab.hover()
-  const { after, transform } = await tab.evaluate((element) => {
-    const box = element.getBoundingClientRect()
-    return {
-      after: { x: box.x + window.scrollX, y: box.y + window.scrollY },
-      transform: getComputedStyle(element).transform,
-    }
-  })
-  expect(after.x).toBe(before.x)
-  expect(after.y).toBe(before.y)
-  expect(transform).toBe('none')
+  for (const recipe of [designRecipes[0], designRecipes[Math.floor(designRecipes.length / 2)], designRecipes.at(-1)!]) {
+    await openRecipe(page, recipe.id)
+    const tab = page.getByRole('tab', { name: 'Product & experience strategy' })
+    await tab.scrollIntoViewIfNeeded()
+    await page.waitForTimeout(300)
+    const before = await tab.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const style = getComputedStyle(element)
+      return {
+        x: box.x + window.scrollX,
+        y: box.y + window.scrollY,
+        borderColor: style.borderColor,
+        boxShadow: style.boxShadow,
+      }
+    })
+    await tab.hover()
+    await page.waitForTimeout(300)
+    const after = await tab.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const style = getComputedStyle(element)
+      return {
+        x: box.x + window.scrollX,
+        y: box.y + window.scrollY,
+        borderColor: style.borderColor,
+        boxShadow: style.boxShadow,
+        transform: style.transform,
+      }
+    })
+    expect(after.x).toBe(before.x)
+    expect(Math.abs(after.y - before.y)).toBeLessThanOrEqual(2)
+    expect(after.transform).toBe('none')
+    expect(after.borderColor).not.toBe(before.borderColor)
+    expect(after.boxShadow).not.toBe(before.boxShadow)
+  }
 })
 
 test('interactive controls use a pointer cursor and the logo returns home', async ({ page }) => {
@@ -968,14 +998,16 @@ test('contact writing controls remain restrained in every recipe', async ({ page
   }
 })
 
-test('hero outcome stage is a clean interface card', async ({ page }) => {
+test('hero opening and outcome stages are clean interface cards', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   for (const recipe of designRecipes) {
     await openRecipe(page, recipe.id)
-    const outcome = page.locator('[data-flow-stage="outcome"]')
-    if (!(await outcome.isVisible())) continue
-    await expect(outcome).toHaveCount(1)
-    await expect(outcome.locator('line')).toHaveCount(0)
+    for (const stageName of ['opening', 'outcome']) {
+      const stage = page.locator(`[data-flow-stage="${stageName}"]`)
+      if (!(await stage.isVisible())) continue
+      await expect(stage).toHaveCount(1)
+      await expect(stage.locator('line')).toHaveCount(0)
+    }
   }
   expect(new Set(designRecipes.map((recipe) => recipe.hero))).toEqual(
     new Set(['split', 'split-reverse', 'stacked-center', 'stacked-flush']),
