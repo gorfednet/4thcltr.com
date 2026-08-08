@@ -211,6 +211,63 @@ test.describe('navigation construct coverage', () => {
   }
 })
 
+test('desktop menu triggers stay separate from the wordmark', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+
+  for (const navigationId of navigationIds) {
+    const construct = getNavigationConstruct(navigationId)
+    if (!construct.usesMenu) continue
+
+    const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
+    await openRecipe(page, recipe.id)
+
+    const wordmark = page.getByRole('link', { name: '4th Culture, home' }).first()
+    const trigger = page.locator('.menu-trigger')
+    const [wordmarkBox, triggerBox] = await Promise.all([
+      wordmark.boundingBox(),
+      trigger.boundingBox(),
+    ])
+    expect(wordmarkBox).not.toBeNull()
+    expect(triggerBox).not.toBeNull()
+    expect(boxesOverlap(wordmarkBox!, triggerBox!)).toBe(false)
+    expect(triggerBox!.x + triggerBox!.width).toBeGreaterThan(1180)
+
+    await trigger.click()
+    const panel = page.locator('#navigation-panel')
+    await expect(panel).toBeVisible()
+    const panelBox = await panel.boundingBox()
+    expect(panelBox).not.toBeNull()
+
+    if (navigationId === 'side-collapsible') {
+      expect(panelBox!.x).toBeLessThanOrEqual(1)
+    } else if (navigationId === 'menu-dropdown' || navigationId === 'corner-launcher') {
+      expect(panelBox!.x + panelBox!.width).toBeGreaterThan(1200)
+    }
+  }
+})
+
+test('desktop side rails keep brand and navigation top aligned', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+
+  for (const navigationId of navigationIds) {
+    if (!navigationId.startsWith('side-') || navigationId === 'side-collapsible') continue
+
+    const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
+    await openRecipe(page, recipe.id)
+
+    const wordmarkBox = await page
+      .getByRole('link', { name: '4th Culture, home' })
+      .first()
+      .boundingBox()
+    const firstNavBox = await page.locator('.primary-navigation .nav-link').first().boundingBox()
+    expect(wordmarkBox).not.toBeNull()
+    expect(firstNavBox).not.toBeNull()
+    expect(wordmarkBox!.y).toBeLessThanOrEqual(48)
+    expect(firstNavBox!.y).toBeGreaterThan(wordmarkBox!.y + wordmarkBox!.height)
+    expect(firstNavBox!.y).toBeLessThanOrEqual(800 / 3)
+  }
+})
+
 test.describe('manifesto recipe coverage', () => {
   for (const recipe of designRecipes) {
     test(`${recipe.id} manifesto remains accessible`, async ({ page }) => {
@@ -356,6 +413,49 @@ test('every mobile navigation construct is usable and preserves drawer side', as
     } else {
       await expect(menu).toBeHidden()
       await expect(primaryNavigation).toBeVisible()
+    }
+  }
+})
+
+test('expanded mobile menus expose every destination without clipping', async ({ page }) => {
+  for (const viewport of [
+    { width: 375, height: 812 },
+    { width: 320, height: 568 },
+  ]) {
+    await page.setViewportSize(viewport)
+
+    for (const mobileNavigationId of mobileMenuIds) {
+      const recipe = designRecipes.find(
+        (candidate) => candidate.mobileNavigationId === mobileNavigationId,
+      )!
+      await openRecipe(page, recipe.id)
+
+      const trigger = page.locator('.menu-trigger')
+      await trigger.click()
+      const panel = page.locator('#navigation-panel')
+      const panelBox = await panel.boundingBox()
+      expect(panelBox).not.toBeNull()
+      expect(panelBox!.y).toBeLessThanOrEqual(1)
+      expect(panelBox!.y + panelBox!.height).toBeGreaterThanOrEqual(viewport.height - 1)
+
+      const visibleControls = await panel.locator('a, button').evaluateAll((elements) =>
+        elements.map((element) => {
+          const box = element.getBoundingClientRect()
+          return {
+            height: box.height,
+            top: box.top,
+            bottom: box.bottom,
+          }
+        }),
+      )
+      expect(visibleControls).toHaveLength(
+        mobileMenuCloseAtTriggerIds.has(mobileNavigationId) ? 5 : 6,
+      )
+      for (const control of visibleControls) {
+        expect(control.height).toBeGreaterThan(0)
+        expect(control.top).toBeGreaterThanOrEqual(0)
+        expect(control.bottom).toBeLessThanOrEqual(viewport.height)
+      }
     }
   }
 })

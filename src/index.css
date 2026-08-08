@@ -412,27 +412,47 @@
     white-space: nowrap;
   }
 
+  [data-mobile-navigation-menu='true'] .navigation-panel {
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+    display: block;
+    min-height: 100svh;
+    overflow: hidden;
+    background: var(--color-ground);
+  }
+  [data-mobile-navigation-menu='true'] .navigation-panel-inner {
+    height: 100svh;
+    max-height: 100svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-top: calc(5.5rem + env(safe-area-inset-top));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+  [data-mobile-navigation-menu='true'] .menu-trigger {
+    position: relative;
+    z-index: 51;
+  }
+
   [data-mobile-navigation='hamburger-left'] .navigation-panel,
   [data-mobile-navigation='hamburger-right'] .navigation-panel {
-    position: fixed;
     top: 0;
     bottom: 0;
-    display: block;
     width: min(24rem, 88vw);
-    background: var(--color-ground);
     box-shadow: 0 20px 60px rgba(0,0,0,.28);
   }
   [data-mobile-navigation='hamburger-left'] .navigation-panel {
     left: 0;
+    right: auto;
     border-right: 1px solid var(--color-line);
   }
   [data-mobile-navigation='hamburger-right'] .navigation-panel {
     right: 0;
+    left: auto;
     border-left: 1px solid var(--color-line);
   }
   [data-mobile-navigation='hamburger-left'] .navigation-panel-inner,
   [data-mobile-navigation='hamburger-right'] .navigation-panel-inner {
-    height: 100%;
     max-height: 100svh;
     padding-top: 6rem;
   }
@@ -653,9 +673,14 @@
     max-width: none;
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-start;
-    gap: 3rem;
+    align-content: flex-start;
+    justify-content: flex-start !important;
+    gap: 1.75rem;
     padding: 2rem 1.5rem;
+  }
+  [data-navigation-family='side'] .site-header-inner > a:first-child,
+  [data-navigation-family='side'] .primary-navigation {
+    flex: 0 0 auto;
   }
   [data-navigation-family='side'] .primary-navigation {
     flex-direction: column;
@@ -810,6 +835,11 @@
     color: var(--color-on-accent);
     padding: 0.8rem 1rem;
   }
+
+  [data-navigation-menu='true'] .site-header-inner {
+    justify-content: space-between !important;
+    gap: 2rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -858,7 +888,10 @@
 }
 
 @media (max-width: 1023px) {
-  .navigation-panel-inner { max-height: calc(100svh - 5rem); overflow-y: auto; }
+  [data-mobile-navigation-menu='true'] .navigation-panel-inner {
+    height: 100svh;
+    max-height: 100svh;
+  }
 }
 
 [data-layout="magazine"] .shell { max-width: 90rem; }
