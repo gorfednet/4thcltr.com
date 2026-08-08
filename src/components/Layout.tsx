@@ -110,6 +110,10 @@ export default function Layout() {
   }, [location.pathname])
 
   useEffect(() => {
+    setMenuOpen(false)
+  }, [mobileNavigationId])
+
+  useEffect(() => {
     if (!menuOpen) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
