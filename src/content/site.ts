@@ -8,7 +8,7 @@ export const studio = {
   principal: 'Michael Duncan McArthur',
   base: 'Toronto',
   positioning:
-    'Independent design leadership, strategy and product work for purpose-built utility platforms, from first idea to established product.',
+    'Independent product strategy, design leadership, front-end implementation and delivery for purpose-built utility platforms, from first idea to established product.',
   linkedin: 'https://www.linkedin.com/in/gorfed/',
   github: 'https://github.com/gorfednet',
   portfolio: 'https://gorfed.net',
@@ -170,13 +170,14 @@ export const facets: Facet[] = [
   {
     id: 'craft',
     title: 'Design & build',
-    lede: 'The work runs from the first interaction flow to shipped front-end code, keeping strategy grounded in what a team can build, maintain and use.',
+    lede: 'The work runs from the first interaction flow to production front-end code and launch, keeping strategy grounded in what a team can build, maintain and use.',
     methods: [
       'Interaction design and prototyping',
       'Interface and visual systems',
-      'Front-end implementation',
+      'Production front-end implementation',
+      'Technical architecture and delivery planning',
       'Purpose-built platforms, design systems and component libraries',
-      'AI-assisted workflow design, human-directed',
+      'Agentic workflows for research, prototyping, implementation and quality assurance',
     ],
   },
 ]
@@ -456,7 +457,7 @@ export const engagements: Engagement[] = [
     index: '02',
     name: 'The week',
     duration: 'One to four weeks',
-    lede: 'Enough time to frame a new platform or an existing problem properly and leave you with something you can act on. The most common way to start.',
+    lede: 'Enough time to frame a new platform or an existing problem properly and produce a strategy, working prototype or implementation plan. The most common way to start.',
     points: [
       'Discovery and opportunity framing',
       'Strategy sprint with a defensible recommendation',
@@ -468,11 +469,12 @@ export const engagements: Engagement[] = [
     index: '03',
     name: 'The assembled team',
     duration: 'Project length',
-    lede: 'For net-new platforms, launches and larger product work that needs more than one pair of hands. A team pulled together for your problem specifically, led directly and never handed off.',
+    lede: 'For net-new platforms, launches and larger product work that needs more than one pair of hands. Michael assembles trusted consultants and contractors around the ask, leads them directly and remains accountable throughout.',
     points: [
-      'End-to-end utility platform design and delivery',
+      'End-to-end product design, production front-end and delivery',
       'Purpose-built platform and design system work',
-      'Human-directed, AI-extended production',
+      'Specialist engineering and consulting capacity as needed',
+      'Human-directed agentic workflows across production',
       'Principal stays on the project throughout',
     ],
   },

@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react'
-import { useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import DesignLink from '../components/DesignLink'
 import PageMeta from '../components/PageMeta'
 import { submitContactEnquiry } from '../config/contactForm'
@@ -12,6 +12,7 @@ const enquiryReasons = [
   'Build or strengthen a product or design team',
   'Product, brand or experience strategy',
   'Net-new product or utility platform design',
+  'End-to-end product design and front-end delivery',
   'Speaking, advisory or collaboration',
   'Something else',
 ]
@@ -23,6 +24,10 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
   const submissionInFlight = useRef(false)
   const successRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (submitted) successRef.current?.focus()
+  }, [submitted])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -51,7 +56,6 @@ export default function Contact() {
     if (result.ok) {
       setSubmitted(true)
       form.reset()
-      requestAnimationFrame(() => successRef.current?.focus())
       return
     }
 
@@ -77,9 +81,9 @@ export default function Contact() {
               <span className="italic text-accent">to change?</span>
             </h1>
             <p className="measure mt-10 text-xl leading-relaxed text-muted">
-              Share what you are making, changing or unblocking, the stakes and what a
-              useful outcome would look like. Michael reads every enquiry and replies
-              directly.
+              Share what you are making, changing or unblocking, whether the ask is a
+              focused decision or end-to-end design and delivery, and what a useful
+              outcome would look like. Michael reads every enquiry and replies directly.
             </p>
           </div>
         </div>

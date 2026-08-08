@@ -39,6 +39,10 @@ export function organizationJsonLd() {
       'Utility platform design',
       'Net-new product design',
       'Human-centered design',
+      'Front-end implementation',
+      'Product delivery',
+      'Design and build',
+      'Agentic workflows',
     ],
   }
 }
@@ -69,6 +73,9 @@ export function personJsonLd() {
       'Net-new product design',
       'Fintech UX',
       'Health product design',
+      'Front-end development',
+      'Product delivery',
+      'Agentic workflows',
     ],
   }
 }

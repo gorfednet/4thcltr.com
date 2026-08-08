@@ -65,7 +65,7 @@ const engagementIcons = [
 ]
 
 const statItems = [
-  { value: studio.yearsActive, label: 'Years shipping design', icon: <TrendingUp size={15} strokeWidth={1.5} aria-hidden /> },
+  { value: studio.yearsActive, label: 'Years shipping products', icon: <TrendingUp size={15} strokeWidth={1.5} aria-hidden /> },
   { value: '02', label: 'Patents filed', icon: <FileText size={15} strokeWidth={1.5} aria-hidden /> },
   { value: `${clients.length}+`, label: 'Clients over the career', icon: <Building2 size={15} strokeWidth={1.5} aria-hidden /> },
   { value: String(awards.length).padStart(2, '0'), label: 'Awards and recognitions', icon: <Award size={15} strokeWidth={1.5} aria-hidden /> },
@@ -117,9 +117,9 @@ export default function Home() {
             <div className="hero-lede mt-3.5 lg:mt-4">
               <p className="measure text-[0.9375rem] leading-[1.55] text-muted lg:max-w-[46ch] lg:text-base">
                 {studio.name} is the practice of{' '}
-                <span className="text-bone">{studio.principal}</span>. Executive design
-                leadership, experience strategy and product design for purpose-built utility
-                platforms, from first idea to established product.
+                <span className="text-bone">{studio.principal}</span>. Product strategy,
+                design leadership, production front-end implementation and end-to-end delivery
+                for purpose-built utility platforms.
               </p>
             </div>
 
@@ -219,7 +219,7 @@ export default function Home() {
           <Reveal>
             <SectionHead
               index="01 / Practice"
-              title="Strategy, leadership and craft."
+              title="Strategy, design and build."
               lede="From a first sketch to an established product, these disciplines stay connected through delivery. One accountable lead keeps the argument, the interface and the build moving in the same direction."
             />
             <Practice />
@@ -421,9 +421,16 @@ export default function Home() {
                     A third-culture kid raised between Canada, the UAE and Egypt, which is
                     where the habit of adapting quickly and solving from more than one
                     angle comes from. Founder three times over, the first as a teenager in
-                    Dubai. I still write front-end code, which is why the strategy stays
-                    honest about what can actually be built. I especially like the moment
-                    before a product has a template, when it needs its first useful shape.
+                    Dubai. I still write production front-end code and use human-directed
+                    agentic workflows across research, prototyping, implementation and
+                    quality assurance. That keeps the strategy honest about what can
+                    actually be built.
+                  </p>
+                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                    When delivery needs broader engineering or specialist expertise, I
+                    assemble trusted consultants and contractors around the work. The team
+                    scales to the ask, while I remain directly involved and accountable
+                    from first decision through launch.
                   </p>
                   <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
                     Based in {studio.base}.

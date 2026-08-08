@@ -2,10 +2,10 @@ export const siteUrl = 'https://4thcltr.com'
 
 export const defaultSeo = {
   siteName: '4th Culture',
-  title: '4th Culture | Independent design practice in Toronto',
+  title: '4th Culture | Product strategy, design and delivery',
   titleTemplate: '%s · 4th Culture',
   description:
-    'Michael Duncan McArthur leads 4th Culture, a Toronto practice for design leadership, strategy and purpose-built utility platforms, from first idea to established product.',
+    'Michael Duncan McArthur leads 4th Culture, a Toronto practice for product strategy, design, production front-end implementation and end-to-end delivery.',
   keywords: [
     '4th Culture',
     'design practice',
@@ -13,13 +13,18 @@ export const defaultSeo = {
     'experience design',
     'executive design leadership',
     'UX strategy',
-    'Toronto design consultancy',
+    'Toronto product design and delivery',
     'Michael Duncan McArthur',
     'differentiation',
     'utility platform design',
     'net-new product design',
     'early-stage product design',
     'human-centered design',
+    'front-end implementation',
+    'design and build',
+    'product delivery',
+    'agentic workflows',
+    'principal-led product team',
   ],
   image: `${siteUrl}/og-image.png`,
   imageAlt: '4th Culture design practice in Toronto',
@@ -46,7 +51,7 @@ export const pageSeo = {
     path: '/contact',
     title: 'Contact Michael Duncan McArthur',
     description:
-      'Contact 4th Culture about executive design leadership, net-new utility platforms, retained product design, team building, strategy, speaking and advisory work.',
+      'Contact 4th Culture about design leadership, strategy, end-to-end product design, production front-end implementation, assembled teams, speaking and advisory work.',
   },
   notFound: {
     path: '/404',

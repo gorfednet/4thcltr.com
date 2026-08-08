@@ -1069,7 +1069,12 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   await expect(form.getByLabel('Email')).toHaveAttribute('type', 'email')
   await expect(form.getByLabel('Organisation')).toBeVisible()
   await expect(form.getByLabel('Reason for getting in touch')).toHaveAttribute('required', '')
-  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(8)
+  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(9)
+  await expect(
+    form
+      .getByLabel('Reason for getting in touch')
+      .locator('option', { hasText: 'End-to-end product design and front-end delivery' }),
+  ).toHaveCount(1)
   await expect(form.getByLabel('Message')).toHaveAttribute('required', '')
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
 })
@@ -1250,6 +1255,33 @@ test('public copy and metadata contain no em dashes', async ({ page }) => {
     'href',
     'https://4thcltr.com/contact',
   )
+})
+
+test('public positioning includes implementation and accountable delivery', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  await expect(page.locator('.hero-lede')).toContainText('production front-end implementation')
+  await expect(page.locator('.hero-lede')).toContainText('end-to-end delivery')
+  const buildTab = page.getByRole('tab', { name: 'Design & build' })
+  await expect(buildTab).toBeVisible()
+  await buildTab.click()
+  await expect(page.getByRole('tabpanel')).toContainText('Production front-end implementation')
+  await expect(
+    page.locator('#engage').getByText('trusted consultants and contractors', { exact: false }),
+  ).toBeVisible()
+
+  const description = await page
+    .locator('meta[name="description"]')
+    .first()
+    .getAttribute('content')
+  expect(description).toContain('production front-end implementation')
+  expect(description).toContain('end-to-end delivery')
+
+  const structuredData = (
+    await page.locator('script[type="application/ld+json"]').allTextContents()
+  ).join(' ')
+  expect(structuredData).toContain('Front-end implementation')
+  expect(structuredData).toContain('Agentic workflows')
 })
 
 test('keyboard and reduced-motion essentials remain usable', async ({ page }) => {
