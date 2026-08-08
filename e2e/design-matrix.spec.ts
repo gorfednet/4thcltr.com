@@ -268,6 +268,60 @@ test('desktop side rails keep brand and navigation top aligned', async ({ page }
   }
 })
 
+test('top navigation preserves its intended brand and nav hierarchy', async ({ page }) => {
+  const sameRowIds = [
+    'top-inline',
+    'top-split',
+    'top-tabs',
+    'top-floating-pill',
+    'top-app-bar',
+    'top-os-menu',
+  ] as const
+
+  for (const viewport of [
+    { width: 1024, height: 768 },
+    { width: 1280, height: 800 },
+  ]) {
+    await page.setViewportSize(viewport)
+
+    for (const navigationId of sameRowIds) {
+      const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
+      await openRecipe(page, recipe.id)
+
+      const wordmarkBox = await page.locator('.site-header-inner > a').first().boundingBox()
+      const navBox = await page.locator('.site-header .primary-navigation').boundingBox()
+      expect(wordmarkBox).not.toBeNull()
+      expect(navBox).not.toBeNull()
+      expect(
+        Math.abs(wordmarkBox!.y + wordmarkBox!.height - (navBox!.y + navBox!.height)),
+      ).toBeLessThanOrEqual(2)
+
+      if (navigationId === 'top-os-menu') {
+        expect(navBox!.x).toBeLessThan(wordmarkBox!.x)
+      } else {
+        expect(navBox!.x).toBeGreaterThan(wordmarkBox!.x)
+      }
+    }
+
+    const centeredRecipe = designRecipes.find(
+      (candidate) => candidate.navigationId === 'top-centered',
+    )!
+    await openRecipe(page, centeredRecipe.id)
+
+    const wordmarkBox = await page.locator('.site-header-inner > a').first().boundingBox()
+    const navBox = await page.locator('.site-header .primary-navigation').boundingBox()
+    const heroStatusBox = await page.locator('.hero-status').boundingBox()
+    const headerBox = await page.locator('.site-header').boundingBox()
+    expect(wordmarkBox).not.toBeNull()
+    expect(navBox).not.toBeNull()
+    expect(heroStatusBox).not.toBeNull()
+    expect(headerBox).not.toBeNull()
+    expect(wordmarkBox!.y + wordmarkBox!.height).toBeLessThanOrEqual(navBox!.y)
+    expect(Math.abs(navBox!.x + navBox!.width / 2 - viewport.width / 2)).toBeLessThanOrEqual(2)
+    expect(heroStatusBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height)
+  }
+})
+
 test.describe('manifesto recipe coverage', () => {
   for (const recipe of designRecipes) {
     test(`${recipe.id} manifesto remains accessible`, async ({ page }) => {
