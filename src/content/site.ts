@@ -198,24 +198,33 @@ export type Award = {
   href?: string
 }
 
+export const whySection = {
+  title: 'What we stand for, before the résumé.',
+  lede:
+    '4th Culture is an independent practice shaped by third-culture experience, the internet and human-directed agentic intelligence. The work exists to make products specific enough to belong to the people they serve.',
+  quote:
+    'Humanity is not a template. Design is how our tools express who we are: our character, feeling and intent. When everything we make feels the same, we design the human out of it.',
+  manifestoLinkLabel: 'Read the seven positions',
+} as const
+
 export const proofSection = {
   title: 'The work, on the record.',
   lede:
-    'Selected outcomes across financial services, health and life sciences, civic technology, retail and mobility, with the sources that document them.',
+    'Selected outcomes across financial services, health and life sciences, civic technology, retail and mobility, with external sources that document them.',
   intro:
-    'Different sectors, teams and constraints. The through-line is work that shipped, found an audience and created value beyond the interface.',
+    'Purpose and method come first. These outcomes show what that commitment produced in market: work that shipped, found an audience and created value beyond the interface.',
 } as const
 
 export const sectionHeads = {
   practice: {
     title: 'One practice, from direction to delivery.',
     lede:
-      'Product strategy, design leadership, research and production front-end stay connected. Michael leads the work throughout, so the decisions made early survive contact with the build.',
+      'With that foundation set, product strategy, design leadership, research and production front-end stay connected throughout. Michael leads the work so decisions made early survive contact with the build.',
   },
   engage: {
     title: 'Choose the right amount of work.',
     lede:
-      'A focused day for one consequential decision, one to four weeks to frame and advance the problem, or an assembled team for end-to-end delivery. Describe the problem; the right shape can follow.',
+      'When the approach is clear, choose the right amount of work: a focused day for one consequential decision, one to four weeks to frame and advance the problem, or an assembled team for end-to-end delivery.',
   },
   who: {
     title: 'The principal stays in the work.',

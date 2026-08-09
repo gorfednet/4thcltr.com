@@ -1175,6 +1175,10 @@ html[data-design-transitioning='true'] *::after {
   margin-top: clamp(1.5rem, 4vw, 2rem) !important;
 }
 
+.why-quote {
+  margin-left: 0;
+}
+
 .brand-story-flow {
   display: grid;
   gap: 0.75rem;

@@ -1583,6 +1583,26 @@ test('hero stat cards separate from the body and use gutter spacing', async ({ p
   }
 })
 
+test('purpose sections precede proof in document order', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+  const order = await page.evaluate(() => {
+    const why = document.getElementById('why')
+    const practice = document.getElementById('practice')
+    const proof = document.getElementById('proof')
+    if (!why || !practice || !proof) return null
+    const following = Node.DOCUMENT_POSITION_FOLLOWING
+    return {
+      whyBeforePractice: Boolean(why.compareDocumentPosition(practice) & following),
+      whyBeforeProof: Boolean(why.compareDocumentPosition(proof) & following),
+      practiceBeforeProof: Boolean(practice.compareDocumentPosition(proof) & following),
+    }
+  })
+  expect(order).not.toBeNull()
+  expect(order!.whyBeforePractice).toBe(true)
+  expect(order!.whyBeforeProof).toBe(true)
+  expect(order!.practiceBeforeProof).toBe(true)
+})
+
 test('proof section head separates from outcome rows', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await openRecipe(page, designRecipes[0].id)
