@@ -20,35 +20,37 @@ export const brandStory = {
   eyebrow: 'Why 4th Culture',
   title: 'A practice built between worlds.',
   summary:
-    'Raised between cultures, shaped by the internet and working at the edge of agentic intelligence, 4th Culture is a shared space for making what comes next without surrendering human judgment.',
+    '4th Culture is an independent practice shaped by Michael’s third-culture experience, the internet and agentic intelligence. It exists to make technology more expressive, specific and recognisably human without surrendering judgment.',
   inputs: [
     {
       index: '01',
       name: 'Lived culture',
-      detail: 'The fluency that comes from growing up across Canada, the UAE and Egypt.',
+      detail:
+        '4th Culture is shaped by Michael’s third-culture experience and the habit of seeing from more than one point of view.',
     },
     {
       index: '02',
       name: 'The network',
-      detail: 'The internet as a place where language, behaviour and belonging keep being remade.',
+      detail: 'The networked culture where language, behaviour and belonging keep being remade.',
     },
     {
       index: '03',
       name: 'Agentic intelligence',
-      detail: 'Systems that increasingly evaluate, create, interact and transact alongside us.',
+      detail:
+        'Human-directed systems that expand what a small, senior practice can explore, build and deliver.',
     },
   ],
   result: {
     index: '04',
     name: 'The fourth space',
     detail:
-      'A deliberate common ground where cultural fluency, human character and computational capability produce something none owns alone.',
+      'A deliberate practice where cultural fluency, human character and computational capability meet in products that do not feel interchangeable.',
   },
   manifesto: [
-    'I am a third-culture kid, raised across Canada, the UAE and Egypt. Long before design became the work, translation was the habit: reading context, moving between systems and resisting the idea that one inherited baseline must be the only correct one.',
-    'The internet is crossing another boundary. People still browse, search and publish, but agents increasingly evaluate options, generate media, operate workflows and transact behind the interface. That shift changes more than software. It reshapes language, behaviour, trust and who remains accountable when action happens at machine speed.',
-    'Fourth Culture is not one fixed academic category here. It is the name for a deliberate shared space: neither a single home culture nor a statistical machine average, but a place cultural fluency, human character and computational capability can meet and make something specific together.',
-    'That is the promise of the practice: use advanced tools without handing over judgment; make the people, context and consequences visible; and build products distinct enough to belong to those they serve.',
+    '4th Culture is shaped by Michael’s third-culture experience growing up across cultures. Long before design became the work, translation became the habit: reading context, moving between systems and resisting the idea that one inherited baseline must be the only correct one.',
+    'The practice was also formed by the internet, a cultural system where language, behaviour and belonging are constantly remade. It is now crossing another boundary as agents evaluate options, generate media, operate workflows and transact behind the interface.',
+    'Fourth Culture is not used here as a fixed academic category. It names a deliberate shared space: neither one home culture nor a statistical machine average, but a place where cultural fluency, human character and computational capability can make something specific together.',
+    'The promise is to use advanced tools without handing over judgment; make people, context and consequences visible; and build products expressive enough to belong to those they serve rather than flattening them into the same experience.',
   ],
 } as const
 
@@ -82,7 +84,7 @@ export const tenets: Tenet[] = [
     body: [
       'The same rounded card. The same gradient hero. The same three-column feature grid, the same testimonial carousel, the same soft blue. An entire industry converged on one template and called it best practice.',
       'Models learn from frequency. Ask for a sensible interface and they return the patterns they have seen most often, then popularity starts to look like a standard. The result may be competent, but the selection was never thoughtful.',
-      'A company, its product and the people using it are specific. Their utility, workflows and design should be specific too. The web is better when you can tell that someone made a choice and can explain why.',
+      'Human beings are not interchangeable. Design is expression: the way tools carry character, feeling and intent into life. A company, its product and the people using it are specific; their experiences should be specific too. When every interface resolves to the same average, the technology has flattened the humanity it was meant to serve.',
     ],
   },
   {
@@ -436,6 +438,11 @@ export type Engagement = {
   index: string
   name: string
   duration: string
+  key: 'day' | 'week' | 'project'
+  price: string
+  priceDetail: string
+  action: string
+  enquiryReason: string
   lede: string
   points: string[]
 }
@@ -445,6 +452,11 @@ export const engagements: Engagement[] = [
     index: '01',
     name: 'The day',
     duration: 'Single day',
+    key: 'day',
+    price: '$1,500 CAD',
+    priceDetail: 'per focused day',
+    action: 'Book the day',
+    enquiryReason: 'Focused day',
     lede: 'A focused day with a senior practitioner for a first-principles product question or a decision that has stalled.',
     points: [
       'Design or product critique with a written verdict',
@@ -457,6 +469,11 @@ export const engagements: Engagement[] = [
     index: '02',
     name: 'The week',
     duration: 'One to four weeks',
+    key: 'week',
+    price: '$6,000 CAD',
+    priceDetail: 'per week',
+    action: 'Start with a week',
+    enquiryReason: 'One-to-four-week engagement',
     lede: 'Enough time to frame a new platform or an existing problem properly and produce a strategy, working prototype or implementation plan. The most common way to start.',
     points: [
       'Discovery and opportunity framing',
@@ -469,7 +486,12 @@ export const engagements: Engagement[] = [
     index: '03',
     name: 'The assembled team',
     duration: 'Project length',
-    lede: 'For net-new platforms, launches and larger product work that needs more than one pair of hands. Michael assembles trusted consultants and contractors around the ask, leads them directly and remains accountable throughout.',
+    key: 'project',
+    price: 'Based on scope',
+    priceDetail: 'a clear estimate follows discovery',
+    action: 'Discuss a project',
+    enquiryReason: 'Scoped project or assembled team',
+    lede: 'End-to-end product work that needs more than one pair of hands. Michael assembles trusted consultants and contractors, leads the work and remains accountable through delivery.',
     points: [
       'End-to-end product design, production front-end and delivery',
       'Purpose-built platform and design system work',

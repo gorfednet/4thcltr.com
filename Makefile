@@ -1,4 +1,4 @@
-# 4thcltr.com — typecheck, build (Vite), deploy to SMB
+# 4thcltr.com — typecheck, build (Vite), deploy to NAS over SSH
 
 SHELL := /bin/bash
 DIST := dist
@@ -15,7 +15,7 @@ build: install
 	@echo "Build done: $(DIST)/"
 
 deploy: build
-	@./deploy-to-smb.sh
+	@./deploy.sh
 
 clean:
 	rm -rf $(DIST) node_modules/.vite

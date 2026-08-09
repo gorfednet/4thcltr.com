@@ -65,10 +65,10 @@ const engagementIcons = [
 ]
 
 const statItems = [
-  { value: studio.yearsActive, label: 'Years shipping products', icon: <TrendingUp size={15} strokeWidth={1.5} aria-hidden /> },
-  { value: '02', label: 'Patents filed', icon: <FileText size={15} strokeWidth={1.5} aria-hidden /> },
-  { value: `${clients.length}+`, label: 'Clients over the career', icon: <Building2 size={15} strokeWidth={1.5} aria-hidden /> },
-  { value: String(awards.length).padStart(2, '0'), label: 'Awards and recognitions', icon: <Award size={15} strokeWidth={1.5} aria-hidden /> },
+  { value: studio.yearsActive, label: 'Years shipping', icon: <TrendingUp size={26} strokeWidth={1.4} aria-hidden /> },
+  { value: '02', label: 'Patents filed', icon: <FileText size={26} strokeWidth={1.4} aria-hidden /> },
+  { value: `${clients.length}+`, label: 'Career clients', icon: <Building2 size={26} strokeWidth={1.4} aria-hidden /> },
+  { value: String(awards.length).padStart(2, '0'), label: 'Awards won', icon: <Award size={26} strokeWidth={1.4} aria-hidden /> },
 ]
 
 export default function Home() {
@@ -146,12 +146,16 @@ export default function Home() {
               {statItems.map((stat) => (
                 <div
                   key={stat.label}
-                  className="stat-cell card-surface flex flex-col justify-between gap-3 px-5 py-5 lg:px-6 lg:py-6"
+                  className="stat-cell card-surface grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-5 sm:gap-4 sm:px-5 lg:px-6 lg:py-6"
                 >
-                  <div className="flex items-center gap-2 text-accent">{stat.icon}</div>
-                  <div>
+                  <div className="stat-icon flex shrink-0 items-center justify-center text-accent">
+                    {stat.icon}
+                  </div>
+                  <div className="stat-copy min-w-0">
                     <p className="display-xl text-2xl lg:text-3xl">{stat.value}</p>
-                    <p className="label mt-1.5 text-faint">{stat.label}</p>
+                    <p className="label mt-1.5 break-words tracking-[0.14em] text-faint sm:tracking-[0.2em]">
+                      {stat.label}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -164,8 +168,9 @@ export default function Home() {
           <Reveal>
             <p className="label text-accent">The manifesto</p>
             <blockquote className="balance mt-10 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:max-w-[30ch]">
-              "People notice the decisions behind a product before they can explain
-              them. Good design gives those decisions a clear point of view."
+              "Humanity is not a template. Design is how our tools express who we are:
+              our character, feeling and intent. When everything we make feels the same,
+              we design the human out of it."
             </blockquote>
 
             <div className="section-content grid-12 mt-14 lg:mt-20">
@@ -328,7 +333,7 @@ export default function Home() {
             <SectionHead
               index="03 / Engage"
               title="Three ways in."
-              lede="Join us at the first idea, a launch, a live product or a rethink. Day and week rates for direct work, or an assembled team for something larger. Rates on request."
+              lede="Clear starting rates for focused work, and a scoped proposal when the work needs a team. Choose the fit that gets you to a useful result."
             />
           </Reveal>
 
@@ -346,21 +351,29 @@ export default function Home() {
                 <div className="engagement-card card-surface flex h-full flex-col p-7 sm:p-8 lg:p-10">
                   <div className="flex items-start justify-between gap-4">
                     <span className="text-accent">{engagementIcons[index]}</span>
-                    <span className="label text-faint">{engagement.duration}</span>
+                    <span className="engagement-meta label text-right text-faint">
+                      <span className="text-accent">{engagement.index}</span>
+                      <span aria-hidden> / </span>
+                      {engagement.duration}
+                    </span>
                   </div>
 
-                  <div className="mt-6">
-                    <span className="label text-accent">{engagement.index}</span>
-                  </div>
-
-                  <h3 className="display-xl mt-4 text-4xl lg:text-5xl">
+                  <h3 className="engagement-name display-xl mt-8 text-4xl lg:text-5xl">
                     {engagement.name}
                   </h3>
-                  <p className="measure mt-5 text-[0.975rem] leading-relaxed text-muted">
+
+                  <div className="engagement-rate mt-7 border-y border-line-soft py-6">
+                    <p className="engagement-price font-display text-[length:clamp(1.7rem,3vw,2.35rem)] leading-none text-bone">
+                      {engagement.price}
+                    </p>
+                    <p className="label mt-2 text-faint">{engagement.priceDetail}</p>
+                  </div>
+
+                  <p className="measure mt-7 text-[0.975rem] leading-relaxed text-muted">
                     {engagement.lede}
                   </p>
 
-                  <ul className="mt-8 grid gap-3 border-t border-line-soft pt-7 sm:grid-cols-2 lg:grid-cols-1">
+                  <ul className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                     {engagement.points.map((point) => (
                       <li
                         key={point}
@@ -371,6 +384,21 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
+
+                  <div className="mt-auto pt-9">
+                    <DesignLink
+                      to={`/contact?engagement=${engagement.key}`}
+                      className="engagement-action group flex min-h-12 items-center justify-between gap-4 border border-line px-5 py-3.5 text-bone"
+                    >
+                      <span className="label">{engagement.action}</span>
+                      <ArrowRight
+                        size={15}
+                        strokeWidth={1.5}
+                        aria-hidden
+                        className="transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </DesignLink>
+                  </div>
                 </div>
               </Reveal>
             ))}
@@ -418,13 +446,11 @@ export default function Home() {
                     Product Design and of User Experience at Klick.
                   </p>
                   <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                    A third-culture kid raised between Canada, the UAE and Egypt, which is
-                    where the habit of adapting quickly and solving from more than one
-                    angle comes from. Founder three times over, the first as a teenager in
-                    Dubai. I still write production front-end code and use human-directed
-                    agentic workflows across research, prototyping, implementation and
-                    quality assurance. That keeps the strategy honest about what can
-                    actually be built.
+                    Growing up across cultures shaped the habit of adapting quickly and
+                    solving from more than one angle. I still write production front-end
+                    code and use human-directed agentic workflows across research,
+                    prototyping, implementation and quality assurance. That keeps the
+                    strategy honest about what can actually be built.
                   </p>
                   <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
                     When delivery needs broader engineering or specialist expertise, I

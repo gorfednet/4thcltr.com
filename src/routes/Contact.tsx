@@ -1,5 +1,6 @@
 import { ArrowRight } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router'
 import DesignLink from '../components/DesignLink'
 import PageMeta from '../components/PageMeta'
 import { submitContactEnquiry } from '../config/contactForm'
@@ -7,6 +8,9 @@ import { organizationJsonLd, personJsonLd } from '../content/jsonLd'
 import { pageSeo } from '../content/seo'
 
 const enquiryReasons = [
+  'Focused day',
+  'One-to-four-week engagement',
+  'Scoped project or assembled team',
   'Hire Michael for a leadership role',
   'Contract or retained design leadership',
   'Build or strengthen a product or design team',
@@ -17,13 +21,21 @@ const enquiryReasons = [
   'Something else',
 ]
 
+const engagementReasons: Record<string, string> = {
+  day: 'Focused day',
+  week: 'One-to-four-week engagement',
+  project: 'Scoped project or assembled team',
+}
+
 export default function Contact() {
+  const [searchParams] = useSearchParams()
   const [honeypot, setHoneypot] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const submissionInFlight = useRef(false)
   const successRef = useRef<HTMLDivElement>(null)
+  const selectedReason = engagementReasons[searchParams.get('engagement') ?? ''] ?? ''
 
   useEffect(() => {
     if (submitted) successRef.current?.focus()
@@ -189,7 +201,12 @@ export default function Contact() {
 
                 <label className="grid gap-2">
                   <span className="label text-faint">Reason for getting in touch</span>
-                  <select className="form-field" name="reason" defaultValue="" required>
+                  <select
+                    className="form-field"
+                    name="reason"
+                    defaultValue={selectedReason}
+                    required
+                  >
                     <option value="" disabled>
                       Select the closest fit
                     </option>

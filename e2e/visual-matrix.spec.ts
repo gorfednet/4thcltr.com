@@ -2,25 +2,45 @@ import { expect, test } from '@playwright/test'
 import { navigationIds } from '../src/navigation'
 import { designRecipes } from '../src/themes'
 
-const visualViewports = [
+// Visual tests intentionally sample representative appearances. The exhaustive
+// recipe, viewport, accessibility, and geometry coverage lives in design-matrix.spec.ts.
+const navigationViewports = [
   { name: 'mobile', width: 375, height: 812 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'desktop-short', width: 1280, height: 760 },
   { name: 'desktop', width: 1280, height: 900 },
-  { name: 'desktop-wide', width: 1600, height: 1000 },
+] as const
+
+const contentViewports = [
+  { name: 'mobile', width: 375, height: 812 },
+  { name: 'desktop', width: 1280, height: 900 },
+] as const
+
+const fullPageViewports = [
+  ...contentViewports,
   { name: 'zoom-200', width: 640, height: 450 },
 ] as const
 
-const contactViewports = [
-  { name: 'mobile', width: 375, height: 812 },
-  { name: 'desktop', width: 1280, height: 900 },
-  { name: 'zoom-200', width: 640, height: 450 },
+const curatedRecipeIds = [
+  'noir',
+  'terminal',
+  'paper',
+  'startupblue',
+  'neonhype',
+  'pastelcard',
+  'broadsheet',
 ] as const
+const curatedRecipes = curatedRecipeIds.map(
+  (id) => designRecipes.find((recipe) => recipe.id === id)!,
+)
+
+const contactRecipeIds = ['noir', 'paper', 'startupblue', 'neonhype'] as const
+const contactRecipes = contactRecipeIds.map(
+  (id) => designRecipes.find((recipe) => recipe.id === id)!,
+)
 
 test.describe('navigation-focused visual matrix', () => {
   for (const navigationId of navigationIds) {
     const recipe = designRecipes.find((candidate) => candidate.navigationId === navigationId)!
-    for (const viewport of visualViewports) {
+    for (const viewport of navigationViewports) {
       test(`${navigationId} navigation at ${viewport.name}`, async ({ page }) => {
         await page.setViewportSize(viewport)
         await page.goto(`/?design=${recipe.id}`)
@@ -48,7 +68,7 @@ test.describe('navigation-focused visual matrix', () => {
 
 test.describe('responsive content focused visuals', () => {
   const recipe = designRecipes[0]
-  for (const viewport of visualViewports) {
+  for (const viewport of contentViewports) {
     test(`brands and career reflow at ${viewport.name}`, async ({ page }) => {
       await page.setViewportSize(viewport)
       await page.goto(`/?design=${recipe.id}`)
@@ -76,8 +96,8 @@ test.describe('responsive content focused visuals', () => {
 })
 
 test.describe('curated visual matrix', () => {
-  for (const recipe of designRecipes) {
-    for (const viewport of visualViewports) {
+  for (const recipe of curatedRecipes) {
+    for (const viewport of fullPageViewports) {
       test(`${recipe.id} full page at ${viewport.name}`, async ({ page }) => {
         test.slow()
         await page.setViewportSize(viewport)
@@ -107,8 +127,8 @@ test.describe('curated visual matrix', () => {
 })
 
 test.describe('contact visual matrix', () => {
-  for (const recipe of designRecipes) {
-    for (const viewport of contactViewports) {
+  for (const recipe of contactRecipes) {
+    for (const viewport of contentViewports) {
       test(`${recipe.id} contact page at ${viewport.name}`, async ({ page }) => {
         test.slow()
         await page.setViewportSize(viewport)

@@ -2,7 +2,7 @@
 
 ## Deploy script
 
-- **`deploy-to-smb.sh`** (run via `make deploy`) only syncs `dist/` to the SMB share. On the server the tree is often `/data/websites/*`; on macOS the same share is typically mounted as `/Volumes/data/websites/4thcltr.com`. It does not configure the web server or SSL.
+- **`deploy.sh`** (run via `make deploy`) syncs `dist/` to the NAS over SSH (`dev@gorfednas`). On the server the tree is `/data/websites/*`; over SSH the path is typically `/volume1/data/websites/4thcltr.com`. It does not configure the web server or SSL.
 
 ## SSL on the server
 

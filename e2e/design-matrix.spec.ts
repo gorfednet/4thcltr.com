@@ -893,6 +893,7 @@ test('interactive controls use a pointer cursor and the logo returns home', asyn
 })
 
 test('flow imagery is hidden on mobile for every design recipe', async ({ page }) => {
+  test.slow()
   await page.setViewportSize({ width: 375, height: 812 })
 
   for (const recipe of designRecipes) {
@@ -1069,7 +1070,16 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   await expect(form.getByLabel('Email')).toHaveAttribute('type', 'email')
   await expect(form.getByLabel('Organisation')).toBeVisible()
   await expect(form.getByLabel('Reason for getting in touch')).toHaveAttribute('required', '')
-  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(9)
+  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(12)
+  for (const reason of [
+    'Focused day',
+    'One-to-four-week engagement',
+    'Scoped project or assembled team',
+  ]) {
+    await expect(
+      form.getByLabel('Reason for getting in touch').locator('option', { hasText: reason }),
+    ).toHaveCount(1)
+  }
   await expect(
     form
       .getByLabel('Reason for getting in touch')
@@ -1284,6 +1294,26 @@ test('public positioning includes implementation and accountable delivery', asyn
   expect(structuredData).toContain('Agentic workflows')
 })
 
+test('brand story stays company-centered and defends human expression', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  const quote = page.locator('blockquote')
+  await expect(quote).toContainText('Humanity is not a template')
+  await expect(quote).toContainText('we design the human out of it')
+  await expect(
+    page.getByText('4th Culture is shaped by Michael’s third-culture experience').first(),
+  ).toBeVisible()
+
+  await page.goto('/manifesto')
+  const storyHeading = page.getByRole('heading', { name: 'A practice built between worlds.' })
+  const storySection = storyHeading.locator('xpath=ancestor::section[1]')
+  const storyText = await storySection.locator('p.text-lg').allTextContents()
+  expect(storyText.join(' ')).not.toMatch(/\b(?:I|we|our)\b/i)
+  await expect(storySection).toContainText('Michael’s third-culture experience')
+  await expect(storySection).not.toContainText('Canada, the UAE and Egypt')
+  await expect(page.getByText('Design is expression:', { exact: false })).toBeVisible()
+})
+
 test('keyboard and reduced-motion essentials remain usable', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.emulateMedia({ reducedMotion: 'reduce' })
@@ -1328,7 +1358,99 @@ test('hero copy, CTA, and visual do not overlap at desktop', async ({ page }) =>
   }
 })
 
+test('card metadata uses compact icon and label hierarchy', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 768, height: 1024 },
+    { width: 1280, height: 800 },
+  ]) {
+    await page.setViewportSize(viewport)
+
+    for (const cell of await page.locator('.stat-cell').all()) {
+      const [iconBox, copyBox] = await Promise.all([
+        cell.locator('.stat-icon svg').boundingBox(),
+        cell.locator('.stat-copy').boundingBox(),
+      ])
+      expect(iconBox).not.toBeNull()
+      expect(copyBox).not.toBeNull()
+      expect(iconBox!.width).toBeGreaterThanOrEqual(24)
+      expect(iconBox!.x + iconBox!.width).toBeLessThanOrEqual(copyBox!.x + 1)
+    }
+
+    const engagementCards = page.locator('.engagement-card')
+    await expect(engagementCards).toHaveCount(3)
+    for (let index = 0; index < 3; index += 1) {
+      const card = engagementCards.nth(index)
+      const [iconBox, metaBox, headingBox] = await Promise.all([
+        card.locator('svg').first().boundingBox(),
+        card.locator('.engagement-meta').boundingBox(),
+        card.locator('h3').boundingBox(),
+      ])
+      expect(iconBox).not.toBeNull()
+      expect(metaBox).not.toBeNull()
+      expect(headingBox).not.toBeNull()
+      expect(Math.abs(iconBox!.y - metaBox!.y)).toBeLessThanOrEqual(8)
+      expect(headingBox!.y).toBeGreaterThan(metaBox!.y + metaBox!.height)
+    }
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )
+    expect(overflow).toBeLessThanOrEqual(1)
+  }
+
+  await expect(page.locator('.engagement-meta')).toHaveText([
+    '01 / Single day',
+    '02 / One to four weeks',
+    '03 / Project length',
+  ])
+})
+
+test('engagement tiers show clear rates and carry intent into contact', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  const cards = page.locator('.engagement-card')
+  await expect(cards.locator('.engagement-price')).toHaveText([
+    '$1,500 CAD',
+    '$6,000 CAD',
+    'Based on scope',
+  ])
+  await expect(cards.locator('.engagement-rate .label')).toHaveText([
+    'per focused day',
+    'per week',
+    'a clear estimate follows discovery',
+  ])
+  await expect(cards.locator('.engagement-action')).toHaveText([
+    'Book the day',
+    'Start with a week',
+    'Discuss a project',
+  ])
+
+  for (const [key, reason] of [
+    ['day', 'Focused day'],
+    ['week', 'One-to-four-week engagement'],
+    ['project', 'Scoped project or assembled team'],
+  ] as const) {
+    const action = page.locator(`.engagement-action[href*="engagement=${key}"]`)
+    await expect(action).toHaveCount(1)
+    await expect(action).toHaveAttribute('href', new RegExp(`engagement=${key}`))
+
+    await page.goto(`/contact?design=${designRecipes[0].id}&engagement=${key}`)
+    await expect(page.getByLabel('Reason for getting in touch')).toHaveValue(reason)
+    await page.goBack()
+  }
+
+  await page.setViewportSize({ width: 320, height: 568 })
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  )
+  expect(overflow).toBeLessThanOrEqual(1)
+})
+
 test('hero stat cards separate from the body and use gutter spacing', async ({ page }) => {
+  test.slow()
   await page.setViewportSize({ width: 1280, height: 800 })
 
   for (const recipe of designRecipes) {
