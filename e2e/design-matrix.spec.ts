@@ -978,8 +978,12 @@ test('mobile tab navigation scrolls horizontally with card-backed links', async 
     }))
     expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth)
 
+    await page.waitForTimeout(100)
     const scrolled = await nav.evaluate((element) => {
-      element.scrollLeft = 48
+      element.scrollTo({
+        left: element.scrollWidth - element.clientWidth,
+        behavior: 'auto',
+      })
       return element.scrollLeft
     })
     expect(scrolled).toBeGreaterThan(0)
@@ -993,6 +997,69 @@ test('mobile tab navigation scrolls horizontally with card-backed links', async 
       expect(background).not.toMatch(/rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)/)
     }
   }
+})
+
+test('mobile tab navigation follows the current section and route', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 760 })
+  const tabsRecipes = designRecipes.filter((recipe) => recipe.mobileNavigationId === 'tabs')
+
+  const activeTabIsFullyVisible = async () =>
+    page
+      .locator('[data-mobile-navigation="tabs"] .primary-navigation')
+      .evaluate((navigation) => {
+        const activeTab = navigation.querySelector<HTMLElement>('[aria-current]')
+        if (!activeTab) return false
+        const navigationBox = navigation.getBoundingClientRect()
+        const tabBox = activeTab.getBoundingClientRect()
+        return (
+          tabBox.left >= navigationBox.left - 1 &&
+          tabBox.right <= navigationBox.right + 1
+        )
+      })
+
+  for (const recipe of tabsRecipes) {
+    await openRecipe(page, recipe.id)
+    const nav = page.locator('[data-mobile-navigation="tabs"] .primary-navigation')
+    const proofLink = nav.locator('a[href*="#proof"]')
+
+    await page.locator('#proof').scrollIntoViewIfNeeded()
+    await expect(proofLink).toHaveAttribute('aria-current', 'location')
+    await expect.poll(activeTabIsFullyVisible).toBe(true)
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+
+    await page.goto(`/contact?design=${recipe.id}`)
+    const contactLink = nav.getByRole('link', { name: 'Contact', exact: true })
+    await expect(contactLink).toHaveAttribute('aria-current', 'page')
+    await expect.poll(activeTabIsFullyVisible).toBe(true)
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+  }
+})
+
+test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 320, height: 760 })
+  const recipe = designRecipes.find(
+    (candidate) => candidate.mobileNavigationId === 'tabs',
+  )!
+
+  await page.goto(`/contact?design=${recipe.id}`)
+  const nav = page.locator('[data-mobile-navigation="tabs"] .primary-navigation')
+  const contactLink = nav.getByRole('link', { name: 'Contact', exact: true })
+
+  await expect(contactLink).toHaveAttribute('aria-current', 'page')
+  await expect.poll(() =>
+    nav.evaluate((navigation) => {
+      const navigationBox = navigation.getBoundingClientRect()
+      const tabBox = navigation
+        .querySelector<HTMLElement>('[aria-current]')!
+        .getBoundingClientRect()
+      return (
+        navigation.scrollLeft > 0 &&
+        tabBox.left >= navigationBox.left - 1 &&
+        tabBox.right <= navigationBox.right + 1
+      )
+    }),
+  ).toBe(true)
 })
 
 test('primary navigation includes Contact link to contact route', async ({ page }) => {

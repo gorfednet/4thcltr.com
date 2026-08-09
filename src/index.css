@@ -602,6 +602,7 @@ html[data-design-transitioning='true'] *::after {
     touch-action: pan-x;
     overscroll-behavior-x: contain;
     scroll-snap-type: x proximity;
+    scroll-padding-inline: 1.25rem;
     scrollbar-width: none;
   }
   [data-mobile-navigation='tabs'] .primary-navigation::-webkit-scrollbar { display: none; }
@@ -617,6 +618,8 @@ html[data-design-transitioning='true'] *::after {
   }
   [data-mobile-navigation='tabs'] .nav-link[aria-current='location'],
   [data-mobile-navigation='tabs'] .nav-link[aria-current='page'] {
+    position: relative;
+    z-index: 1;
     border-color: var(--color-accent);
     color: var(--color-bone);
   }
