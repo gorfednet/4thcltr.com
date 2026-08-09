@@ -10,6 +10,7 @@ import {
 import DesignLink from './DesignLink'
 import SectionLink from './SectionLink'
 import { studio } from '../content/site'
+import { useScrollSpy } from '../hooks/useScrollSpy'
 import { designAwarePath } from '../utils/designPath'
 
 function Wordmark({ onClick }: { onClick?: () => void }) {
@@ -53,9 +54,11 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
 function NavigationLinks({
   className,
   onNavigate,
+  activeSectionId,
 }: {
   className: string
   onNavigate?: () => void
+  activeSectionId: ReturnType<typeof useScrollSpy>
 }) {
   const location = useLocation()
   const content = (glyph: string, label: string) => (
@@ -71,7 +74,7 @@ function NavigationLinks({
         to="why"
         className={className}
         onNavigate={onNavigate}
-        current={location.pathname === '/' && location.hash === '#why'}
+        current={activeSectionId === 'why'}
       >
         {content('01', 'Manifesto')}
       </SectionLink>
@@ -79,7 +82,7 @@ function NavigationLinks({
         to="practice"
         className={className}
         onNavigate={onNavigate}
-        current={location.pathname === '/' && location.hash === '#practice'}
+        current={activeSectionId === 'practice'}
       >
         {content('02', 'Practice')}
       </SectionLink>
@@ -87,7 +90,7 @@ function NavigationLinks({
         to="engage"
         className={className}
         onNavigate={onNavigate}
-        current={location.pathname === '/' && location.hash === '#engage'}
+        current={activeSectionId === 'engage'}
       >
         {content('03', 'Engage')}
       </SectionLink>
@@ -95,7 +98,7 @@ function NavigationLinks({
         to="proof"
         className={className}
         onNavigate={onNavigate}
-        current={location.pathname === '/' && location.hash === '#proof'}
+        current={activeSectionId === 'proof'}
       >
         {content('04', 'Proof')}
       </SectionLink>
@@ -103,7 +106,11 @@ function NavigationLinks({
         to="/contact"
         className={`${className} nav-contact`}
         onClick={onNavigate}
-        aria-current={location.pathname === '/contact' ? 'page' : undefined}
+        aria-current={
+          location.pathname === '/contact' || activeSectionId === 'contact'
+            ? 'page'
+            : undefined
+        }
       >
         {content('05', 'Contact')}
       </DesignLink>
@@ -133,6 +140,7 @@ export default function Layout() {
     useTheme()
   const navigation = getNavigationConstruct(navigationId)
   const mobileMenuClosesAtTrigger = mobileMenuCloseAtTriggerIds.has(mobileNavigationId)
+  const activeSectionId = useScrollSpy()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -273,7 +281,7 @@ export default function Layout() {
         >
           <Wordmark onClick={() => setMenuOpen(false)} />
           <nav aria-label="Primary navigation" className="primary-navigation">
-            <NavigationLinks className={navLinkClass} />
+            <NavigationLinks className={navLinkClass} activeSectionId={activeSectionId} />
           </nav>
 
           <button
@@ -315,6 +323,7 @@ export default function Layout() {
                 <NavigationLinks
                   className="mobile-nav-link"
                   onNavigate={() => setMenuOpen(false)}
+                  activeSectionId={activeSectionId}
                 />
                 <button
                   type="button"

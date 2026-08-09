@@ -201,7 +201,7 @@ export type Award = {
 export const whySection = {
   title: 'What we stand for, before the résumé.',
   lede:
-    '4th Culture is an independent practice shaped by third-culture experience, the internet and human-directed agentic intelligence. The work exists to make products specific enough to belong to the people they serve.',
+    '4th Culture is an independent practice shaped by Michael’s third-culture experience, the internet and agentic intelligence. It exists to make technology more expressive, specific and recognisably human without surrendering judgment, and to build products specific enough to belong to the people they serve.',
   quote:
     'Humanity is not a template. Design is how our tools express who we are: our character, feeling and intent. When everything we make feels the same, we design the human out of it.',
   manifestoLinkLabel: 'Read the seven positions',
@@ -210,9 +210,7 @@ export const whySection = {
 export const proofSection = {
   title: 'The work, on the record.',
   lede:
-    'Selected outcomes across financial services, health and life sciences, civic technology, retail and mobility, with external sources that document them.',
-  intro:
-    'Purpose and method come first. These outcomes show what that commitment produced in market: work that shipped, found an audience and created value beyond the interface.',
+    'Purpose and method come first. Selected outcomes across financial services, health and life sciences, civic technology, retail and mobility show what that commitment produced in market: work that shipped, found an audience and created value beyond the interface, with external sources that document them.',
 } as const
 
 export const sectionHeads = {

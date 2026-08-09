@@ -1603,6 +1603,49 @@ test('purpose sections precede proof in document order', async ({ page }) => {
   expect(order!.practiceBeforeProof).toBe(true)
 })
 
+test('section head lede stacks under title in editorial column', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await openRecipe(page, designRecipes[0].id)
+  await page.locator('#engage').scrollIntoViewIfNeeded()
+
+  const alignment = await page.evaluate(() => {
+    const title = document.querySelector('#engage .section-head-title')
+    const lede = document.querySelector('#engage .section-head-lede')
+    if (!title || !lede) return null
+    const titleBox = title.getBoundingClientRect()
+    const ledeBox = lede.getBoundingClientRect()
+    return {
+      leftDelta: Math.abs(ledeBox.left - titleBox.left),
+      ledeBelowTitle: ledeBox.top >= titleBox.top,
+    }
+  })
+
+  expect(alignment).not.toBeNull()
+  expect(alignment!.leftDelta).toBeLessThanOrEqual(4)
+  expect(alignment!.ledeBelowTitle).toBe(true)
+})
+
+test('scroll spy highlights practice nav when practice is in view', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await openRecipe(page, designRecipes[0].id)
+  await page.locator('#practice').scrollIntoViewIfNeeded()
+  await page.waitForTimeout(100)
+
+  const practiceNav = page.locator('.primary-navigation a[href*="#practice"]')
+  await expect(practiceNav).toHaveAttribute('aria-current', 'location')
+})
+
+test('scroll motion is disabled when reduced motion is preferred', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await openRecipe(page, designRecipes[0].id)
+  await page.locator('#why').scrollIntoViewIfNeeded()
+
+  const motionY = await page.locator('.why-quote').evaluate((el) =>
+    getComputedStyle(el).getPropertyValue('--motion-y').trim(),
+  )
+  expect(motionY === '' || motionY === '0px').toBe(true)
+})
+
 test('proof section head separates from outcome rows', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await openRecipe(page, designRecipes[0].id)
