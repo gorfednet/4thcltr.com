@@ -1027,7 +1027,7 @@ test('mobile tab navigation follows the current section and route', async ({ pag
     await expect.poll(activeTabIsFullyVisible).toBe(true)
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
 
-    await page.goto(`/contact?design=${recipe.id}`)
+    await page.goto(`/contact/?design=${recipe.id}`)
     const contactLink = nav.getByRole('link', { name: 'Contact', exact: true })
     await expect(contactLink).toHaveAttribute('aria-current', 'page')
     await expect.poll(activeTabIsFullyVisible).toBe(true)
@@ -1042,7 +1042,7 @@ test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
     (candidate) => candidate.mobileNavigationId === 'tabs',
   )!
 
-  await page.goto(`/contact?design=${recipe.id}`)
+  await page.goto(`/contact/?design=${recipe.id}`)
   const nav = page.locator('[data-mobile-navigation="tabs"] .primary-navigation')
   const contactLink = nav.getByRole('link', { name: 'Contact', exact: true })
 

@@ -61,6 +61,7 @@ function NavigationLinks({
   activeSectionId: ReturnType<typeof useScrollSpy>
 }) {
   const location = useLocation()
+  const isContactPage = /^\/contact\/?$/.test(location.pathname)
   const content = (glyph: string, label: string) => (
     <>
       <span className="nav-glyph" aria-hidden>{glyph}</span>
@@ -107,7 +108,7 @@ function NavigationLinks({
         className={`${className} nav-contact`}
         onClick={onNavigate}
         aria-current={
-          location.pathname === '/contact' || activeSectionId === 'contact'
+          isContactPage || activeSectionId === 'contact'
             ? 'page'
             : undefined
         }
