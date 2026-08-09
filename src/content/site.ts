@@ -108,7 +108,7 @@ export const tenets: Tenet[] = [
     title: 'Proof over posture.',
     body: [
       'More than 25 years of shipped work includes two patent filings, a brokerage ranked best in Canada three years running and a health-transport product acquired for $57.5M. The public record also includes twelve honours and launched apps for Chapters Indigo, Land Rover and C Spire.',
-      'The proof section links the claims to their sources.',
+      'The standard remains the same: make work that carries its weight in the market.',
     ],
   },
   {
@@ -184,12 +184,34 @@ export const facets: Facet[] = [
   },
 ]
 
+export type Citation = {
+  label: string
+  source: string
+  href?: string
+}
+
+export type Award = {
+  title: string
+  detail: string
+  source: string
+  year: string
+  href?: string
+}
+
+export const proofSection = {
+  title: 'A history of firsts, honours and repeat wins.',
+  lede:
+    'Across regulated industries and public launches, the work has led to acquisitions, repeat brokerage wins, patented products and lasting commercial value.',
+  intro:
+    'The settings changed; the standard did not. Build something original, make it work in the real world and leave the business stronger than you found it.',
+} as const
+
 export type Outcome = {
   client: string
   sector: string
   headline: string
   detail: string
-  citations: { label: string; source: string }[]
+  citations: Citation[]
 }
 
 export const outcomes: Outcome[] = [
@@ -198,10 +220,28 @@ export const outcomes: Outcome[] = [
     sector: 'Financial services',
     headline: 'Best Canadian Brokerage, three years running.',
     detail:
-      'Eight years inside the Human-Centered Design Practice of TD Invent, latterly as a people manager in the Wealth pillar. Work spanned WebBroker, EasyWeb, TD Asset Management, Global Investment Solutions and Business Connect, across retail through institutional investors. Two related patents filed.',
+      'Eight years inside the Human-Centered Design Practice of TD Invent, latterly as a people manager in the Wealth pillar. Work spanned WebBroker, EasyWeb, TD Asset Management, Global Investment Solutions and Business Connect, across retail through institutional investors. Two related patents filed. The three-year run established a repeatable standard for brokerage work in a tightly regulated category.',
     citations: [
-      { label: 'Best Canadian Brokerage 2023, 2024, 2025', source: 'The Globe and Mail' },
-      { label: 'Investor sentiment index launch, 2021', source: 'Investment Executive' },
+      {
+        label: 'Best Canadian Brokerage 2025',
+        source: 'The Globe and Mail',
+        href: 'https://www.theglobeandmail.com/investing/personal-finance/article-the-2025-globe-and-mail-digital-brokerage-ranking-improvements-all/',
+      },
+      {
+        label: 'Best Canadian Brokerage 2024',
+        source: 'The Globe and Mail',
+        href: 'https://www.theglobeandmail.com/investing/article-the-2024-globe-and-mail-digital-brokerage-ranking-who-rules-and-whos/',
+      },
+      {
+        label: 'Best Canadian Brokerage 2023',
+        source: 'The Globe and Mail',
+        href: 'https://www.theglobeandmail.com/investing/article-canadas-top-digital-broker-is-td-direct-investing-with-an-assist-from/',
+      },
+      {
+        label: 'Investor sentiment index launch, 2021',
+        source: 'Investment Executive',
+        href: 'https://www.investmentexecutive.com/news/products/td-launches-new-tool-to-help-self-directed-investors-gauge-sentiment/',
+      },
     ],
   },
   {
@@ -209,10 +249,23 @@ export const outcomes: Outcome[] = [
     sector: 'Health and life sciences',
     headline: 'Non-emergency medical transport, acquired for $57.5M.',
     detail:
-      'Directed UX and UI on the platform pairing hospitals with Uber and later Lyft to move patients across North America. Raised $10.5M in Series A, reached 1,500 health facilities, and was acquired by LogistiCare in September 2018.',
+      'Directed UX and UI on the platform pairing hospitals with Uber and later Lyft to move patients across North America. Raised $10.5M in Series A, reached 1,500 health facilities, and was acquired by LogistiCare in September 2018. The acquisition turned a purpose-led transportation platform into a significant commercial outcome.',
     citations: [
-      { label: 'Acquisition by LogistiCare, 2018', source: 'MobiHealthNews' },
-      { label: 'Uber and Lyft partnerships, 2016 to 2017', source: 'Xconomy / MedCityNews' },
+      {
+        label: 'Acquisition by LogistiCare, 2018',
+        source: 'MobiHealthNews',
+        href: 'https://www.mobihealthnews.com/content/circulation-acquired-nemt-broker-logisticare-46-million',
+      },
+      {
+        label: 'Uber partnership, 2016',
+        source: 'Xconomy',
+        href: 'https://www.xconomy.com/boston/2016/09/27/circulation-uber-team-up-to-get-patients-to-doctors-appointments/',
+      },
+      {
+        label: 'Lyft partnership, 2017',
+        source: 'MedCityNews',
+        href: 'https://medcitynews.com/2017/12/lyft-and-non-emergency-medical-transportation/',
+      },
     ],
   },
   {
@@ -220,18 +273,42 @@ export const outcomes: Outcome[] = [
     sector: 'Life sciences',
     headline: 'Klick’s flagship brand management platform.',
     detail:
-      'Directed the UX and UI teams on an omni-channel life sciences platform for marketing automation and rapid commercialisation, alongside client work for Abbott, Allergan, Takeda and the American Medical Association.',
-    citations: [{ label: 'Director, Product Design, 2017 to 2018', source: 'Klick Health' }],
+      'Directed the UX and UI teams on an omni-channel life sciences platform for marketing automation and rapid commercialisation, alongside client work for Abbott, Allergan, Takeda and the American Medical Association. It became the flagship expression of Klick’s product thinking and digital delivery capabilities.',
+    citations: [
+      {
+        label: 'Director, Product Design, 2017 to 2018',
+        source: 'Medical Marketing and Media',
+        href: 'https://www.mmm-online.com/agencies/klick-health-2017/article/662457/',
+      },
+    ],
   },
   {
     client: 'TowIt',
     sector: 'Public information systems',
     headline: 'A civic app that earned its own Wikipedia entry.',
     detail:
-      'Co-founded and led as President an anti-congestion service letting citizens report parking violations. Named one of the 12 best apps made in Canada that year, and covered from the Toronto Star to Fast Company.',
+      'Co-founded and led as President an anti-congestion service letting citizens report parking violations. Named one of the 12 best apps made in Canada that year, and covered from the Toronto Star to Fast Company. The app translated a common civic frustration into a recognised public-service product.',
     citations: [
-      { label: 'Coverage, 2015', source: 'Toronto Star / Fast Company / City Lab' },
-      { label: '12 Best Apps Made in Canada, 2015', source: 'Techvibes' },
+      {
+        label: 'Towit pitches a digital solution to illegal parking, 2015',
+        source: 'Toronto Star',
+        href: 'https://www.thestar.com/business/2015/01/19/towit-pitches-a-digital-solution-to-illegal-parking.html',
+      },
+      {
+        label: 'Report cars parked in bike lanes, 2015',
+        source: 'Fast Company',
+        href: 'https://www.fastcompany.com/3045965/this-new-app-lets-you-report-cars-parked-in-bike-lanes-so-they-can-be-towed-like-they-deserv',
+      },
+      {
+        label: 'Remove badly parked cars with TowIt, 2015',
+        source: 'City Lab',
+        href: 'https://www.citylab.com/life/2015/05/remove-badly-parked-cars-with-the-app-tow-it/394043/',
+      },
+      {
+        label: '12 Best Apps Made in Canada, 2015',
+        source: 'Techvibes',
+        href: 'https://techvibes.com/2015/07/10/best-apps-made-in-canada-2015-07-10',
+      },
     ],
   },
   {
@@ -239,9 +316,18 @@ export const outcomes: Outcome[] = [
     sector: 'Retail',
     headline: 'Mobile and in-store purchasing, launched on both platforms.',
     detail:
-      'iOS and Android applications bringing in-store purchasing and Passbook support to Canada’s largest book retailer, built while establishing the product design team at BNOTIONS.',
+      'iOS and Android applications bringing in-store purchasing and Passbook support to Canada’s largest book retailer, built while establishing the product design team at BNOTIONS. The experience brought mobile purchasing into stores across both major smartphone platforms.',
     citations: [
-      { label: 'Launch coverage, 2013', source: 'The Next Web / BetaKit' },
+      {
+        label: 'Indigo launches mobile apps for in-store purchasing, 2013',
+        source: 'The Next Web',
+        href: 'https://thenextweb.com/news/canadas-indigo-books-music-launches-android-ios-app-mobile-store-purchasing',
+      },
+      {
+        label: 'Indigo launches new app for iOS and Android, 2013',
+        source: 'BetaKit',
+        href: 'https://betakit.com/indigo-launches-new-app-for-ios-and-android/',
+      },
       { label: "North American Editors' Choice, 2013", source: 'Apple iTunes' },
     ],
   },
@@ -250,9 +336,13 @@ export const outcomes: Outcome[] = [
     sector: 'Mobility and automotive',
     headline: 'The marque’s first exploration driving app.',
     detail:
-      'The Trail Less Traveled, a driving companion built for the launch of the Range Rover L405, extending the brand experience beyond the vehicle. Named Mobile of the Day by FWA.',
+      'The Trail Less Traveled, a driving companion built for the launch of the Range Rover L405, extending the brand experience beyond the vehicle. Named Mobile of the Day by FWA. The concept connected product capability, exploration and mobile utility in one award-winning experience.',
     citations: [
-      { label: 'Range Rover launch, 2013', source: 'Land Rover Media Newsroom' },
+      {
+        label: 'Range Rover exploration driving app launch, 2013',
+        source: 'Land Rover Media Newsroom',
+        href: 'https://media.landrover.com/en-us/news/2013/05/land-rover-releases-first-ever-exploration-driving-app-all-new-range-rover',
+      },
       { label: 'Mobile of the Day, 2013', source: 'FWA' },
     ],
   },
@@ -347,24 +437,27 @@ export const clients = [
   'Youthography',
 ]
 
-export const awards = [
+export const awards: Award[] = [
   {
     title: 'Best Canadian Brokerage',
     detail: 'TD Direct Investing',
     source: 'The Globe and Mail',
     year: '2025',
+    href: 'https://www.theglobeandmail.com/investing/personal-finance/article-the-2025-globe-and-mail-digital-brokerage-ranking-improvements-all/',
   },
   {
     title: 'Best Canadian Brokerage',
     detail: 'TD Direct Investing',
     source: 'The Globe and Mail',
     year: '2024',
+    href: 'https://www.theglobeandmail.com/investing/article-the-2024-globe-and-mail-digital-brokerage-ranking-who-rules-and-whos/',
   },
   {
     title: 'Best Canadian Brokerage',
     detail: 'TD Direct Investing',
     source: 'The Globe and Mail',
     year: '2023',
+    href: 'https://www.theglobeandmail.com/investing/article-canadas-top-digital-broker-is-td-direct-investing-with-an-assist-from/',
   },
   {
     title: 'Featured on Product Hunt',
@@ -389,6 +482,7 @@ export const awards = [
     detail: 'TowIt',
     source: 'Techvibes',
     year: '2015',
+    href: 'https://techvibes.com/2015/07/10/best-apps-made-in-canada-2015-07-10',
   },
   {
     title: 'Finalist, Wildcard category',

@@ -29,6 +29,7 @@ import {
   clients,
   engagements,
   outcomes,
+  proofSection,
   sectors,
   speaking,
   studio,
@@ -238,12 +239,18 @@ export default function Home() {
           <Reveal>
             <SectionHead
               index="02 / Proof"
-              title="A record you can look up."
-              lede="Regulated industries, public launches, measured outcomes. Every claim below has a citation attached to it."
+              title={proofSection.title}
+              lede={proofSection.lede}
             />
           </Reveal>
 
-          <div className="section-content mt-16 lg:mt-24">
+          <Reveal>
+            <p className="measure mt-10 text-[1.0625rem] leading-[1.75] text-muted lg:mt-12 lg:max-w-[52ch]">
+              {proofSection.intro}
+            </p>
+          </Reveal>
+
+          <div className="section-content mt-16 lg:mt-20">
             {outcomes.map((outcome, index) => (
               <Reveal key={outcome.client} delay={index * 60}>
                 <article className="proof-row grid-12 group border-t border-line py-10 lg:py-14">
@@ -268,10 +275,28 @@ export default function Home() {
                   <ul className="grid gap-3 sm:grid-cols-2 md:col-span-9 md:col-start-4 lg:col-span-4 lg:col-start-9 lg:grid-cols-1">
                     {outcome.citations.map((citation) => (
                       <li key={citation.label} className="border-l border-line-soft pl-4">
-                        <p className="text-sm leading-snug text-balance text-bone">
-                          {citation.label}
-                        </p>
-                        <p className="label mt-1.5 text-faint">{citation.source}</p>
+                        {citation.href ? (
+                          <a
+                            href={citation.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="group block transition-colors duration-300"
+                          >
+                            <p className="text-sm leading-snug text-balance text-bone transition-colors duration-300 group-hover:text-accent">
+                              {citation.label}
+                            </p>
+                            <p className="label mt-1.5 text-faint transition-colors duration-300 group-hover:text-accent">
+                              {citation.source}
+                            </p>
+                          </a>
+                        ) : (
+                          <>
+                            <p className="text-sm leading-snug text-balance text-bone">
+                              {citation.label}
+                            </p>
+                            <p className="label mt-1.5 text-faint">{citation.source}</p>
+                          </>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -511,9 +536,20 @@ export default function Home() {
                       >
                         <div className="min-w-0">
                           <p className="text-sm text-balance text-bone">{award.title}</p>
-                          <p className="label mt-1.5 text-faint">
-                            {award.source} / {award.detail}
-                          </p>
+                          {award.href ? (
+                            <a
+                              href={award.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="label mt-1.5 text-faint transition-colors duration-300 hover:text-accent"
+                            >
+                              {award.source} / {award.detail}
+                            </a>
+                          ) : (
+                            <p className="label mt-1.5 text-faint">
+                              {award.source} / {award.detail}
+                            </p>
+                          )}
                         </div>
                         <span className="label text-faint sm:text-right">{award.year}</span>
                       </li>
