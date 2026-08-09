@@ -123,6 +123,7 @@ export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const frameRef = useRef<HTMLDivElement>(null)
   const headerInnerRef = useRef<HTMLDivElement>(null)
+  const primaryNavigationRef = useRef<HTMLElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
@@ -141,6 +142,62 @@ export default function Layout() {
   const navigation = getNavigationConstruct(navigationId)
   const mobileMenuClosesAtTrigger = mobileMenuCloseAtTriggerIds.has(mobileNavigationId)
   const activeSectionId = useScrollSpy()
+
+  useEffect(() => {
+    if (mobileNavigationId !== 'tabs') return
+
+    const navigationElement = primaryNavigationRef.current
+    if (!navigationElement) return
+
+    let frame = 0
+    let active = true
+
+    const centerActiveTab = () => {
+      frame = 0
+      if (!active || !window.matchMedia('(max-width: 1023px)').matches) return
+
+      const activeTab =
+        navigationElement.querySelector<HTMLElement>('[aria-current]')
+      if (!activeTab) return
+
+      const targetLeft =
+        activeTab.offsetLeft -
+        (navigationElement.clientWidth - activeTab.offsetWidth) / 2
+      const maxLeft =
+        navigationElement.scrollWidth - navigationElement.clientWidth
+      const left = Math.max(0, Math.min(targetLeft, maxLeft))
+
+      if (Math.abs(navigationElement.scrollLeft - left) < 1) return
+
+      navigationElement.scrollTo({
+        left,
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'auto'
+          : 'smooth',
+      })
+    }
+
+    const scheduleCenter = () => {
+      if (!active) return
+      if (frame) cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(centerActiveTab)
+    }
+
+    scheduleCenter()
+    window.addEventListener('resize', scheduleCenter, { passive: true })
+    document.fonts.ready.then(scheduleCenter)
+
+    return () => {
+      active = false
+      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('resize', scheduleCenter)
+    }
+  }, [
+    activeSectionId,
+    location.pathname,
+    mobileNavigationId,
+    recipe.id,
+  ])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -280,7 +337,11 @@ export default function Layout() {
           className="site-header-inner shell flex items-center justify-between py-5"
         >
           <Wordmark onClick={() => setMenuOpen(false)} />
-          <nav aria-label="Primary navigation" className="primary-navigation">
+          <nav
+            ref={primaryNavigationRef}
+            aria-label="Primary navigation"
+            className="primary-navigation"
+          >
             <NavigationLinks className={navLinkClass} activeSectionId={activeSectionId} />
           </nav>
 
