@@ -230,7 +230,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 text-left disabled:opacity-60"
+                  className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 text-left disabled:cursor-not-allowed disabled:pointer-events-none disabled:bg-accent-deep disabled:border-accent-deep"
                 >
                   <span className="label">{submitting ? 'Sending...' : 'Send enquiry'}</span>
                   <ArrowRight

@@ -358,7 +358,7 @@ html[data-design-transitioning='true'] *::after {
   .engagement-action:focus-visible {
     border-color: var(--color-accent);
     background: var(--color-accent);
-    color: var(--color-ground);
+    color: var(--color-on-accent);
   }
   @media (min-width: 1024px) {
     .engagement-name { min-height: 2.2em; }
@@ -1138,6 +1138,18 @@ html[data-design-transitioning='true'] *::after {
 .hero-lede,
 .hero-cta {
   margin-top: clamp(0.75rem, 2vw, 1rem) !important;
+}
+
+.hero-cta-button:hover,
+.hero-cta-button[data-active='true'] {
+  color: var(--color-on-accent);
+}
+
+.hero-cta-button:hover .hero-cta-label,
+.hero-cta-button[data-active='true'] .hero-cta-label,
+.hero-cta-button:hover .hero-cta-icon,
+.hero-cta-button[data-active='true'] .hero-cta-icon {
+  color: var(--color-on-accent) !important;
 }
 
 .hero-stats {
