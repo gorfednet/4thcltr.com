@@ -581,7 +581,7 @@ export const career: CareerEntry[] = [
       { title: 'Senior Designer', period: '2006 to 2007' },
       { title: 'Designer', period: '2005 to 2006' },
     ],
-    note: 'Hired while studying at Toronto Metropolitan University. Moved the shop to pure CSS.',
+    note: 'Hired while studying at Toronto Metropolitan University. Agency bootcamp.',
   },
   {
     company: 'Boardwise',
