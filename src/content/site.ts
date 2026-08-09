@@ -26,7 +26,7 @@ export const brandStory = {
       index: '01',
       name: 'Lived culture',
       detail:
-        '4th Culture is shaped by Michael’s third-culture experience and the habit of seeing from more than one point of view.',
+        '4th Culture is shaped by Michael’s third-culture experience growing up abroad and by the necessity of seeing from more than one point of view.',
     },
     {
       index: '02',
@@ -47,7 +47,7 @@ export const brandStory = {
       'A deliberate practice where cultural fluency, human character and computational capability meet in products that do not feel interchangeable.',
   },
   manifesto: [
-    '4th Culture is shaped by Michael’s third-culture experience growing up across cultures. Long before design became the work, translation became the habit: reading context, moving between systems and resisting the idea that one inherited baseline must be the only correct one.',
+    '4th Culture is shaped by Michael’s third-culture experience across Canada, the UAE and Egypt. Long before design became the work, translation became the habit: reading context, moving between systems and resisting the idea that one inherited baseline must be the only correct one.',
     'The practice was also formed by the internet, a cultural system where language, behaviour and belonging are constantly remade. It is now crossing another boundary as agents evaluate options, generate media, operate workflows and transact behind the interface.',
     'Fourth Culture is not used here as a fixed academic category. It names a deliberate shared space: neither one home culture nor a statistical machine average, but a place where cultural fluency, human character and computational capability can make something specific together.',
     'The promise is to use advanced tools without handing over judgment; make people, context and consequences visible; and build products expressive enough to belong to those they serve rather than flattening them into the same experience.',

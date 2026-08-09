@@ -97,7 +97,7 @@ export default function Home() {
                 ? `hero-copy flex flex-col justify-center lg:w-full lg:py-2${
                     hero === 'stacked-center' ? ' items-center text-center' : ''
                   }`
-                : 'hero-copy flex flex-col justify-center lg:col-span-7 lg:py-2'
+                : 'hero-copy flex flex-col justify-center lg:col-span-8 lg:py-2'
             }
           >
             <div className="hero-status flex items-center gap-3">
@@ -109,9 +109,10 @@ export default function Home() {
             </div>
 
             <h1 className="display-xl hero-title mt-3.5 lg:mt-4">
-              Everything feels <span className="italic text-accent">the same.</span>
-              <br />
-              Your product doesn't have to.
+              <span className="hero-title-line">
+                Everything feels <span className="italic text-accent">the same.</span>
+              </span>
+              <span className="hero-title-line">Your product doesn't have to.</span>
             </h1>
 
             <div className="hero-lede mt-3.5 lg:mt-4">
@@ -132,7 +133,7 @@ export default function Home() {
                 ? hero === 'stacked-flush'
                   ? 'hero-visual relative hidden shrink-0 items-center justify-center overflow-hidden lg:order-first lg:flex lg:max-h-[min(180px,22vh)] lg:w-full lg:py-2'
                   : 'hero-visual relative hidden shrink-0 items-center justify-center self-center overflow-hidden lg:flex lg:max-h-[min(200px,24vh)] lg:max-w-[min(48rem,100%)] lg:w-full lg:py-2'
-                : 'hero-visual relative hidden items-center justify-center overflow-hidden lg:col-span-5 lg:flex lg:self-stretch lg:py-2'
+                : 'hero-visual relative hidden items-center justify-center overflow-hidden lg:col-span-4 lg:flex lg:self-stretch lg:py-2'
             }
           >
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-transparent to-ground/60" />

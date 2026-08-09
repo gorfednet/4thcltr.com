@@ -866,6 +866,48 @@ test('practice tabs signal hover without moving the layout', async ({ page }) =>
   }
 })
 
+test('practice becomes a single-open accordion on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+
+  for (const recipe of [
+    designRecipes[0],
+    designRecipes[Math.floor(designRecipes.length / 2)],
+    designRecipes.at(-1)!,
+  ]) {
+    await openRecipe(page, recipe.id)
+
+    const practice = page.locator('#practice')
+    const first = practice.getByRole('button', { name: 'Executive design leadership' })
+    const second = practice.getByRole('button', { name: 'Product & experience strategy' })
+
+    await expect(practice.getByRole('tab')).toHaveCount(0)
+    await expect(first).toHaveAttribute('aria-expanded', 'true')
+    await expect(second).toHaveAttribute('aria-expanded', 'false')
+    await expect(practice.getByRole('region')).toHaveCount(1)
+    await expect(practice.getByRole('region')).toContainText(
+      'Design leadership for the decisions that connect company strategy to shipped work',
+    )
+
+    await second.click()
+    await expect(first).toHaveAttribute('aria-expanded', 'false')
+    await expect(second).toHaveAttribute('aria-expanded', 'true')
+    await expect(practice.getByRole('region')).toHaveCount(1)
+    await expect(practice.getByRole('region')).toContainText(
+      'Clear product choices start with a precise account of the opportunity',
+    )
+    expect(
+      await second.evaluate(
+        (button) => button.parentElement?.querySelector('[role="region"]') !== null,
+      ),
+    ).toBe(true)
+
+    await second.press('ArrowDown')
+    await expect(
+      practice.getByRole('button', { name: 'Research & evidence' }),
+    ).toHaveAttribute('aria-expanded', 'true')
+  }
+})
+
 test('interactive controls use a pointer cursor and the logo returns home', async ({ page }) => {
   const recipe = designRecipes[0]
   await page.goto(`/contact?design=${recipe.id}`)
@@ -1301,7 +1343,10 @@ test('brand story stays company-centered and defends human expression', async ({
   await expect(quote).toContainText('Humanity is not a template')
   await expect(quote).toContainText('we design the human out of it')
   await expect(
-    page.getByText('4th Culture is shaped by Michael’s third-culture experience').first(),
+    page.getByText(
+      '4th Culture is shaped by Michael’s third-culture experience growing up abroad and by the necessity of seeing from more than one point of view.',
+      { exact: true },
+    ),
   ).toBeVisible()
 
   await page.goto('/manifesto')
@@ -1310,7 +1355,7 @@ test('brand story stays company-centered and defends human expression', async ({
   const storyText = await storySection.locator('p.text-lg').allTextContents()
   expect(storyText.join(' ')).not.toMatch(/\b(?:I|we|our)\b/i)
   await expect(storySection).toContainText('Michael’s third-culture experience')
-  await expect(storySection).not.toContainText('Canada, the UAE and Egypt')
+  await expect(storySection).toContainText('Canada, the UAE and Egypt')
   await expect(page.getByText('Design is expression:', { exact: false })).toBeVisible()
 })
 
@@ -1344,6 +1389,38 @@ test('hero copy, CTA, and visual do not overlap at desktop', async ({ page }) =>
 
     if (titleBox && ctaBox) {
       expect(titleBox.y + titleBox.height).toBeLessThanOrEqual(ctaBox.y + 1)
+    }
+
+    const titleLayout = await page.locator('.hero-title').evaluate((title) => {
+      const titleStyle = getComputedStyle(title)
+      const titleRect = title.getBoundingClientRect()
+      const copyRect = title.closest('.hero-copy')!.getBoundingClientRect()
+      const lineHeight = Number.parseFloat(titleStyle.lineHeight)
+      const lines = [...title.querySelectorAll<HTMLElement>('.hero-title-line')].map(
+        (line) => {
+          const rect = line.getBoundingClientRect()
+          return {
+            left: rect.left,
+            right: rect.right,
+            scrollWidth: line.scrollWidth,
+            clientWidth: line.clientWidth,
+          }
+        },
+      )
+
+      return {
+        visualLineCount: titleRect.height / lineHeight,
+        lines,
+        copyLeft: copyRect.left,
+        copyRight: copyRect.right,
+      }
+    })
+    expect(titleLayout.visualLineCount).toBeLessThanOrEqual(2.1)
+    expect(titleLayout.lines).toHaveLength(2)
+    for (const line of titleLayout.lines) {
+      expect(line.left).toBeGreaterThanOrEqual(titleLayout.copyLeft - 1)
+      expect(line.right).toBeLessThanOrEqual(titleLayout.copyRight + 1)
+      expect(line.scrollWidth).toBeLessThanOrEqual(line.clientWidth + 1)
     }
 
     const visual = page.locator('.hero-visual')
