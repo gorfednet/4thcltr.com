@@ -266,6 +266,21 @@ export const outcomes: Outcome[] = [
         source: 'MedCityNews',
         href: 'https://medcitynews.com/2017/12/lyft-and-non-emergency-medical-transportation/',
       },
+      {
+        label: 'Transportation platform across 1,500 health facilities, 2018',
+        source: 'BusinessWire',
+        href: 'https://www.businesswire.com/news/home/20180227005360/en/Circulation-Providing-Full-Suite-Transportation-1500-Health',
+      },
+      {
+        label: 'Changing non-emergency medical transportation, 2017',
+        source: 'StateScoop',
+        href: 'https://statescoop.com/how-a-boston-based-startup-is-changing-non-emergency-medical-transportation',
+      },
+      {
+        label: '$10.5M Series A for medical transport software, 2017',
+        source: 'Xconomy',
+        href: 'https://www.xconomy.com/boston/2017/07/25/investors-pump-10-5m-into-circulation-for-medical-transport-software/',
+      },
     ],
   },
   {
@@ -309,6 +324,21 @@ export const outcomes: Outcome[] = [
         source: 'Techvibes',
         href: 'https://techvibes.com/2015/07/10/best-apps-made-in-canada-2015-07-10',
       },
+      {
+        label: 'Wikipedia entry',
+        source: 'Wikipedia',
+        href: 'https://en.wikipedia.org/wiki/TowIt',
+      },
+      {
+        label: 'Report parking violations from your phone, 2015',
+        source: 'MobileSyrup',
+        href: 'https://mobilesyrup.com/2015/01/27/towit-helps-torontonians-report-parking-violations-from-their-phone/',
+      },
+      {
+        label: 'Public help catch parking violators in the act, 2015',
+        source: 'Global News',
+        href: 'https://globalnews.ca/news/1964509/toronto-based-app-lets-public-help-catch-parking-violators-in-the-act/',
+      },
     ],
   },
   {
@@ -328,6 +358,11 @@ export const outcomes: Outcome[] = [
         source: 'BetaKit',
         href: 'https://betakit.com/indigo-launches-new-app-for-ios-and-android/',
       },
+      {
+        label: 'Indigo deepens in-store experience, 2013',
+        source: 'Strategy Online',
+        href: 'https://strategyonline.ca/2013/11/11/indigo-deepens-in-store-experience/',
+      },
       { label: "North American Editors' Choice, 2013", source: 'Apple iTunes' },
     ],
   },
@@ -342,6 +377,11 @@ export const outcomes: Outcome[] = [
         label: 'Range Rover exploration driving app launch, 2013',
         source: 'Land Rover Media Newsroom',
         href: 'https://media.landrover.com/en-us/news/2013/05/land-rover-releases-first-ever-exploration-driving-app-all-new-range-rover',
+      },
+      {
+        label: 'Trail Less Traveled iOS app, 2013',
+        source: 'Motor Authority',
+        href: 'https://www.motorauthority.com/news/1083908_land-rover-range-rover-gets-frostian-trail-less-traveled-ios-app',
       },
       { label: 'Mobile of the Day, 2013', source: 'FWA' },
     ],
@@ -470,12 +510,14 @@ export const awards: Award[] = [
     detail: 'TowIt',
     source: 'Planetizen',
     year: '2016',
+    href: 'https://www.planetizen.com/blogs/82996-best-planning-apps-2016',
   },
   {
     title: '5 Toronto Apps You Should Be Using',
     detail: 'TowIt',
     source: 'Indie88',
     year: '2015',
+    href: 'https://indie88.com/5-toronto-apps-you-should-be-using/',
   },
   {
     title: '12 Best Apps Made in Canada',
