@@ -40,6 +40,7 @@ import {
   supplementalAwards,
   supplementalAwardsHeading,
   whoBio,
+  whySection,
 } from '../content/site'
 
 function SectionHead({
@@ -179,74 +180,69 @@ export default function Home() {
           </div>
       </section>
 
-      <section id="proof" className="section-anchor rule-top scroll-mt-24">
+      <section id="why" className="section-anchor rule-top scroll-mt-24">
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="02 / Proof"
-              title={proofSection.title}
-              lede={proofSection.lede}
-            >
-              <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                {proofSection.intro}
-              </p>
-            </SectionHead>
+              index="01 / Manifesto"
+              title={whySection.title}
+              lede={whySection.lede}
+            />
           </Reveal>
 
-          <div className="section-content mt-16 lg:mt-20">
-            {outcomes.map((outcome, index) => (
-              <Reveal key={outcome.client} delay={index * 60}>
-                <article className="proof-row grid-12 border-t border-line py-10 lg:py-14">
-                  <div className="md:col-span-3">
-                    <h3 className="wrap-name font-display text-3xl leading-[1.05] lg:text-[2.5rem]">
-                      {outcome.client}
-                    </h3>
-                    <p className="label mt-3 inline-block border border-line-soft px-2 py-0.5 text-faint">
-                      {outcome.sector}
-                    </p>
-                  </div>
+          <Reveal>
+            <blockquote
+              className="why-quote balance mt-14 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:mt-16 lg:max-w-[30ch]"
+            >
+              "{whySection.quote}"
+            </blockquote>
 
-                  <div className="md:col-span-9 md:col-start-4 lg:col-span-5">
-                    <p className="balance font-display text-xl italic leading-snug text-bone lg:text-2xl">
-                      {outcome.headline}
-                    </p>
-                    <p className="measure mt-4 text-[0.975rem] leading-relaxed text-muted">
-                      {outcome.detail}
-                    </p>
-                  </div>
+            <div className="section-content grid-12 mt-14 lg:mt-20">
+              <div className="space-y-6 md:col-span-6 lg:col-span-5">
+                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                  {brandStory.summary}
+                </p>
+              </div>
 
-                  <ul className="grid gap-3 sm:grid-cols-2 md:col-span-9 md:col-start-4 lg:col-span-4 lg:col-start-9 lg:grid-cols-1">
-                    {outcome.citations.map((citation) => (
-                      <li key={citation.label} className="border-l border-line-soft pl-4">
-                        {citation.href ? (
-                          <a
-                            href={citation.href}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="block transition-colors duration-300 hover:[&_p]:text-accent"
-                          >
-                            <p className="text-sm leading-snug text-balance text-bone transition-colors duration-300">
-                              {citation.label}
-                            </p>
-                            <p className="label mt-1.5 text-faint transition-colors duration-300">
-                              {citation.source}
-                            </p>
-                          </a>
-                        ) : (
-                          <>
-                            <p className="text-sm leading-snug text-balance text-bone">
-                              {citation.label}
-                            </p>
-                            <p className="label mt-1.5 text-faint">{citation.source}</p>
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+              <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9 lg:self-end">
+                <DesignLink
+                  to="/manifesto"
+                  className="group flex items-baseline justify-between gap-6 border-b border-line pb-3 transition-colors duration-300 hover:border-accent"
+                >
+                  <span className="balance font-display text-2xl italic lg:text-[1.75rem]">
+                    {whySection.manifestoLinkLabel}
+                  </span>
+                  <span
+                    aria-hidden
+                    className="shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1.5"
+                  >
+                    <ArrowRight size={16} strokeWidth={1.5} />
+                  </span>
+                </DesignLink>
+              </div>
+            </div>
+
+            <div
+              className="brand-story-flow section-content mt-14 lg:mt-20"
+              aria-label="The four parts of 4th Culture"
+            >
+              {brandStory.inputs.map((input) => (
+                <article key={input.index} className="brand-story-card card-surface">
+                  <p className="label text-accent">{input.index}</p>
+                  <h3 className="font-display text-2xl">{input.name}</h3>
+                  <p className="text-sm leading-relaxed text-bone">{input.detail}</p>
                 </article>
-              </Reveal>
-            ))}
-          </div>
+              ))}
+              <span aria-hidden className="brand-story-arrow">
+                →
+              </span>
+              <article className="brand-story-card brand-story-result">
+                <p className="label text-accent">{brandStory.result.index}</p>
+                <h3 className="font-display text-2xl">{brandStory.result.name}</h3>
+                <p className="text-sm leading-relaxed text-bone">{brandStory.result.detail}</p>
+              </article>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -254,7 +250,7 @@ export default function Home() {
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="01 / Practice"
+              index="02 / Practice"
               title={sectionHeads.practice.title}
               lede={sectionHeads.practice.lede}
             />
@@ -343,6 +339,77 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="proof" className="section-anchor rule-top scroll-mt-24">
+        <div className="section-shell shell py-24 lg:py-36">
+          <Reveal>
+            <SectionHead
+              index="04 / Proof"
+              title={proofSection.title}
+              lede={proofSection.lede}
+            >
+              <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                {proofSection.intro}
+              </p>
+            </SectionHead>
+          </Reveal>
+
+          <div className="section-content mt-16 lg:mt-20">
+            {outcomes.map((outcome, index) => (
+              <Reveal key={outcome.client} delay={index * 60}>
+                <article className="proof-row grid-12 border-t border-line py-10 lg:py-14">
+                  <div className="md:col-span-3">
+                    <h3 className="wrap-name font-display text-3xl leading-[1.05] lg:text-[2.5rem]">
+                      {outcome.client}
+                    </h3>
+                    <p className="label mt-3 inline-block border border-line-soft px-2 py-0.5 text-faint">
+                      {outcome.sector}
+                    </p>
+                  </div>
+
+                  <div className="md:col-span-9 md:col-start-4 lg:col-span-5">
+                    <p className="balance font-display text-xl italic leading-snug text-bone lg:text-2xl">
+                      {outcome.headline}
+                    </p>
+                    <p className="measure mt-4 text-[0.975rem] leading-relaxed text-muted">
+                      {outcome.detail}
+                    </p>
+                  </div>
+
+                  <ul className="grid gap-3 sm:grid-cols-2 md:col-span-9 md:col-start-4 lg:col-span-4 lg:col-start-9 lg:grid-cols-1">
+                    {outcome.citations.map((citation) => (
+                      <li key={citation.label} className="border-l border-line-soft pl-4">
+                        {citation.href ? (
+                          <a
+                            href={citation.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block transition-colors duration-300 hover:[&_p]:text-accent"
+                          >
+                            <p className="text-sm leading-snug text-balance text-bone transition-colors duration-300">
+                              {citation.label}
+                            </p>
+                            <p className="label mt-1.5 text-faint transition-colors duration-300">
+                              {citation.source}
+                            </p>
+                          </a>
+                        ) : (
+                          <>
+                            <p className="text-sm leading-snug text-balance text-bone">
+                              {citation.label}
+                            </p>
+                            <p className="label mt-1.5 text-faint">{citation.source}</p>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="rule-top bg-ground-lift">
         <div className="section-shell shell py-24 lg:py-32">
           <Reveal>
@@ -393,7 +460,7 @@ export default function Home() {
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="04 / Who"
+              index="05 / Who"
               title={sectionHeads.who.title}
               lede={sectionHeads.who.lede}
             />
@@ -541,66 +608,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="rule-top bg-ground-lift">
-        <div className="section-shell shell py-24 lg:py-36">
-          <Reveal>
-            <p className="label text-accent">The manifesto</p>
-            <blockquote className="balance mt-10 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:max-w-[30ch]">
-              "Humanity is not a template. Design is how our tools express who we are:
-              our character, feeling and intent. When everything we make feels the same,
-              we design the human out of it."
-            </blockquote>
-
-            <div className="section-content grid-12 mt-14 lg:mt-20">
-              <div className="space-y-6 md:col-span-6 lg:col-span-5">
-                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  {brandStory.summary}
-                </p>
-              </div>
-
-              <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9 lg:self-end">
-                <DesignLink
-                  to="/manifesto"
-                  className="group flex items-baseline justify-between gap-6 border-b border-line pb-3 transition-colors duration-300 hover:border-accent"
-                >
-                  <span className="balance font-display text-2xl italic lg:text-[1.75rem]">
-                    Read the seven positions
-                  </span>
-                  <span
-                    aria-hidden
-                    className="shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1.5"
-                  >
-                    <ArrowRight size={16} strokeWidth={1.5} />
-                  </span>
-                </DesignLink>
-              </div>
-            </div>
-
-            <div className="brand-story-flow section-content" aria-label="The four parts of 4th Culture">
-              {brandStory.inputs.map((input) => (
-                <article key={input.index} className="brand-story-card card-surface">
-                  <p className="label text-accent">{input.index}</p>
-                  <h3 className="font-display text-2xl">{input.name}</h3>
-                  <p className="text-sm leading-relaxed text-bone">{input.detail}</p>
-                </article>
-              ))}
-              <span aria-hidden className="brand-story-arrow">
-                →
-              </span>
-              <article className="brand-story-card brand-story-result">
-                <p className="label text-accent">{brandStory.result.index}</p>
-                <h3 className="font-display text-2xl">{brandStory.result.name}</h3>
-                <p className="text-sm leading-relaxed text-bone">{brandStory.result.detail}</p>
-              </article>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       <section id="contact" className="section-anchor rule-top scroll-mt-24 bg-ground-lift">
         <div className="section-shell shell py-28 lg:py-40">
           <Reveal>
-            <p className="label text-accent">05 / Start</p>
+            <p className="label text-accent">06 / Start</p>
             <h2 className="display-xl mt-8 text-[length:clamp(2.75rem,9vw,8rem)]">
               Describe the
               <br />

@@ -68,20 +68,20 @@ function NavigationLinks({
   return (
     <>
       <SectionLink
+        to="why"
+        className={className}
+        onNavigate={onNavigate}
+        current={location.pathname === '/' && location.hash === '#why'}
+      >
+        {content('01', 'Manifesto')}
+      </SectionLink>
+      <SectionLink
         to="practice"
         className={className}
         onNavigate={onNavigate}
         current={location.pathname === '/' && location.hash === '#practice'}
       >
-        {content('01', 'Practice')}
-      </SectionLink>
-      <SectionLink
-        to="proof"
-        className={className}
-        onNavigate={onNavigate}
-        current={location.pathname === '/' && location.hash === '#proof'}
-      >
-        {content('02', 'Proof')}
+        {content('02', 'Practice')}
       </SectionLink>
       <SectionLink
         to="engage"
@@ -91,14 +91,14 @@ function NavigationLinks({
       >
         {content('03', 'Engage')}
       </SectionLink>
-      <DesignLink
-        to="/manifesto"
+      <SectionLink
+        to="proof"
         className={className}
-        onClick={onNavigate}
-        aria-current={location.pathname === '/manifesto' ? 'page' : undefined}
+        onNavigate={onNavigate}
+        current={location.pathname === '/' && location.hash === '#proof'}
       >
-        {content('04', 'Manifesto')}
-      </DesignLink>
+        {content('04', 'Proof')}
+      </SectionLink>
       <DesignLink
         to="/contact"
         className={`${className} nav-contact`}
