@@ -264,6 +264,9 @@ export const supplementalAwardsHeading = 'Further recognition'
 
 export const heroStatLabel = 'Public recognition'
 
+export const heroRegenerateNote =
+  'This site redesigns itself to show how AI and design systems make everything interchangeable.'
+
 export type Outcome = {
   client: string
   sector: string
@@ -652,6 +655,7 @@ export type Engagement = {
   priceDetail: string
   action: string
   enquiryReason: string
+  outcome: string
   lede: string
   points: string[]
 }
@@ -666,6 +670,7 @@ export const engagements: Engagement[] = [
     priceDetail: 'per focused day',
     action: 'Book the day',
     enquiryReason: 'Focused day',
+    outcome: 'A clear decision, backed by a senior critique and written verdict.',
     lede: 'A focused day with a senior practitioner for a first-principles product question or a decision that has stalled.',
     points: [
       'Design or product critique with a written verdict',
@@ -683,6 +688,7 @@ export const engagements: Engagement[] = [
     priceDetail: 'per week',
     action: 'Start with a week',
     enquiryReason: 'One-to-four-week engagement',
+    outcome: 'A tested direction, with the prototype or plan needed to move.',
     lede: 'Enough time to frame a new platform or an existing problem properly and produce a strategy, working prototype or implementation plan. The most common way to start.',
     points: [
       'Discovery and opportunity framing',
@@ -700,6 +706,7 @@ export const engagements: Engagement[] = [
     priceDetail: 'a clear estimate follows discovery',
     action: 'Discuss a project',
     enquiryReason: 'Scoped project or assembled team',
+    outcome: 'A senior-led team that takes the product from definition through delivery.',
     lede: 'End-to-end product work that needs more than one pair of hands. Michael assembles trusted consultants and contractors, leads the work and remains accountable through delivery.',
     points: [
       'End-to-end product design, production front-end and delivery',

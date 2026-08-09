@@ -30,6 +30,7 @@ import {
   career,
   clients,
   engagements,
+  heroRegenerateNote,
   heroStatLabel,
   outcomes,
   proofSection,
@@ -135,6 +136,9 @@ export default function Home() {
             </div>
 
             <RegenerateButton />
+            <p className="hero-regenerate-note mt-3 max-w-[46ch] text-[0.8125rem] leading-snug text-faint">
+              {heroRegenerateNote}
+            </p>
           </div>
 
           <div
@@ -280,7 +284,11 @@ export default function Home() {
                     : 'h-full'
                 }
               >
-                <div className="engagement-card card-surface flex h-full flex-col p-7 sm:p-8 lg:p-10">
+                <div
+                  className={`engagement-card card-surface flex h-full flex-col p-7 sm:p-8 lg:p-10${
+                    engagement.key === 'project' ? ' engagement-card-featured' : ''
+                  }`}
+                >
                   <div className="flex items-start justify-between gap-4">
                     <span className="text-accent">{engagementIcons[index]}</span>
                     <span className="engagement-meta label text-right text-faint">
@@ -293,6 +301,10 @@ export default function Home() {
                   <h3 className="engagement-name display-xl mt-8 text-4xl lg:text-5xl">
                     {engagement.name}
                   </h3>
+
+                  <p className="engagement-outcome balance mt-5 font-display text-lg italic leading-snug text-bone lg:text-xl">
+                    {engagement.outcome}
+                  </p>
 
                   <div className="engagement-rate mt-7 border-y border-line-soft py-6">
                     <p className="engagement-price font-display text-[length:clamp(1.7rem,3vw,2.35rem)] leading-none text-bone">
@@ -572,34 +584,28 @@ export default function Home() {
                   </ul>
                 </section>
 
-                <div className="grid content-start gap-10 sm:grid-cols-2">
-                  <div>
-                    <p className="label border-b border-line-soft pb-4 text-faint">
-                      Selected speaking
-                    </p>
-                    <ul className="mt-5 space-y-3">
-                      {speaking.map((item) => (
-                        <li key={item.venue} className="text-sm leading-snug text-muted">
-                          {item.venue}
-                          <span className="text-faint"> / {item.year}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <p className="label border-b border-line-soft pb-4 text-faint">
-                      Interviewed by
-                    </p>
-                    <ul className="mt-5 space-y-3">
-                      {broadcast.map((item) => (
-                        <li key={item.outlet} className="text-sm leading-snug text-muted">
-                          {item.outlet}
-                          <span className="text-faint"> / {item.year}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+                <section aria-labelledby="on-the-record-heading">
+                  <h3
+                    id="on-the-record-heading"
+                    className="label border-b border-line-soft pb-4 text-faint"
+                  >
+                    On the record
+                  </h3>
+                  <ul className="mt-5 grid content-start gap-x-10 gap-y-3 sm:grid-cols-2">
+                    {speaking.map((item) => (
+                      <li key={item.venue} className="text-sm leading-snug text-muted">
+                        {item.venue}
+                        <span className="text-faint"> / speaking, {item.year}</span>
+                      </li>
+                    ))}
+                    {broadcast.map((item) => (
+                      <li key={item.outlet} className="text-sm leading-snug text-muted">
+                        {item.outlet}
+                        <span className="text-faint"> / interview, {item.year}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               </div>
             </div>
           </Reveal>

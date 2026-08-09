@@ -1131,7 +1131,7 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   await expect(form.getByLabel('Email')).toHaveAttribute('type', 'email')
   await expect(form.getByLabel('Organisation')).toBeVisible()
   await expect(form.getByLabel('Reason for getting in touch')).toHaveAttribute('required', '')
-  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(12)
+  await expect(form.getByLabel('Reason for getting in touch').locator('option')).toHaveCount(7)
   for (const reason of [
     'Focused day',
     'One-to-four-week engagement',
@@ -1144,7 +1144,7 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   await expect(
     form
       .getByLabel('Reason for getting in touch')
-      .locator('option', { hasText: 'End-to-end product design and front-end delivery' }),
+      .locator('option', { hasText: 'Leadership, strategy or team development' }),
   ).toHaveCount(1)
   await expect(form.getByLabel('Message')).toHaveAttribute('required', '')
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
@@ -1219,7 +1219,7 @@ test('contact form submits successfully without changing design state or URL', a
   await page.getByLabel('Organisation').fill('Example Company')
   await page
     .getByLabel('Reason for getting in touch')
-    .selectOption('Build or strengthen a product or design team')
+    .selectOption('Leadership, strategy or team development')
   await page.getByLabel('Message').fill('A useful test enquiry.')
   await page.locator('form.contact-form').evaluate((form: HTMLFormElement) => {
     form.requestSubmit()
@@ -1233,7 +1233,7 @@ test('contact form submits successfully without changing design state or URL', a
   expect(submittedBody).toContain('Test Person')
   expect(submittedBody).toContain('test@example.com')
   expect(submittedBody).toContain('Example Company')
-  expect(submittedBody).toContain('Build or strengthen a product or design team')
+  expect(submittedBody).toContain('Leadership, strategy or team development')
   await expect(page).toHaveURL(/design=noir/)
   await expect(page).not.toHaveURL(/submitted=/)
   expect(requestCount).toBe(1)
@@ -1633,6 +1633,55 @@ test('scroll spy highlights practice nav when practice is in view', async ({ pag
 
   const practiceNav = page.locator('.primary-navigation a[href*="#practice"]')
   await expect(practiceNav).toHaveAttribute('aria-current', 'location')
+})
+
+test('scroll spy clears active nav over unmapped scroll zones', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await openRecipe(page, designRecipes[0].id)
+
+  await page.evaluate(() => {
+    const who = document.getElementById('who')
+    if (!who) return
+    const rect = who.getBoundingClientRect()
+    window.scrollTo({
+      top: window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2,
+      behavior: 'instant',
+    })
+  })
+  await page.waitForTimeout(300)
+
+  const activeCount = await page
+    .locator('.primary-navigation a[aria-current="location"]')
+    .count()
+  expect(activeCount).toBe(0)
+})
+
+test('engagement outcome promise precedes the price block', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await openRecipe(page, designRecipes[0].id)
+  await page.locator('#engage').scrollIntoViewIfNeeded()
+
+  const cards = page.locator('.engagement-card')
+  const cardCount = await cards.count()
+  expect(cardCount).toBe(3)
+
+  for (let index = 0; index < cardCount; index += 1) {
+    const card = cards.nth(index)
+    await expect(card.locator('.engagement-outcome')).toHaveCount(1)
+    const outcomeFirst = await card.evaluate((el) => {
+      const outcome = el.querySelector('.engagement-outcome')
+      const rate = el.querySelector('.engagement-rate')
+      if (!outcome || !rate) return false
+      return Boolean(
+        outcome.compareDocumentPosition(rate) & Node.DOCUMENT_POSITION_FOLLOWING,
+      )
+    })
+    expect(outcomeFirst).toBe(true)
+  }
+
+  const featured = page.locator('.engagement-card-featured')
+  await expect(featured).toHaveCount(1)
+  await expect(featured.locator('.engagement-name')).toHaveText('The assembled team')
 })
 
 test('scroll motion is disabled when reduced motion is preferred', async ({ page }) => {
