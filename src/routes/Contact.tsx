@@ -12,12 +12,7 @@ const enquiryReasons = [
   'Focused day',
   'One-to-four-week engagement',
   'Scoped project or assembled team',
-  'Hire Michael for a leadership role',
-  'Contract or retained design leadership',
-  'Build or strengthen a product or design team',
-  'Product, brand or experience strategy',
-  'Net-new product or utility platform design',
-  'End-to-end product design and front-end delivery',
+  'Leadership, strategy or team development',
   'Speaking, advisory or collaboration',
   'Something else',
 ]

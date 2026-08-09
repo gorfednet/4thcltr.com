@@ -390,7 +390,7 @@ export default function Layout() {
                 </li>
                 <li>
                   <DesignLink to="/contact" className="footer-link">
-                    Start a project
+                    Describe the problem
                   </DesignLink>
                 </li>
               </ul>

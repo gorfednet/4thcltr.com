@@ -14,6 +14,7 @@ function getAnchorOffset(): number {
 
 function pickActiveSection(): ScrollSpySectionId | null {
   const anchorY = getAnchorOffset()
+  const viewportHeight = window.innerHeight
   let bestId: ScrollSpySectionId | null = null
   let bestDistance = Infinity
 
@@ -27,6 +28,18 @@ function pickActiveSection(): ScrollSpySectionId | null {
       bestDistance = distance
       bestId = id
     }
+  }
+
+  if (!bestId) return null
+
+  const el = document.getElementById(bestId)
+  if (!el) return null
+  const rect = el.getBoundingClientRect()
+  if (
+    rect.bottom < anchorY - viewportHeight * 0.1 ||
+    rect.top > anchorY + viewportHeight * 0.6
+  ) {
+    return null
   }
 
   return bestId
