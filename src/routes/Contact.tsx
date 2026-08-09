@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router'
 import DesignLink from '../components/DesignLink'
 import PageMeta from '../components/PageMeta'
 import { submitContactEnquiry } from '../config/contactForm'
+import { contactCopy } from '../content/site'
 import { organizationJsonLd, personJsonLd } from '../content/jsonLd'
 import { pageSeo } from '../content/seo'
 
@@ -93,9 +94,7 @@ export default function Contact() {
               <span className="italic text-accent">to change?</span>
             </h1>
             <p className="measure mt-10 text-xl leading-relaxed text-muted">
-              Share what you are making, changing or unblocking, whether the ask is a
-              focused decision or end-to-end design and delivery, and what a useful
-              outcome would look like. Michael reads every enquiry and replies directly.
+              {contactCopy.introLede}
             </p>
           </div>
         </div>
@@ -110,6 +109,14 @@ export default function Contact() {
               <li>Any timing, team or regulatory constraints</li>
               <li>What a strong result would make possible</li>
             </ul>
+            <div className="mt-10 border-t border-line-soft pt-6">
+              <p className="label text-faint">What happens next</p>
+              <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted">
+                {contactCopy.whatHappensNext.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ul>
+            </div>
           </aside>
 
           <div className="mt-12 md:col-span-8 md:mt-0 lg:col-span-7 lg:col-start-6">
@@ -231,6 +238,7 @@ export default function Contact() {
                   type="submit"
                   disabled={submitting}
                   className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 text-left disabled:cursor-not-allowed disabled:pointer-events-none disabled:bg-accent-deep disabled:border-accent-deep"
+                  data-cta="contact-submit"
                 >
                   <span className="label">{submitting ? 'Sending...' : 'Send enquiry'}</span>
                   <ArrowRight
@@ -240,6 +248,8 @@ export default function Contact() {
                     className="transition-transform duration-300 group-hover:translate-x-1"
                   />
                 </button>
+
+                <p className="text-sm leading-relaxed text-faint">{contactCopy.privacyNote}</p>
               </form>
             )}
           </div>
