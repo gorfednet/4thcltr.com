@@ -50,7 +50,7 @@ export function useScrollSpy(): ScrollSpySectionId | null {
   const [activeId, setActiveId] = useState<ScrollSpySectionId | null>(null)
 
   useEffect(() => {
-    if (location.pathname === '/contact') {
+    if (/^\/contact\/?$/.test(location.pathname)) {
       setActiveId('contact')
       return
     }
