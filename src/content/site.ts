@@ -107,7 +107,7 @@ export const tenets: Tenet[] = [
     number: '06',
     title: 'Proof over posture.',
     body: [
-      'More than 25 years of shipped work includes two patent filings, a brokerage ranked best in Canada three years running and a health-transport product acquired for $57.5M. The public record also includes twelve honours and launched apps for Chapters Indigo, Land Rover and C Spire.',
+      'More than 25 years of shipped work includes two patent filings, a brokerage ranked best in Canada three years running and a health-transport product acquired for $46M. The public record also includes twelve instances of recognition and launched apps for Chapters Indigo, Land Rover and C Spire.',
       'The standard remains the same: make work that carries its weight in the market.',
     ],
   },
@@ -199,12 +199,63 @@ export type Award = {
 }
 
 export const proofSection = {
-  title: 'A history of firsts, honours and repeat wins.',
+  title: 'The work, on the record.',
   lede:
-    'Across regulated industries and public launches, the work has led to acquisitions, repeat brokerage wins, patented products and lasting commercial value.',
+    'Selected outcomes across financial services, health and life sciences, civic technology, retail and mobility, with the sources that document them.',
   intro:
-    'The settings changed; the standard did not. Build something original, make it work in the real world and leave the business stronger than you found it.',
+    'Different sectors, teams and constraints. The through-line is work that shipped, found an audience and created value beyond the interface.',
 } as const
+
+export const sectionHeads = {
+  practice: {
+    title: 'One practice, from direction to delivery.',
+    lede:
+      'Product strategy, design leadership, research and production front-end stay connected. Michael leads the work throughout, so the decisions made early survive contact with the build.',
+  },
+  engage: {
+    title: 'Choose the right amount of work.',
+    lede:
+      'A focused day for one consequential decision, one to four weeks to frame and advance the problem, or an assembled team for end-to-end delivery. Describe the problem; the right shape can follow.',
+  },
+  who: {
+    title: 'The principal stays in the work.',
+    lede:
+      'Michael leads every engagement directly and brings in trusted specialists only when the work calls for them.',
+  },
+} as const
+
+export const whoBio = {
+  leadItalic:
+    'I am Michael Duncan McArthur, an independent product strategist and design leader with more than 25 years of experience shaping complex, regulated and closely scrutinised products.',
+  paragraphs: [
+    'Most recently, I spent eight years inside the Human-Centered Design Practice of TD Invent, leading experience design across the Wealth pillar for products serving retail through institutional investors. Before that, I was Director of Product Design and Director of User Experience at Klick.',
+    'My career began with Boardwise, an online skate shop founded in Dubai in 1999. Since then I have founded civic technology, built product design teams and worked across financial services, health and life sciences, mobility, retail, media and public information systems.',
+    'Growing up across cultures shaped the habit of adapting quickly and solving from more than one angle. I still write production front-end code and use human-directed agentic workflows across research, prototyping, implementation and quality assurance. That keeps the strategy honest about what can actually be built.',
+    'When delivery needs broader engineering or specialist expertise, I assemble trusted consultants and contractors around the work. The team scales to the problem while I remain directly involved and accountable from the first decision through launch. Based in Toronto.',
+  ],
+} as const
+
+export const startSection = {
+  lede:
+    'Share what you are trying to make, change or unstick, and what a useful outcome would look like. Michael will read the enquiry and reply directly.',
+  ctaLabel: 'Describe the problem',
+} as const
+
+export const contactCopy = {
+  introLede:
+    'Describe what you are making, changing or unblocking, where things stand and what a useful outcome would make possible. Michael reads every enquiry and replies directly.',
+  whatHappensNext: [
+    'Michael reads your enquiry and replies directly.',
+    'The first reply will clarify fit, timing and any missing context.',
+    'If there is a useful way forward, you will receive a clear next step, usually a focused conversation or a scoped proposal.',
+  ],
+  privacyNote:
+    'Your details are used only to respond to your enquiry. They are not sold or added to a mailing list.',
+} as const
+
+export const supplementalAwardsHeading = 'Further recognition'
+
+export const heroStatLabel = 'Public recognition'
 
 export type Outcome = {
   client: string
@@ -247,9 +298,9 @@ export const outcomes: Outcome[] = [
   {
     client: 'Circulation',
     sector: 'Health and life sciences',
-    headline: 'Non-emergency medical transport, acquired for $57.5M.',
+    headline: 'Non-emergency medical transport, acquired for $46M.',
     detail:
-      'Directed UX and UI on the platform pairing hospitals with Uber and later Lyft to move patients across North America. Raised $10.5M in Series A, reached 1,500 health facilities, and was acquired by LogistiCare in September 2018. The acquisition turned a purpose-led transportation platform into a significant commercial outcome.',
+      'Directed UX and UI for the platform connecting health facilities with non-emergency transport, including Uber and Lyft. Circulation raised $10.5M in Series A funding, reached 1,500 health facilities and was acquired by LogistiCare for $46M in 2018.',
     citations: [
       {
         label: 'Acquisition by LogistiCare, 2018',
@@ -557,6 +608,21 @@ export const awards: Award[] = [
     year: '2009',
   },
 ]
+
+const proofCitationHrefSet = new Set(
+  outcomes.flatMap((outcome) =>
+    outcome.citations.map((citation) => citation.href).filter((href): href is string => Boolean(href)),
+  ),
+)
+
+/** Honours not already linked from Proof outcome citations. */
+export const supplementalAwards = awards.filter((award) => {
+  if (award.href && proofCitationHrefSet.has(award.href)) return false
+  if (award.title === 'Mobile of the Day') return false
+  if (award.title.includes("iTunes North American")) return false
+  if (award.title === '12 Best Apps Made in Canada') return false
+  return true
+})
 
 export const sectors = [
   'Financial services and fintech',

@@ -1582,3 +1582,39 @@ test('hero stat cards separate from the body and use gutter spacing', async ({ p
     expect(tokenSeparation).toBeGreaterThan(0)
   }
 })
+
+test('proof section head separates from outcome rows', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await openRecipe(page, designRecipes[0].id)
+  await page.locator('#proof h2').scrollIntoViewIfNeeded()
+
+  const bounds = await page.evaluate(() => {
+    const heading = document.querySelector('#proof h2')
+    const firstRow = document.querySelector('#proof .proof-row')
+    if (!heading || !firstRow) return null
+    const headingBox = heading.getBoundingClientRect()
+    const rowBox = firstRow.getBoundingClientRect()
+    const style = getComputedStyle(heading)
+    const fontSize = Number.parseFloat(style.fontSize)
+    return {
+      headingBottom: headingBox.bottom,
+      rowTop: rowBox.top,
+      lineHeightPx: Number.parseFloat(style.lineHeight),
+      lineCount: heading.scrollHeight / (Number.parseFloat(style.lineHeight) || fontSize),
+    }
+  })
+
+  expect(bounds).not.toBeNull()
+  expect(bounds!.rowTop).toBeGreaterThan(bounds!.headingBottom - 2)
+  expect(bounds!.lineCount).toBeGreaterThan(0.9)
+})
+
+test('supplemental awards do not duplicate proof citation urls', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+  const duplicates = await page.evaluate(() => {
+    const proofHrefs = [...document.querySelectorAll('#proof a[href]')].map((link) => link.href)
+    const whoHrefs = [...document.querySelectorAll('#who a[href]')].map((link) => link.href)
+    return whoHrefs.filter((href) => proofHrefs.includes(href))
+  })
+  expect(duplicates).toEqual([])
+})

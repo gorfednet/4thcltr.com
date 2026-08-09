@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import {
   ArrowRight,
   Award,
@@ -28,32 +29,45 @@ import {
   career,
   clients,
   engagements,
+  heroStatLabel,
   outcomes,
   proofSection,
+  sectionHeads,
   sectors,
   speaking,
+  startSection,
   studio,
+  supplementalAwards,
+  supplementalAwardsHeading,
+  whoBio,
 } from '../content/site'
 
 function SectionHead({
   index,
   title,
   lede,
+  children,
 }: {
   index: string
   title: string
   lede?: string
+  children?: ReactNode
 }) {
   return (
-    <div className="grid-12">
+    <div className="section-head grid-12">
       <p className="label text-accent md:col-span-2">{index}</p>
-      <h2 className="display-xl balance text-[length:clamp(2.5rem,7vw,5rem)] md:col-span-10 lg:col-span-6">
+      <h2 className="section-head-title display-xl balance md:col-span-10 md:col-start-3 lg:col-span-7">
         {title}
       </h2>
       {lede && (
-        <p className="measure text-[1.0625rem] leading-[1.75] text-muted md:col-span-8 md:col-start-3 lg:col-span-4 lg:col-start-9 lg:self-end">
+        <p className="section-head-lede measure text-[1.0625rem] leading-[1.75] text-muted md:col-span-10 md:col-start-3 lg:col-span-4 lg:col-start-9 lg:row-start-2 lg:self-start">
           {lede}
         </p>
+      )}
+      {children && (
+        <div className="section-head-body md:col-span-10 md:col-start-3 lg:col-span-5 lg:row-start-3">
+          {children}
+        </div>
       )}
     </div>
   )
@@ -69,7 +83,7 @@ const statItems = [
   { value: studio.yearsActive, label: 'Years shipping', icon: <TrendingUp size={26} strokeWidth={1.4} aria-hidden /> },
   { value: '02', label: 'Patents filed', icon: <FileText size={26} strokeWidth={1.4} aria-hidden /> },
   { value: `${clients.length}+`, label: 'Career clients', icon: <Building2 size={26} strokeWidth={1.4} aria-hidden /> },
-  { value: String(awards.length).padStart(2, '0'), label: 'Awards won', icon: <Award size={26} strokeWidth={1.4} aria-hidden /> },
+  { value: String(awards.length).padStart(2, '0'), label: heroStatLabel, icon: <Award size={26} strokeWidth={1.4} aria-hidden /> },
 ]
 
 export default function Home() {
@@ -165,75 +179,6 @@ export default function Home() {
           </div>
       </section>
 
-      <section className="rule-top bg-ground-lift">
-        <div className="section-shell shell py-24 lg:py-36">
-          <Reveal>
-            <p className="label text-accent">The manifesto</p>
-            <blockquote className="balance mt-10 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:max-w-[30ch]">
-              "Humanity is not a template. Design is how our tools express who we are:
-              our character, feeling and intent. When everything we make feels the same,
-              we design the human out of it."
-            </blockquote>
-
-            <div className="section-content grid-12 mt-14 lg:mt-20">
-              <div className="space-y-6 md:col-span-6 lg:col-span-5">
-                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  {brandStory.summary}
-                </p>
-              </div>
-
-              <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9 lg:self-end">
-                <DesignLink
-                  to="/manifesto"
-                  className="group flex items-baseline justify-between gap-6 border-b border-line pb-3 transition-colors duration-300 hover:border-accent"
-                >
-                  <span className="balance font-display text-2xl italic lg:text-[1.75rem]">
-                    Read the seven positions
-                  </span>
-                  <span
-                    aria-hidden
-                    className="shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1.5"
-                  >
-                    <ArrowRight size={16} strokeWidth={1.5} />
-                  </span>
-                </DesignLink>
-              </div>
-            </div>
-
-            <div className="brand-story-flow section-content" aria-label="The four parts of 4th Culture">
-              {brandStory.inputs.map((input) => (
-                <article key={input.index} className="brand-story-card card-surface">
-                  <p className="label text-accent">{input.index}</p>
-                  <h3 className="font-display text-2xl">{input.name}</h3>
-                  <p className="text-sm leading-relaxed text-bone">{input.detail}</p>
-                </article>
-              ))}
-              <span aria-hidden className="brand-story-arrow">
-                →
-              </span>
-              <article className="brand-story-card brand-story-result">
-                <p className="label text-accent">{brandStory.result.index}</p>
-                <h3 className="font-display text-2xl">{brandStory.result.name}</h3>
-                <p className="text-sm leading-relaxed text-bone">{brandStory.result.detail}</p>
-              </article>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <section id="practice" className="section-anchor rule-top scroll-mt-24">
-        <div className="section-shell shell py-24 lg:py-36">
-          <Reveal>
-            <SectionHead
-              index="01 / Practice"
-              title="Strategy, design and build."
-              lede="From a first sketch to an established product, these disciplines stay connected through delivery. One accountable lead keeps the argument, the interface and the build moving in the same direction."
-            />
-            <Practice />
-          </Reveal>
-        </div>
-      </section>
-
       <section id="proof" className="section-anchor rule-top scroll-mt-24">
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
@@ -241,13 +186,11 @@ export default function Home() {
               index="02 / Proof"
               title={proofSection.title}
               lede={proofSection.lede}
-            />
-          </Reveal>
-
-          <Reveal>
-            <p className="measure mt-10 text-[1.0625rem] leading-[1.75] text-muted lg:mt-12 lg:max-w-[52ch]">
-              {proofSection.intro}
-            </p>
+            >
+              <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                {proofSection.intro}
+              </p>
+            </SectionHead>
           </Reveal>
 
           <div className="section-content mt-16 lg:mt-20">
@@ -307,48 +250,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="rule-top bg-ground-lift">
-        <div className="section-shell shell py-24 lg:py-32">
+      <section id="practice" className="section-anchor rule-top scroll-mt-24">
+        <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
-            <div className="brands-sector-band grid gap-14 lg:gap-20">
-              <div>
-                <p className="label border-b border-line-soft pb-4 text-faint">
-                  Sectors worked in
-                </p>
-                <ul className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(min(100%,10rem),1fr))] gap-2">
-                  {sectors.map((sector) => (
-                    <li
-                      key={sector}
-                      className="card-surface flex min-h-11 items-center px-4 py-2 text-sm leading-relaxed text-muted"
-                    >
-                      {sector}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line-soft pb-4">
-                  <p className="label text-faint">
-                    Brands delivered for, in-house and through agency partners
-                  </p>
-                  <p className="label text-accent">{clients.length} named</p>
-                </div>
-                <ul className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(min(100%,11rem),1fr))] gap-x-8 gap-y-3">
-                  {clients.map((client) => (
-                    <li
-                      key={client}
-                      className="wrap-name font-sans text-[0.95rem] leading-relaxed text-muted transition-colors duration-300 hover:text-bone lg:text-base"
-                    >
-                      {client}
-                    </li>
-                  ))}
-                  <li className="font-sans text-[0.95rem] italic leading-relaxed text-faint lg:text-base">
-                    and many more
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <SectionHead
+              index="01 / Practice"
+              title={sectionHeads.practice.title}
+              lede={sectionHeads.practice.lede}
+            />
+            <Practice />
           </Reveal>
         </div>
       </section>
@@ -358,8 +268,8 @@ export default function Home() {
           <Reveal>
             <SectionHead
               index="03 / Engage"
-              title="Three ways in."
-              lede="Clear starting rates for focused work, and a scoped proposal when the work needs a team. Choose the fit that gets you to a useful result."
+              title={sectionHeads.engage.title}
+              lede={sectionHeads.engage.lede}
             />
           </Reveal>
 
@@ -415,6 +325,7 @@ export default function Home() {
                     <DesignLink
                       to={`/contact?engagement=${engagement.key}`}
                       className="engagement-action group flex min-h-12 items-center justify-between gap-4 border border-line px-5 py-3.5 text-bone"
+                      data-cta={`engage-${engagement.key}`}
                     >
                       <span className="label">{engagement.action}</span>
                       <ArrowRight
@@ -432,10 +343,60 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="rule-top">
+      <section className="rule-top bg-ground-lift">
+        <div className="section-shell shell py-24 lg:py-32">
+          <Reveal>
+            <div className="brands-sector-band grid gap-14 lg:gap-20">
+              <div>
+                <p className="label border-b border-line-soft pb-4 text-faint">
+                  Sectors worked in
+                </p>
+                <ul className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(min(100%,10rem),1fr))] gap-2">
+                  {sectors.map((sector) => (
+                    <li
+                      key={sector}
+                      className="card-surface flex min-h-11 items-center px-4 py-2 text-sm leading-relaxed text-muted"
+                    >
+                      {sector}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line-soft pb-4">
+                  <p className="label text-faint">
+                    Brands delivered for, in-house and through agency partners
+                  </p>
+                  <p className="label text-accent">{clients.length} named</p>
+                </div>
+                <ul className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(min(100%,11rem),1fr))] gap-x-8 gap-y-3">
+                  {clients.map((client) => (
+                    <li
+                      key={client}
+                      className="wrap-name font-sans text-[0.95rem] leading-relaxed text-muted transition-colors duration-300 hover:text-bone lg:text-base"
+                    >
+                      {client}
+                    </li>
+                  ))}
+                  <li className="font-sans text-[0.95rem] italic leading-relaxed text-faint lg:text-base">
+                    and many more
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section id="who" className="section-anchor rule-top scroll-mt-24">
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
-            <SectionHead index="04 / Who" title="Who you are hiring." />
+            <SectionHead
+              index="04 / Who"
+              title={sectionHeads.who.title}
+              lede={sectionHeads.who.lede}
+            />
           </Reveal>
 
           <Reveal>
@@ -458,35 +419,14 @@ export default function Home() {
             <div className="section-content who-content mt-16 lg:mt-24">
               <div className="grid gap-6 lg:grid-cols-2 lg:gap-x-16">
                 <p className="balance font-display text-2xl italic leading-snug text-bone lg:text-[1.875rem]">
-                  I am {studio.principal}, and I have spent over {studio.yearsActive} years leading
-                  experience design and product strategy across complex, regulated,
-                  heavily scrutinised products. The work runs from founding Boardwise in
-                  Dubai in 1999 to executive design leadership today.
+                  {whoBio.leadItalic}
                 </p>
                 <div className="space-y-6">
-                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                    Most recently Manager, Experience Design at TD, closing eight years
-                    inside the Human-Centered Design Practice of TD Invent. I filed two
-                    related patents there, and the brokerage was named best in Canada by
-                    The Globe and Mail three years running. Before that, Director of
-                    Product Design and of User Experience at Klick.
-                  </p>
-                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                    Growing up across cultures shaped the habit of adapting quickly and
-                    solving from more than one angle. I still write production front-end
-                    code and use human-directed agentic workflows across research,
-                    prototyping, implementation and quality assurance. That keeps the
-                    strategy honest about what can actually be built.
-                  </p>
-                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                    When delivery needs broader engineering or specialist expertise, I
-                    assemble trusted consultants and contractors around the work. The team
-                    scales to the ask, while I remain directly involved and accountable
-                    from first decision through launch.
-                  </p>
-                  <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                    Based in {studio.base}.
-                  </p>
+                  {whoBio.paragraphs.map((paragraph) => (
+                    <p key={paragraph} className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                      {paragraph}
+                    </p>
+                  ))}
                 </div>
               </div>
 
@@ -526,10 +466,20 @@ export default function Home() {
               <div className="mt-16 grid gap-12 lg:mt-24 lg:grid-cols-2">
                 <section>
                   <h3 className="label border-b border-line-soft pb-4 text-faint">
-                    Awards and recognition
+                    {supplementalAwardsHeading}
                   </h3>
-                  <ul>
-                    {awards.map((award) => (
+                  <p className="mt-4 text-sm text-muted">
+                    Documented client outcomes and press citations are in{' '}
+                    <a
+                      href="#proof"
+                      className="text-accent underline underline-offset-4 decoration-accent/70 transition-colors duration-300 hover:decoration-accent"
+                    >
+                      Proof
+                    </a>
+                    .
+                  </p>
+                  <ul className="mt-4">
+                    {supplementalAwards.map((award) => (
                       <li
                         key={`${award.title}${award.year}`}
                         className="grid gap-2 border-b border-line-soft py-4 sm:grid-cols-[1fr_auto] sm:gap-4"
@@ -591,6 +541,62 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="rule-top bg-ground-lift">
+        <div className="section-shell shell py-24 lg:py-36">
+          <Reveal>
+            <p className="label text-accent">The manifesto</p>
+            <blockquote className="balance mt-10 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:max-w-[30ch]">
+              "Humanity is not a template. Design is how our tools express who we are:
+              our character, feeling and intent. When everything we make feels the same,
+              we design the human out of it."
+            </blockquote>
+
+            <div className="section-content grid-12 mt-14 lg:mt-20">
+              <div className="space-y-6 md:col-span-6 lg:col-span-5">
+                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
+                  {brandStory.summary}
+                </p>
+              </div>
+
+              <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9 lg:self-end">
+                <DesignLink
+                  to="/manifesto"
+                  className="group flex items-baseline justify-between gap-6 border-b border-line pb-3 transition-colors duration-300 hover:border-accent"
+                >
+                  <span className="balance font-display text-2xl italic lg:text-[1.75rem]">
+                    Read the seven positions
+                  </span>
+                  <span
+                    aria-hidden
+                    className="shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1.5"
+                  >
+                    <ArrowRight size={16} strokeWidth={1.5} />
+                  </span>
+                </DesignLink>
+              </div>
+            </div>
+
+            <div className="brand-story-flow section-content" aria-label="The four parts of 4th Culture">
+              {brandStory.inputs.map((input) => (
+                <article key={input.index} className="brand-story-card card-surface">
+                  <p className="label text-accent">{input.index}</p>
+                  <h3 className="font-display text-2xl">{input.name}</h3>
+                  <p className="text-sm leading-relaxed text-bone">{input.detail}</p>
+                </article>
+              ))}
+              <span aria-hidden className="brand-story-arrow">
+                →
+              </span>
+              <article className="brand-story-card brand-story-result">
+                <p className="label text-accent">{brandStory.result.index}</p>
+                <h3 className="font-display text-2xl">{brandStory.result.name}</h3>
+                <p className="text-sm leading-relaxed text-bone">{brandStory.result.detail}</p>
+              </article>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       <section id="contact" className="section-anchor rule-top scroll-mt-24 bg-ground-lift">
         <div className="section-shell shell py-28 lg:py-40">
           <Reveal>
@@ -604,16 +610,16 @@ export default function Home() {
             <div className="section-content grid-12 mt-16">
               <div className="md:col-span-8 lg:col-span-6">
                 <p className="measure text-xl leading-relaxed text-muted">
-                  Share what you are trying to make, change or unstick, and what a useful
-                  outcome would look like. Michael will reply directly.
+                  {startSection.lede}
                 </p>
               </div>
 
               <DesignLink
                 to="/contact"
                 className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 md:col-span-6 md:col-start-3 lg:col-span-4 lg:col-start-9"
+                data-cta="start"
               >
-                <span className="label">Choose how to get in touch</span>
+                <span className="label">{startSection.ctaLabel}</span>
                 <ArrowRight
                   size={14}
                   strokeWidth={1.5}

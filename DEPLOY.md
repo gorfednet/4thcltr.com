@@ -4,6 +4,12 @@
 
 - **`deploy.sh`** (run via `make deploy`) syncs `dist/` to the NAS over SSH (`dev@gorfednas`). On the server the tree is `/data/websites/*`; over SSH the path is typically `/volume1/data/websites/4thcltr.com`. It does not configure the web server or SSL.
 
+## Rollback
+
+Before deploying, copy the current live tree to a dated backup on the NAS (for example `/volume1/data/websites/4thcltr.com.backup-YYYYMMDD`). If a release fails post-deploy smoke, restore that backup to `/volume1/data/websites/4thcltr.com` and reload nginx.
+
+Post-deploy smoke: `/`, `/manifesto`, `/contact`, unknown route (404), contact form submission, and key external citation URLs.
+
 ## SSL on the server
 
 SSL is configured on the server via nginx, not by this repo.
