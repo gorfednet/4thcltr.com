@@ -612,6 +612,25 @@ test('all palette tokens meet AA contrast thresholds', () => {
   }
 })
 
+test('hero CTA label meets AA contrast on accent fill during active state', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 760 })
+
+  for (const recipe of designRecipes) {
+    await openRecipe(page, recipe.id)
+    const { colors } = getTheme(recipe.themeId)
+    expect(
+      contrast(colors.onAccent, colors.accent),
+      `${recipe.id}: on-accent/accent tokens`,
+    ).toBeGreaterThanOrEqual(4.5)
+
+    const regenerate = page.getByRole('button', { name: 'Regenerate design colors and layout' })
+    await regenerate.click()
+    await expect.poll(async () => regenerate.getAttribute('data-active')).toBe('true')
+    await expect(regenerate.locator('.hero-cta-label')).toHaveClass(/text-on-accent/)
+    await expect(regenerate.locator('.hero-cta-icon')).toHaveClass(/text-on-accent/)
+  }
+})
+
 test('desktop navigation, mobile navigation, and mobile headers are independently balanced', () => {
   const desktopCounts = navigationIds.map((navigationId) =>
     designRecipes.filter((recipe) => recipe.navigationId === navigationId).length,
