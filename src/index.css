@@ -255,6 +255,12 @@ html[data-design-transitioning='true'] *::after {
   .nav-link { position: relative; display: inline-flex; min-height: var(--header-control-size); align-items: center; padding-block: 0.35rem; }
   .nav-link::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; height: 1px; background: var(--color-accent); transform: scaleX(0); transform-origin: right; transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1); }
   .nav-link:hover::after, .nav-link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+  .nav-link[aria-current='location']::after,
+  .mobile-nav-link[aria-current='location']::after,
+  .nav-link.nav-contact[aria-current='page']::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
   .footer-link { font-size: .875rem; color: var(--color-muted); }
   .footer-link:hover, .footer-link:focus-visible { color: var(--color-accent); }
 
@@ -608,6 +614,11 @@ html[data-design-transitioning='true'] *::after {
     padding: 0.75rem 1rem;
     white-space: nowrap;
     scroll-snap-align: start;
+  }
+  [data-mobile-navigation='tabs'] .nav-link[aria-current='location'],
+  [data-mobile-navigation='tabs'] .nav-link[aria-current='page'] {
+    border-color: var(--color-accent);
+    color: var(--color-bone);
   }
   .hero-visual { display: none !important; }
 
@@ -1130,21 +1141,39 @@ html[data-design-transitioning='true'] *::after {
   line-height: clamp(1.02, 0.98 + 0.15vw, 1.1);
 }
 
+.section-head-main {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  align-content: start;
+}
+
+.section-head-index {
+  align-self: start;
+}
+
 .section-head-lede {
   margin-top: 0;
+  max-width: var(--measure-width, 42rem);
 }
 
-.section-head-body {
-  margin-top: 0;
+.why-quote-strip {
+  border-left: 2px solid var(--color-accent);
+  padding-left: clamp(1rem, 2vw, 1.5rem);
 }
 
-@media (min-width: 1024px) {
-  .section-head-lede {
-    margin-top: 0.25rem;
-  }
+.scroll-motion {
+  transform: translate3d(0, var(--motion-y, 0px), 0);
+  will-change: transform;
+}
 
-  .section-head-body {
-    margin-top: 0.5rem;
+.scroll-motion-wrap {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-motion {
+    transform: none;
+    will-change: auto;
   }
 }
 

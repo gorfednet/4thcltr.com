@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import {
   ArrowRight,
   Award,
@@ -15,6 +14,7 @@ import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
 import RegenerateButton from '../components/RegenerateButton'
 import Reveal from '../components/Reveal'
+import { ScrollMotion, ScrollMotionProvider } from '../components/ScrollMotion'
 import { useTheme } from '../context/ThemeContext'
 import {
   organizationJsonLd,
@@ -22,6 +22,7 @@ import {
   websiteJsonLd,
 } from '../content/jsonLd'
 import { pageSeo } from '../content/seo'
+import { scrollMotionPresets } from '../content/motion'
 import {
   awards,
   brandStory,
@@ -47,29 +48,22 @@ function SectionHead({
   index,
   title,
   lede,
-  children,
 }: {
   index: string
   title: string
   lede?: string
-  children?: ReactNode
 }) {
   return (
     <div className="section-head grid-12">
-      <p className="label text-accent md:col-span-2">{index}</p>
-      <h2 className="section-head-title display-xl balance md:col-span-10 md:col-start-3 lg:col-span-7">
-        {title}
-      </h2>
-      {lede && (
-        <p className="section-head-lede measure text-[1.0625rem] leading-[1.75] text-muted md:col-span-10 md:col-start-3 lg:col-span-4 lg:col-start-9 lg:row-start-2 lg:self-start">
-          {lede}
-        </p>
-      )}
-      {children && (
-        <div className="section-head-body md:col-span-10 md:col-start-3 lg:col-span-5 lg:row-start-3">
-          {children}
-        </div>
-      )}
+      <p className="section-head-index label text-accent md:col-span-2">{index}</p>
+      <div className="section-head-main md:col-span-10 md:col-start-3 lg:col-span-8">
+        <h2 className="section-head-title display-xl balance">{title}</h2>
+        {lede && (
+          <p className="section-head-lede measure text-[1.0625rem] leading-[1.75] text-muted">
+            {lede}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -180,6 +174,7 @@ export default function Home() {
           </div>
       </section>
 
+      <ScrollMotionProvider>
       <section id="why" className="section-anchor rule-top scroll-mt-24">
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
@@ -191,20 +186,18 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <blockquote
-              className="why-quote balance mt-14 max-w-[22ch] font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight sm:max-w-[26ch] lg:mt-16 lg:max-w-[30ch]"
-            >
-              "{whySection.quote}"
-            </blockquote>
+            <div className="grid-12 mt-12 lg:mt-16">
+              <ScrollMotion drift={scrollMotionPresets.whyQuote} className="md:col-span-10 md:col-start-3">
+                <blockquote
+                  className="why-quote why-quote-strip balance font-display text-[length:clamp(1.85rem,4.6vw,3.4rem)] italic leading-[1.14] tracking-tight max-w-[30ch]"
+                >
+                  "{whySection.quote}"
+                </blockquote>
+              </ScrollMotion>
+            </div>
 
-            <div className="section-content grid-12 mt-14 lg:mt-20">
-              <div className="space-y-6 md:col-span-6 lg:col-span-5">
-                <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                  {brandStory.summary}
-                </p>
-              </div>
-
-              <div className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9 lg:self-end">
+            <div className="grid-12 mt-12 lg:mt-16">
+              <div className="md:col-span-10 md:col-start-3">
                 <DesignLink
                   to="/manifesto"
                   className="group flex items-baseline justify-between gap-6 border-b border-line pb-3 transition-colors duration-300 hover:border-accent"
@@ -223,24 +216,31 @@ export default function Home() {
             </div>
 
             <div
-              className="brand-story-flow section-content mt-14 lg:mt-20"
+              className="brand-story-flow section-content mt-12 lg:mt-16"
               aria-label="The four parts of 4th Culture"
             >
-              {brandStory.inputs.map((input) => (
-                <article key={input.index} className="brand-story-card card-surface">
-                  <p className="label text-accent">{input.index}</p>
-                  <h3 className="font-display text-2xl">{input.name}</h3>
-                  <p className="text-sm leading-relaxed text-bone">{input.detail}</p>
-                </article>
+              {brandStory.inputs.map((input, cardIndex) => (
+                <ScrollMotion
+                  key={input.index}
+                  drift={scrollMotionPresets.brandStoryCard[cardIndex] ?? 0.08}
+                >
+                  <article className="brand-story-card card-surface">
+                    <p className="label text-accent">{input.index}</p>
+                    <h3 className="font-display text-2xl">{input.name}</h3>
+                    <p className="text-sm leading-relaxed text-bone">{input.detail}</p>
+                  </article>
+                </ScrollMotion>
               ))}
               <span aria-hidden className="brand-story-arrow">
                 →
               </span>
-              <article className="brand-story-card brand-story-result">
-                <p className="label text-accent">{brandStory.result.index}</p>
-                <h3 className="font-display text-2xl">{brandStory.result.name}</h3>
-                <p className="text-sm leading-relaxed text-bone">{brandStory.result.detail}</p>
-              </article>
+              <ScrollMotion drift={scrollMotionPresets.brandStoryCard[3]}>
+                <article className="brand-story-card brand-story-result">
+                  <p className="label text-accent">{brandStory.result.index}</p>
+                  <h3 className="font-display text-2xl">{brandStory.result.name}</h3>
+                  <p className="text-sm leading-relaxed text-bone">{brandStory.result.detail}</p>
+                </article>
+              </ScrollMotion>
             </div>
           </Reveal>
         </div>
@@ -346,11 +346,7 @@ export default function Home() {
               index="04 / Proof"
               title={proofSection.title}
               lede={proofSection.lede}
-            >
-              <p className="measure text-[1.0625rem] leading-[1.75] text-muted">
-                {proofSection.intro}
-              </p>
-            </SectionHead>
+            />
           </Reveal>
 
           <div className="section-content mt-16 lg:mt-20">
@@ -366,14 +362,14 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="md:col-span-9 md:col-start-4 lg:col-span-5">
+                  <ScrollMotion drift={scrollMotionPresets.proofHeadline} className="md:col-span-9 md:col-start-4 lg:col-span-5">
                     <p className="balance font-display text-xl italic leading-snug text-bone lg:text-2xl">
                       {outcome.headline}
                     </p>
                     <p className="measure mt-4 text-[0.975rem] leading-relaxed text-muted">
                       {outcome.detail}
                     </p>
-                  </div>
+                  </ScrollMotion>
 
                   <ul className="grid gap-3 sm:grid-cols-2 md:col-span-9 md:col-start-4 lg:col-span-4 lg:col-start-9 lg:grid-cols-1">
                     {outcome.citations.map((citation) => (
@@ -467,19 +463,21 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <div className="relative mt-14 aspect-[16/9] max-h-[22rem] overflow-hidden bg-ground-lift sm:aspect-[16/6] sm:min-h-[12rem] lg:mt-20 lg:aspect-[16/5]">
-              <img
-                src="/who-texture.jpg"
-                alt="Dark concrete wall texture, abstract surface detail"
-                className="h-full w-full object-cover opacity-40 mix-blend-luminosity"
-                width={1400}
-                height={440}
-                decoding="async"
-                loading="lazy"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ground via-transparent to-ground" />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-ground" />
-            </div>
+            <ScrollMotion drift={scrollMotionPresets.whoTexture}>
+              <div className="relative mt-14 aspect-[16/9] max-h-[22rem] overflow-hidden bg-ground-lift sm:aspect-[16/6] sm:min-h-[12rem] lg:mt-20 lg:aspect-[16/5]">
+                <img
+                  src="/who-texture.jpg"
+                  alt="Dark concrete wall texture, abstract surface detail"
+                  className="h-full w-full object-cover opacity-40 mix-blend-luminosity"
+                  width={1400}
+                  height={440}
+                  decoding="async"
+                  loading="lazy"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ground via-transparent to-ground" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-ground" />
+              </div>
+            </ScrollMotion>
           </Reveal>
 
           <Reveal>
@@ -642,6 +640,7 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
+      </ScrollMotionProvider>
     </>
   )
 }
