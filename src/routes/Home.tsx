@@ -253,7 +253,7 @@ export default function Home() {
           <div className="section-content mt-16 lg:mt-20">
             {outcomes.map((outcome, index) => (
               <Reveal key={outcome.client} delay={index * 60}>
-                <article className="proof-row grid-12 group border-t border-line py-10 lg:py-14">
+                <article className="proof-row grid-12 border-t border-line py-10 lg:py-14">
                   <div className="md:col-span-3">
                     <h3 className="wrap-name font-display text-3xl leading-[1.05] lg:text-[2.5rem]">
                       {outcome.client}
@@ -280,12 +280,12 @@ export default function Home() {
                             href={citation.href}
                             target="_blank"
                             rel="noreferrer"
-                            className="group block transition-colors duration-300"
+                            className="block transition-colors duration-300 hover:[&_p]:text-accent"
                           >
-                            <p className="text-sm leading-snug text-balance text-bone transition-colors duration-300 group-hover:text-accent">
+                            <p className="text-sm leading-snug text-balance text-bone transition-colors duration-300">
                               {citation.label}
                             </p>
-                            <p className="label mt-1.5 text-faint transition-colors duration-300 group-hover:text-accent">
+                            <p className="label mt-1.5 text-faint transition-colors duration-300">
                               {citation.source}
                             </p>
                           </a>
