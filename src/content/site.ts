@@ -315,19 +315,14 @@ export const outcomes: Outcome[] = [
         href: 'https://www.mobihealthnews.com/content/circulation-acquired-nemt-broker-logisticare-46-million',
       },
       {
-        label: 'Uber partnership, 2016',
-        source: 'Xconomy',
-        href: 'https://www.xconomy.com/boston/2016/09/27/circulation-uber-team-up-to-get-patients-to-doctors-appointments/',
+        label: 'Transportation platform across 1,500 health facilities, 2018',
+        source: 'BusinessWire',
+        href: 'https://www.businesswire.com/news/home/20180227005360/en/Circulation-Providing-Full-Suite-Transportation-1500-Health',
       },
       {
         label: 'Lyft partnership, 2017',
         source: 'MedCityNews',
         href: 'https://medcitynews.com/2017/12/lyft-and-non-emergency-medical-transportation/',
-      },
-      {
-        label: 'Transportation platform across 1,500 health facilities, 2018',
-        source: 'BusinessWire',
-        href: 'https://www.businesswire.com/news/home/20180227005360/en/Circulation-Providing-Full-Suite-Transportation-1500-Health',
       },
       {
         label: 'Changing non-emergency medical transportation, 2017',
@@ -338,6 +333,11 @@ export const outcomes: Outcome[] = [
         label: '$10.5M Series A for medical transport software, 2017',
         source: 'Xconomy',
         href: 'https://www.xconomy.com/boston/2017/07/25/investors-pump-10-5m-into-circulation-for-medical-transport-software/',
+      },
+      {
+        label: 'Uber partnership, 2016',
+        source: 'Xconomy',
+        href: 'https://www.xconomy.com/boston/2016/09/27/circulation-uber-team-up-to-get-patients-to-doctors-appointments/',
       },
     ],
   },
@@ -362,6 +362,15 @@ export const outcomes: Outcome[] = [
     detail:
       'Co-founded and led as President an anti-congestion service letting citizens report parking violations. Named one of the 12 best apps made in Canada that year, and covered from the Toronto Star to Fast Company. The app translated a common civic frustration into a recognised public-service product.',
     citations: [
+      {
+        label: 'Featured on Product Hunt, 2018',
+        source: 'Product Hunt',
+      },
+      {
+        label: 'The Best Planning Apps, 2016',
+        source: 'Planetizen',
+        href: 'https://www.planetizen.com/blogs/82996-best-planning-apps-2016',
+      },
       {
         label: 'Towit pitches a digital solution to illegal parking, 2015',
         source: 'Toronto Star',
@@ -396,15 +405,6 @@ export const outcomes: Outcome[] = [
         label: '5 Toronto Apps You Should Be Using, 2015',
         source: 'Indie88',
         href: 'https://indie88.com/5-toronto-apps-you-should-be-using/',
-      },
-      {
-        label: 'The Best Planning Apps, 2016',
-        source: 'Planetizen',
-        href: 'https://www.planetizen.com/blogs/82996-best-planning-apps-2016',
-      },
-      {
-        label: 'Featured on Product Hunt, 2018',
-        source: 'Product Hunt',
       },
       {
         label: 'Wikipedia entry',
