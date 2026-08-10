@@ -2263,6 +2263,51 @@ test('history section head separates from outcome rows', async ({ page }) => {
   expect(bounds!.lineCount).toBeGreaterThan(0.9)
 })
 
+test('History citations and further recognition are reverse chronological', async ({
+  page,
+}) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  const sequences = await page.evaluate(() => {
+    const yearsFrom = (text: string) => {
+      const matches = text.match(/\b(?:19|20)\d{2}\b/g)
+      return matches ? Math.max(...matches.map(Number)) : null
+    }
+    const history = [...document.querySelectorAll('#history .history-row')].map((row) => ({
+      client: row.querySelector('h3')?.textContent?.trim() ?? '',
+      years: [...row.querySelectorAll('ul li')].map((item) =>
+        yearsFrom(item.textContent ?? ''),
+      ),
+    }))
+    const furtherRecognitionHeading = [...document.querySelectorAll('#who h3')].find(
+      (heading) => heading.textContent?.trim() === 'Further recognition',
+    )
+    const furtherRecognition = furtherRecognitionHeading?.parentElement
+      ? [...furtherRecognitionHeading.parentElement.querySelectorAll('ul li')].map(
+          (item) => yearsFrom(item.textContent ?? ''),
+        )
+      : []
+    return { history, furtherRecognition }
+  })
+
+  for (const sequence of [
+    ...sequences.history.map(({ client, years }) => ({ label: client, years })),
+    { label: 'Further recognition', years: sequences.furtherRecognition },
+  ]) {
+    const datedYears = sequence.years.filter((year): year is number => year !== null)
+    expect(datedYears, sequence.label).toEqual(
+      [...datedYears].sort((left, right) => right - left),
+    )
+    const firstUndatedIndex = sequence.years.indexOf(null)
+    if (firstUndatedIndex >= 0) {
+      expect(
+        sequence.years.slice(firstUndatedIndex),
+        `${sequence.label} undated entries`,
+      ).toEqual(sequence.years.slice(firstUndatedIndex).fill(null))
+    }
+  }
+})
+
 test('supplemental awards do not duplicate history citation urls', async ({ page }) => {
   await openRecipe(page, designRecipes[0].id)
   const duplicates = await page.evaluate(() => {
@@ -2281,6 +2326,8 @@ test('TowIt recognition is consolidated in History with Wikipedia last', async (
   })
   const citations = towItRow.locator('ul li')
   await expect(citations).toHaveCount(10)
+  await expect(citations.nth(0)).toContainText('Product Hunt')
+  await expect(citations.nth(1)).toContainText('Planetizen')
   await expect(towItRow).toContainText('Product Hunt')
   await expect(towItRow).toContainText('Planetizen')
   await expect(towItRow).toContainText('Indie88')
