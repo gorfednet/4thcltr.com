@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router'
 import Layout from './components/Layout'
+import ManifestoModal from './components/ManifestoModal'
 import Contact from './routes/Contact'
 import Home from './routes/Home'
-import Manifesto from './routes/Manifesto'
 import NotFound from './routes/NotFound'
 
 export const router = createBrowserRouter([
@@ -11,7 +11,15 @@ export const router = createBrowserRouter([
     Component: Layout,
     children: [
       { index: true, Component: Home },
-      { path: 'manifesto', Component: Manifesto },
+      {
+        path: 'manifesto',
+        element: (
+          <>
+            <Home />
+            <ManifestoModal />
+          </>
+        ),
+      },
       { path: 'contact', Component: Contact },
       { path: '*', Component: NotFound },
     ],

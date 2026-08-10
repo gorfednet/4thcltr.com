@@ -8,8 +8,10 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
+import ContactForm from '../components/ContactForm'
 import DesignLink from '../components/DesignLink'
 import HeroVisual from '../components/HeroVisual'
+import SectionLink from '../components/SectionLink'
 import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
 import RegenerateButton from '../components/RegenerateButton'
@@ -29,6 +31,7 @@ import {
   broadcast,
   career,
   clients,
+  contactCopy,
   engagements,
   heroRegenerateNote,
   heroStatLabel,
@@ -330,8 +333,9 @@ export default function Home() {
                   </ul>
 
                   <div className="mt-auto pt-9">
-                    <DesignLink
-                      to={`/contact?engagement=${engagement.key}`}
+                    <SectionLink
+                      to="contact"
+                      params={{ engagement: engagement.key }}
                       className="engagement-action group flex min-h-12 items-center justify-between gap-4 border border-line px-5 py-3.5 text-bone"
                       data-cta={`engage-${engagement.key}`}
                     >
@@ -342,7 +346,7 @@ export default function Home() {
                         aria-hidden
                         className="transition-transform duration-300 group-hover:translate-x-1"
                       />
-                    </DesignLink>
+                    </SectionLink>
                   </div>
                 </div>
               </Reveal>
@@ -623,25 +627,33 @@ export default function Home() {
             </h2>
 
             <div className="section-content grid-12 mt-16">
-              <div className="md:col-span-8 lg:col-span-6">
+              <aside className="md:col-span-4 lg:col-span-4">
                 <p className="measure text-xl leading-relaxed text-muted">
                   {startSection.lede}
                 </p>
-              </div>
+                <div className="mt-10 border-t border-line-soft pt-6">
+                  <p className="label text-faint">Useful context</p>
+                  <ul className="mt-5 space-y-3 text-base leading-relaxed text-muted">
+                    <li>Your role and organisation</li>
+                    <li>The decision or problem at hand</li>
+                    <li>Where the product is today: concept, launch, live or scaling</li>
+                    <li>Any timing, team or regulatory constraints</li>
+                    <li>What a strong result would make possible</li>
+                  </ul>
+                </div>
+                <div className="mt-10 border-t border-line-soft pt-6">
+                  <p className="label text-faint">What happens next</p>
+                  <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted">
+                    {contactCopy.whatHappensNext.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ul>
+                </div>
+              </aside>
 
-              <DesignLink
-                to="/contact"
-                className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 md:col-span-6 md:col-start-3 lg:col-span-4 lg:col-start-9"
-                data-cta="start"
-              >
-                <span className="label">{startSection.ctaLabel}</span>
-                <ArrowRight
-                  size={14}
-                  strokeWidth={1.5}
-                  aria-hidden
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </DesignLink>
+              <div className="mt-12 md:col-span-8 md:mt-0 lg:col-span-7 lg:col-start-6">
+                <ContactForm />
+              </div>
             </div>
           </Reveal>
         </div>

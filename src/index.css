@@ -257,7 +257,7 @@ html[data-design-transitioning='true'] *::after {
   .nav-link:hover::after, .nav-link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
   .nav-link[aria-current='location']::after,
   .mobile-nav-link[aria-current='location']::after,
-  .nav-link.nav-contact[aria-current='page']::after {
+  .nav-link[aria-current='page']::after {
     transform: scaleX(1);
     transform-origin: left;
   }
@@ -1624,3 +1624,80 @@ html[data-design-transitioning='true'] *::after {
   }
 }
 
+/* Manifesto route modal */
+.manifesto-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  justify-content: center;
+  padding: clamp(0.75rem, 2.5vw, 2.5rem);
+  background: rgb(4 4 5 / 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.manifesto-modal {
+  width: min(100%, 76rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-ground);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-block, 0);
+  animation: manifesto-modal-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.manifesto-modal-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem clamp(1.25rem, 3vw, 2rem);
+  border-bottom: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-ground) 90%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.manifesto-modal-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.125rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control, 0);
+  color: var(--color-bone);
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.manifesto-modal-close:hover {
+  border-color: var(--color-bone);
+  color: var(--color-accent);
+}
+
+/* The article was designed as a page; trim its header clearance inside the modal. */
+.manifesto-modal .page-intro {
+  padding-top: clamp(3rem, 7vh, 5rem) !important;
+  padding-bottom: clamp(2.5rem, 5vh, 4rem) !important;
+}
+
+@keyframes manifesto-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .manifesto-modal {
+    animation: none;
+  }
+}

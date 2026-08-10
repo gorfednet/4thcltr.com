@@ -69,7 +69,6 @@ export function useScrollSpy(): ScrollSpySectionId | null {
     }
   }, [location.hash, location.key, location.pathname])
 
-  if (/^\/contact\/?$/.test(location.pathname)) return 'contact'
   if (location.pathname !== '/') return null
   return homeState.locationKey === location.key ? homeState.activeId : null
 }

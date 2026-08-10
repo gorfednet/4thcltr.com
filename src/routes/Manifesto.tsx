@@ -1,6 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import DesignLink from '../components/DesignLink'
 import PageMeta from '../components/PageMeta'
+import SectionLink from '../components/SectionLink'
 import Reveal from '../components/Reveal'
 import { manifestoJsonLd, organizationJsonLd, personJsonLd } from '../content/jsonLd'
 import { pageSeo } from '../content/seo'
@@ -111,13 +112,13 @@ export default function Manifesto() {
             </p>
 
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <DesignLink
-                to="/contact"
+              <SectionLink
+                to="contact"
                 className="label inline-flex items-center gap-2 border border-accent bg-accent px-7 py-3.5 text-on-accent transition-colors duration-300 hover:bg-accent-deep hover:border-accent-deep"
               >
                 Describe your project
                 <ArrowRight size={13} strokeWidth={1.5} aria-hidden />
-              </DesignLink>
+              </SectionLink>
               <DesignLink
                 to="/"
                 className="label inline-flex items-center gap-2 border border-line px-7 py-3.5 text-bone transition-colors duration-300 hover:border-bone"

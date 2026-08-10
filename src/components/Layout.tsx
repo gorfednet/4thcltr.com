@@ -51,9 +51,6 @@ function getRouteNavigation(pathname: string): CurrentNavigation {
   if (normalized === '/manifesto') {
     return { key: 'why', ariaCurrent: 'page' }
   }
-  if (normalized === '/contact') {
-    return { key: 'contact', ariaCurrent: 'page' }
-  }
   return null
 }
 
@@ -211,15 +208,15 @@ function NavigationLinks({
       >
         {content('4.0', 'Proof')}
       </SectionLink>
-      <DesignLink
-        to="/contact"
+      <SectionLink
+        to="contact"
         className={`${className} nav-contact`}
-        onClick={onNavigate}
-        aria-current={currentFor('contact')}
-        data-nav-key="contact"
+        onNavigate={onNavigate}
+        current={currentFor('contact')}
+        navKey="contact"
       >
         {content('6.0', 'Contact')}
-      </DesignLink>
+      </SectionLink>
     </>
   )
 }
@@ -604,9 +601,9 @@ export default function Layout() {
                   </SectionLink>
                 </li>
                 <li>
-                  <DesignLink to="/contact" className="footer-link">
+                  <SectionLink to="contact" className="footer-link">
                     Describe the problem
-                  </DesignLink>
+                  </SectionLink>
                 </li>
               </ul>
             </div>

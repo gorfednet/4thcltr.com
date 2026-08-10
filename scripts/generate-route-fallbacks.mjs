@@ -14,14 +14,6 @@ const routes = [
     url: 'https://4thcltr.com/manifesto',
     type: 'article',
   },
-  {
-    segment: 'contact',
-    title: 'Contact Michael Duncan McArthur · 4th Culture',
-    description:
-      'Contact 4th Culture about product strategy, design leadership, end-to-end delivery, assembled teams, speaking and advisory work.',
-    url: 'https://4thcltr.com/contact',
-    type: 'website',
-  },
 ]
 
 function replaceTag(html, pattern, replacement) {
