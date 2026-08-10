@@ -383,11 +383,6 @@ export const outcomes: Outcome[] = [
         href: 'https://techvibes.com/2015/07/10/best-apps-made-in-canada-2015-07-10',
       },
       {
-        label: 'Wikipedia entry',
-        source: 'Wikipedia',
-        href: 'https://en.wikipedia.org/wiki/TowIt',
-      },
-      {
         label: 'Report parking violations from your phone, 2015',
         source: 'MobileSyrup',
         href: 'https://mobilesyrup.com/2015/01/27/towit-helps-torontonians-report-parking-violations-from-their-phone/',
@@ -396,6 +391,25 @@ export const outcomes: Outcome[] = [
         label: 'Public help catch parking violators in the act, 2015',
         source: 'Global News',
         href: 'https://globalnews.ca/news/1964509/toronto-based-app-lets-public-help-catch-parking-violators-in-the-act/',
+      },
+      {
+        label: '5 Toronto Apps You Should Be Using, 2015',
+        source: 'Indie88',
+        href: 'https://indie88.com/5-toronto-apps-you-should-be-using/',
+      },
+      {
+        label: 'The Best Planning Apps, 2016',
+        source: 'Planetizen',
+        href: 'https://www.planetizen.com/blogs/82996-best-planning-apps-2016',
+      },
+      {
+        label: 'Featured on Product Hunt, 2018',
+        source: 'Product Hunt',
+      },
+      {
+        label: 'Wikipedia entry',
+        source: 'Wikipedia',
+        href: 'https://en.wikipedia.org/wiki/TowIt',
       },
     ],
   },
@@ -624,6 +638,7 @@ const historyCitationHrefSet = new Set(
 
 /** Honours not already linked from History outcome citations. */
 export const supplementalAwards = awards.filter((award) => {
+  if (award.detail === 'TowIt') return false
   if (award.href && historyCitationHrefSet.has(award.href)) return false
   if (award.title === 'Mobile of the Day') return false
   if (award.title.includes("iTunes North American")) return false

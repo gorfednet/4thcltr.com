@@ -116,7 +116,7 @@ export default function Manifesto() {
                 to="contact"
                 className="label inline-flex items-center gap-2 border border-accent bg-accent px-7 py-3.5 text-on-accent transition-colors duration-300 hover:bg-accent-deep hover:border-accent-deep"
               >
-                Describe your project
+                Describe the problem
                 <ArrowRight size={13} strokeWidth={1.5} aria-hidden />
               </SectionLink>
               <DesignLink

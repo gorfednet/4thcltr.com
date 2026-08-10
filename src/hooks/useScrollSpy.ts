@@ -16,16 +16,17 @@ function getAnchorOffset(): number {
 
 function pickActiveSection(): ScrollSpySectionId | null {
   const anchorY = getAnchorOffset()
+  let activeId: ScrollSpySectionId | null = null
 
   for (const { id } of scrollSpySections) {
     const el = document.getElementById(id)
     if (!el) continue
-    const rect = el.getBoundingClientRect()
-    if (rect.top <= anchorY && rect.bottom > anchorY) return id
+    if (el.getBoundingClientRect().top > anchorY) break
+    activeId = id
   }
 
   if (window.scrollY <= anchorY) return 'why'
-  return null
+  return activeId
 }
 
 function getHashSectionId(hash: string): ScrollSpySectionId | null {
