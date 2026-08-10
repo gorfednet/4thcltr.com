@@ -81,6 +81,34 @@ async function expectMobileTabState(
     .toBe(true)
 }
 
+async function assertEngagementHeadersAligned(page: Page) {
+  const engagementCards = page.locator('.engagement-card')
+  await expect(engagementCards).toHaveCount(3)
+
+  for (let index = 0; index < 3; index += 1) {
+    const card = engagementCards.nth(index)
+    const [iconBox, metaBox, headingBox] = await Promise.all([
+      card.locator('.engagement-icon svg').boundingBox(),
+      card.locator('.engagement-meta').boundingBox(),
+      card.locator('h3').boundingBox(),
+    ])
+    expect(iconBox).not.toBeNull()
+    expect(metaBox).not.toBeNull()
+    expect(headingBox).not.toBeNull()
+
+    const iconCenter = iconBox!.y + iconBox!.height / 2
+    const metaCenter = metaBox!.y + metaBox!.height / 2
+    expect(Math.abs(iconCenter - metaCenter)).toBeLessThanOrEqual(1)
+    expect(iconBox!.x + iconBox!.width).toBeLessThanOrEqual(metaBox!.x)
+    expect(headingBox!.y).toBeGreaterThan(
+      Math.max(
+        iconBox!.y + iconBox!.height,
+        metaBox!.y + metaBox!.height,
+      ),
+    )
+  }
+}
+
 function boxesOverlap(
   a: { x: number; y: number; width: number; height: number },
   b: { x: number; y: number; width: number; height: number },
@@ -1694,21 +1722,7 @@ test('card metadata uses compact icon and label hierarchy', async ({ page }) => 
       expect(iconBox!.x + iconBox!.width).toBeLessThanOrEqual(copyBox!.x + 1)
     }
 
-    const engagementCards = page.locator('.engagement-card')
-    await expect(engagementCards).toHaveCount(3)
-    for (let index = 0; index < 3; index += 1) {
-      const card = engagementCards.nth(index)
-      const [iconBox, metaBox, headingBox] = await Promise.all([
-        card.locator('svg').first().boundingBox(),
-        card.locator('.engagement-meta').boundingBox(),
-        card.locator('h3').boundingBox(),
-      ])
-      expect(iconBox).not.toBeNull()
-      expect(metaBox).not.toBeNull()
-      expect(headingBox).not.toBeNull()
-      expect(Math.abs(iconBox!.y - metaBox!.y)).toBeLessThanOrEqual(8)
-      expect(headingBox!.y).toBeGreaterThan(metaBox!.y + metaBox!.height)
-    }
+    await assertEngagementHeadersAligned(page)
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -1717,11 +1731,80 @@ test('card metadata uses compact icon and label hierarchy', async ({ page }) => 
   }
 
   await expect(page.locator('.engagement-meta')).toHaveText([
-    '01 / Single day',
-    '02 / One to four weeks',
-    '03 / Project length',
+    '3.1 / Single day',
+    '3.2 / One to four weeks',
+    '3.3 / Project length',
   ])
 })
+
+test('flow numbering is hierarchical and consistent across nav and sections', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  await expect(page.locator('.section-head-index')).toHaveText([
+    '1.0 / Manifesto',
+    '2.0 / Practice',
+    '3.0 / Engage',
+    '4.0 / Proof',
+    '5.0 / Who',
+  ])
+  await expect(
+    page.locator('#contact .label.text-accent').first(),
+  ).toHaveText('6.0 / Start')
+
+  const navGlyphs = page.locator('.primary-navigation .nav-glyph')
+  await expect(navGlyphs).toHaveText(['1.0', '2.0', '3.0', '4.0', '6.0'])
+
+  await expect(
+    page.locator('.brand-story-card .label.text-accent'),
+  ).toHaveText(['1.0.1', '1.0.2', '1.0.3', '1.0.4'])
+
+  await page.goto(`/manifesto?design=${designRecipes[0].id}`)
+  await page.evaluate(() => document.fonts.ready)
+  const positionNumbers = page.locator(
+    'section .font-display.italic.text-accent',
+  )
+  await expect(positionNumbers).toHaveText([
+    '1.1',
+    '1.2',
+    '1.3',
+    '1.4',
+    '1.5',
+    '1.6',
+    '1.7',
+  ])
+  await expect(page.getByText('1.0.4', { exact: true })).toBeVisible()
+
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  )
+  expect(overflow).toBeLessThanOrEqual(1)
+})
+
+for (const recipe of designRecipes) {
+  test(`engagement card headers align across responsive grids in ${recipe.id}`, async ({
+    page,
+  }) => {
+    await openRecipe(page, recipe.id)
+
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 768, height: 1024 },
+      { width: 1280, height: 800 },
+    ]) {
+      await page.setViewportSize(viewport)
+      await assertEngagementHeadersAligned(page)
+
+      const overflow = await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      )
+      expect(overflow).toBeLessThanOrEqual(1)
+    }
+  })
+}
 
 test('engagement tiers show clear rates and carry intent into contact', async ({ page }) => {
   await openRecipe(page, designRecipes[0].id)

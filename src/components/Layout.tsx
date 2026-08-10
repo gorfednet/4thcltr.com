@@ -171,7 +171,7 @@ function NavigationLinks({
           aria-current={currentFor('why')}
           data-nav-key="why"
         >
-          {content('01', 'Manifesto')}
+          {content('1.0', 'Manifesto')}
         </DesignLink>
       ) : (
         <SectionLink
@@ -181,7 +181,7 @@ function NavigationLinks({
           current={currentFor('why')}
           navKey="why"
         >
-          {content('01', 'Manifesto')}
+          {content('1.0', 'Manifesto')}
         </SectionLink>
       )}
       <SectionLink
@@ -191,7 +191,7 @@ function NavigationLinks({
         current={currentFor('practice')}
         navKey="practice"
       >
-        {content('02', 'Practice')}
+        {content('2.0', 'Practice')}
       </SectionLink>
       <SectionLink
         to="engage"
@@ -200,7 +200,7 @@ function NavigationLinks({
         current={currentFor('engage')}
         navKey="engage"
       >
-        {content('03', 'Engage')}
+        {content('3.0', 'Engage')}
       </SectionLink>
       <SectionLink
         to="proof"
@@ -209,7 +209,7 @@ function NavigationLinks({
         current={currentFor('proof')}
         navKey="proof"
       >
-        {content('04', 'Proof')}
+        {content('4.0', 'Proof')}
       </SectionLink>
       <DesignLink
         to="/contact"
@@ -218,7 +218,7 @@ function NavigationLinks({
         aria-current={currentFor('contact')}
         data-nav-key="contact"
       >
-        {content('05', 'Contact')}
+        {content('6.0', 'Contact')}
       </DesignLink>
     </>
   )
