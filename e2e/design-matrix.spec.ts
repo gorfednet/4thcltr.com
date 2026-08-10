@@ -1415,14 +1415,22 @@ test('design swaps suppress inherited motion and close open menus', async ({ pag
   await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 })
 
-test('site has one accessible contact form without DOM botcheck', async ({ page }) => {
+test('site has one accessible contact form with an unchecked hidden botcheck', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await openRecipe(page, designRecipes[0].id)
   const form = page.locator('form.contact-form')
 
   await expect(page.locator('form')).toHaveCount(1)
   await expect(form).toHaveCount(1)
-  await expect(form.locator('input[name="botcheck"]')).toHaveCount(0)
+  const botcheck = form.locator('input[name="botcheck"]')
+  await expect(botcheck).toHaveCount(1)
+  await expect(botcheck).toHaveAttribute('type', 'checkbox')
+  await expect(botcheck).toHaveAttribute('aria-hidden', 'true')
+  await expect(botcheck).not.toBeChecked()
+  await expect(botcheck).toBeHidden()
+  await expect(form.locator('input[name="company_website"]')).toHaveCount(0)
   await expect(form.getByLabel('Name')).toHaveAttribute('required', '')
   await expect(form.getByLabel('Email')).toHaveAttribute('type', 'email')
   await expect(form.getByLabel('Organisation')).toBeVisible()
@@ -1444,6 +1452,26 @@ test('site has one accessible contact form without DOM botcheck', async ({ page 
   ).toHaveCount(1)
   await expect(form.getByLabel('Message')).toHaveAttribute('required', '')
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
+})
+
+test('contact honeypot reads the submitted DOM state without a change event', async ({
+  page,
+}) => {
+  let requestCount = 0
+  await page.route('https://api.web3forms.com/submit', async (route) => {
+    requestCount += 1
+    await route.abort()
+  })
+  await openRecipe(page, designRecipes[0].id)
+
+  await page.locator('form.contact-form').evaluate((form: HTMLFormElement) => {
+    const botcheck = form.elements.namedItem('botcheck') as HTMLInputElement
+    botcheck.checked = true
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+  })
+
+  await expect(page.getByRole('status')).toContainText('Message sent')
+  expect(requestCount).toBe(0)
 })
 
 test('contact writing controls remain restrained in every recipe', async ({ page }) => {
@@ -1489,10 +1517,12 @@ test('hero opening and outcome stages are clean interface cards', async ({ page 
 
 test('contact form submits successfully without changing design state or URL', async ({ page }) => {
   let submittedBody = ''
+  let submittedContentType = ''
   let requestCount = 0
   await page.route('https://api.web3forms.com/submit', async (route) => {
     requestCount += 1
     submittedBody = route.request().postData() ?? ''
+    submittedContentType = route.request().headers()['content-type'] ?? ''
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -1526,11 +1556,14 @@ test('contact form submits successfully without changing design state or URL', a
   await expect(status).toContainText('Message sent')
   await expect(status).toBeFocused()
   await expect(page.locator('form')).toHaveCount(0)
-  expect(submittedBody).toContain('Test Person')
-  expect(submittedBody).toContain('test@example.com')
-  expect(submittedBody).toContain('Example Company')
-  expect(submittedBody).toContain('Leadership, strategy or team development')
-  expect(submittedBody.toLowerCase()).not.toContain('botcheck')
+  expect(submittedContentType).toContain('application/json')
+  const submitted = JSON.parse(submittedBody) as Record<string, unknown>
+  expect(submitted.name).toBe('Test Person')
+  expect(submitted.email).toBe('test@example.com')
+  expect(submitted.organization).toBe('Example Company')
+  expect(submitted.reason).toBe('Leadership, strategy or team development')
+  expect(submitted.botcheck).toBe(false)
+  expect(typeof submitted.botcheck).toBe('boolean')
   await expect(page).toHaveURL(/design=noir/)
   await expect(page).not.toHaveURL(/submitted=/)
   expect(requestCount).toBe(1)
@@ -1567,7 +1600,7 @@ test('contact form failure stays editable and reports the error', async ({ page 
   await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
 })
 
-test('contact form surfaces Web3Forms honeypot errors without clearing the form', async ({
+test('contact form masks Web3Forms honeypot errors without clearing the form', async ({
   page,
 }) => {
   await page.route('https://api.web3forms.com/submit', (route) =>
@@ -1588,7 +1621,10 @@ test('contact form surfaces Web3Forms honeypot errors without clearing the form'
   await page.getByLabel('Message').fill('A useful test enquiry.')
   await page.getByRole('button', { name: 'Send enquiry' }).click()
 
-  await expect(page.getByRole('alert')).toContainText('Honeypot Error')
+  await expect(page.getByRole('alert')).toHaveText(
+    'Could not verify your submission. Refresh the page and try again.',
+  )
+  await expect(page.getByRole('alert')).not.toContainText(/honeypot|botcheck/i)
   await expect(page.locator('form.contact-form')).toBeVisible()
   await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
 })

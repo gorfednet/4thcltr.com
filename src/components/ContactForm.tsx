@@ -21,7 +21,6 @@ const engagementReasons: Record<string, string> = {
 
 export default function ContactForm() {
   const [searchParams] = useSearchParams()
-  const [honeypot, setHoneypot] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -44,13 +43,14 @@ export default function ContactForm() {
     if (submissionInFlight.current) return
     setFormError(null)
 
-    if (honeypot.trim() !== '') {
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    const botcheck = formData.has('botcheck')
+    if (botcheck) {
       setSubmitted(true)
       return
     }
 
-    const form = event.currentTarget
-    const formData = new FormData(form)
     submissionInFlight.current = true
     setSubmitting(true)
     const result = await submitContactEnquiry({
@@ -59,6 +59,7 @@ export default function ContactForm() {
       organisation: String(formData.get('organisation') ?? ''),
       reason: String(formData.get('reason') ?? ''),
       message: String(formData.get('message') ?? ''),
+      botcheck,
     })
     submissionInFlight.current = false
     setSubmitting(false)
@@ -93,10 +94,7 @@ export default function ContactForm() {
           <button
             type="button"
             className="button-outline label min-h-12 px-6 py-3"
-            onClick={() => {
-              setSubmitted(false)
-              setHoneypot('')
-            }}
+            onClick={() => setSubmitted(false)}
           >
             Send another enquiry
           </button>
@@ -109,12 +107,10 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} className="contact-form relative grid gap-6">
       <input
         hidden
-        type="text"
-        name="company_website"
+        type="checkbox"
+        name="botcheck"
         tabIndex={-1}
-        autoComplete="off"
-        value={honeypot}
-        onChange={(event) => setHoneypot(event.target.value)}
+        aria-hidden="true"
       />
 
       {formError && (
