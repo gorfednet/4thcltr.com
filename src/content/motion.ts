@@ -2,7 +2,7 @@
  * Sol motion vocabulary and scroll-spy section map for the home narrative.
  */
 
-export type ScrollSpySectionId = 'why' | 'practice' | 'engage' | 'proof' | 'contact'
+export type ScrollSpySectionId = 'why' | 'practice' | 'engage' | 'history' | 'contact'
 
 export const scrollSpySections: ReadonlyArray<{
   id: ScrollSpySectionId
@@ -11,7 +11,7 @@ export const scrollSpySections: ReadonlyArray<{
   { id: 'why', navKey: 'why' },
   { id: 'practice', navKey: 'practice' },
   { id: 'engage', navKey: 'engage' },
-  { id: 'proof', navKey: 'proof' },
+  { id: 'history', navKey: 'history' },
   { id: 'contact', navKey: 'contact' },
 ]
 
@@ -19,6 +19,6 @@ export const scrollSpySections: ReadonlyArray<{
 export const scrollMotionPresets = {
   whyQuote: 0.1,
   brandStoryCard: [0.06, 0.08, 0.1, 0.12] as const,
-  proofHeadline: -0.04,
+  historyHeadline: -0.04,
   whoTexture: 0.14,
 } as const

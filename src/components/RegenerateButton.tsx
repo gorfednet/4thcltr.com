@@ -28,7 +28,7 @@ export default function RegenerateButton() {
   )
 
   return (
-    <div className="hero-cta mt-4 lg:mt-5">
+    <div className="hero-cta">
       <button
         type="button"
         onClick={handleClick}
