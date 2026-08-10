@@ -1395,11 +1395,14 @@ test('public copy and metadata contain no em dashes', async ({ page }) => {
   )
 })
 
-test('public positioning includes implementation and accountable delivery', async ({ page }) => {
+test('public positioning is concise while service detail remains available', async ({ page }) => {
   await openRecipe(page, designRecipes[0].id)
 
-  await expect(page.locator('.hero-lede')).toContainText('production front-end implementation')
-  await expect(page.locator('.hero-lede')).toContainText('end-to-end delivery')
+  const positioning =
+    'Product strategy, design leadership and end-to-end delivery, shaped to fit the scope.'
+  await expect(page.locator('.hero-lede')).toContainText(positioning)
+  await expect(page.locator('.hero-lede')).not.toContainText('front-end implementation')
+  await expect(page.locator('footer')).toContainText(positioning)
   const buildTab = page.getByRole('tab', { name: 'Design & build' })
   await expect(buildTab).toBeVisible()
   await buildTab.click()
@@ -1412,12 +1415,14 @@ test('public positioning includes implementation and accountable delivery', asyn
     .locator('meta[name="description"]')
     .first()
     .getAttribute('content')
-  expect(description).toContain('production front-end implementation')
+  expect(description).toContain('product strategy, design leadership and end-to-end delivery')
+  expect(description).not.toContain('front-end implementation')
   expect(description).toContain('end-to-end delivery')
 
   const structuredData = (
     await page.locator('script[type="application/ld+json"]').allTextContents()
   ).join(' ')
+  expect(structuredData).toContain(positioning)
   expect(structuredData).toContain('Front-end implementation')
   expect(structuredData).toContain('Agentic workflows')
 })

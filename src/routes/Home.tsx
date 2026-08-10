@@ -129,9 +129,7 @@ export default function Home() {
             <div className="hero-lede mt-3.5 lg:mt-4">
               <p className="measure text-[0.9375rem] leading-[1.55] text-muted lg:max-w-[46ch] lg:text-base">
                 {studio.name} is the practice of{' '}
-                <span className="text-bone">{studio.principal}</span>. Product strategy,
-                design leadership, production front-end implementation and end-to-end delivery
-                for purpose-built utility platforms.
+                <span className="text-bone">{studio.principal}</span>. {studio.positioning}
               </p>
             </div>
 
