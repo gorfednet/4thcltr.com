@@ -5,7 +5,7 @@ export const defaultSeo = {
   title: '4th Culture | Product strategy, design and delivery',
   titleTemplate: '%s · 4th Culture',
   description:
-    'Michael Duncan McArthur leads 4th Culture, a Toronto practice for product strategy, design, production front-end implementation and end-to-end delivery.',
+    'Michael Duncan McArthur leads 4th Culture, a Toronto practice for product strategy, design leadership and end-to-end delivery, shaped to fit the scope.',
   keywords: [
     '4th Culture',
     'design practice',
@@ -51,7 +51,7 @@ export const pageSeo = {
     path: '/contact',
     title: 'Contact Michael Duncan McArthur',
     description:
-      'Contact 4th Culture about design leadership, strategy, end-to-end product design, production front-end implementation, assembled teams, speaking and advisory work.',
+      'Contact 4th Culture about product strategy, design leadership, end-to-end delivery, assembled teams, speaking and advisory work.',
   },
   notFound: {
     path: '/404',

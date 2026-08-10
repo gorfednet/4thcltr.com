@@ -8,7 +8,7 @@ export const studio = {
   principal: 'Michael Duncan McArthur',
   base: 'Toronto',
   positioning:
-    'Independent product strategy, design leadership, front-end implementation and delivery for purpose-built utility platforms, from first idea to established product.',
+    'Product strategy, design leadership and end-to-end delivery, shaped to fit the scope.',
   linkedin: 'https://www.linkedin.com/in/gorfed/',
   github: 'https://github.com/gorfednet',
   portfolio: 'https://gorfed.net',
