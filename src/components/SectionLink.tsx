@@ -8,7 +8,8 @@ type SectionLinkProps = {
   children: ReactNode
   className?: string
   onNavigate?: () => void
-  current?: boolean
+  current?: 'location' | 'page'
+  navKey?: string
 }
 
 /**
@@ -21,6 +22,7 @@ export default function SectionLink({
   className = '',
   onNavigate,
   current,
+  navKey,
 }: SectionLinkProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -43,7 +45,8 @@ export default function SectionLink({
       href={designAwarePath(`/#${to}`, location.search, recipe.id)}
       onClick={handleClick}
       className={className}
-      aria-current={current ? 'location' : undefined}
+      aria-current={current}
+      data-nav-key={navKey}
     >
       {children}
     </a>

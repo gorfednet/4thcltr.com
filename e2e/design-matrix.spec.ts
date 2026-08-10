@@ -45,6 +45,42 @@ async function openRecipe(page: Page, recipeId: string) {
   await page.evaluate(() => document.fonts.ready)
 }
 
+function mobileTabNavigation(page: Page) {
+  return page.locator(
+    '[data-mobile-navigation="tabs"] .primary-navigation',
+  )
+}
+
+async function expectMobileTabState(
+  page: Page,
+  key: 'why' | 'practice' | 'engage' | 'proof' | 'contact',
+  ariaCurrent: 'location' | 'page',
+) {
+  const navigation = mobileTabNavigation(page)
+  const tab = navigation.locator(`[data-nav-key="${key}"]`)
+
+  await expect(tab).toHaveAttribute('aria-current', ariaCurrent)
+  await expect
+    .poll(() => navigation.locator('[aria-current]').count())
+    .toBe(1)
+  await expect
+    .poll(() =>
+      navigation.evaluate((element, activeKey) => {
+        const activeTab = element.querySelector<HTMLElement>(
+          `[data-nav-key="${activeKey}"]`,
+        )
+        if (!activeTab) return false
+        const navigationBox = element.getBoundingClientRect()
+        const tabBox = activeTab.getBoundingClientRect()
+        return (
+          tabBox.left >= navigationBox.left - 1 &&
+          tabBox.right <= navigationBox.right + 1
+        )
+      }, key),
+    )
+    .toBe(true)
+}
+
 function boxesOverlap(
   a: { x: number; y: number; width: number; height: number },
   b: { x: number; y: number; width: number; height: number },
@@ -1000,39 +1036,150 @@ test('mobile tab navigation scrolls horizontally with card-backed links', async 
 })
 
 test('mobile tab navigation follows the current section and route', async ({ page }) => {
+  test.slow()
   await page.setViewportSize({ width: 320, height: 760 })
   const tabsRecipes = designRecipes.filter((recipe) => recipe.mobileNavigationId === 'tabs')
 
-  const activeTabIsFullyVisible = async () =>
-    page
-      .locator('[data-mobile-navigation="tabs"] .primary-navigation')
-      .evaluate((navigation) => {
-        const activeTab = navigation.querySelector<HTMLElement>('[aria-current]')
-        if (!activeTab) return false
-        const navigationBox = navigation.getBoundingClientRect()
-        const tabBox = activeTab.getBoundingClientRect()
-        return (
-          tabBox.left >= navigationBox.left - 1 &&
-          tabBox.right <= navigationBox.right + 1
-        )
-      })
-
   for (const recipe of tabsRecipes) {
     await openRecipe(page, recipe.id)
-    const nav = page.locator('[data-mobile-navigation="tabs"] .primary-navigation')
+    const nav = mobileTabNavigation(page)
     const proofLink = nav.locator('a[href*="#proof"]')
+
+    await expectMobileTabState(page, 'why', 'location')
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeLessThanOrEqual(1)
+
+    await nav.evaluate((element) =>
+      element.scrollTo({
+        left: element.scrollWidth - element.clientWidth,
+        behavior: 'auto',
+      }),
+    )
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+    await page.reload()
+    await expectMobileTabState(page, 'why', 'location')
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeLessThanOrEqual(1)
 
     await page.locator('#proof').scrollIntoViewIfNeeded()
     await expect(proofLink).toHaveAttribute('aria-current', 'location')
-    await expect.poll(activeTabIsFullyVisible).toBe(true)
+    await expectMobileTabState(page, 'proof', 'location')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
 
     await page.goto(`/contact/?design=${recipe.id}`)
-    const contactLink = nav.getByRole('link', { name: 'Contact', exact: true })
-    await expect(contactLink).toHaveAttribute('aria-current', 'page')
-    await expect.poll(activeTabIsFullyVisible).toBe(true)
+    await expectMobileTabState(page, 'contact', 'page')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+
+    await page.getByRole('link', { name: '4th Culture, home' }).first().click()
+    await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}$`))
+    await expectMobileTabState(page, 'why', 'location')
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeLessThanOrEqual(1)
+
+    await page.goto(`/manifesto/?design=${recipe.id}`)
+    await expectMobileTabState(page, 'why', 'page')
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeLessThanOrEqual(1)
+
+    await page.goto(`/?design=${recipe.id}#proof`)
+    await expectMobileTabState(page, 'proof', 'location')
+    await page.goto(`/contact/?design=${recipe.id}`)
+    await expectMobileTabState(page, 'contact', 'page')
+    await page.goBack()
+    await expect(page).toHaveURL(new RegExp(`design=${recipe.id}#proof$`))
+    await expectMobileTabState(page, 'proof', 'location')
+
+    await page.setViewportSize({ width: 375, height: 760 })
+    await expectMobileTabState(page, 'proof', 'location')
+    await page.setViewportSize({ width: 320, height: 760 })
+    await expectMobileTabState(page, 'proof', 'location')
   }
+})
+
+test('mobile tabs clear stale state on invalid and unmapped routes', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 760 })
+  const recipe = designRecipes.find(
+    (candidate) => candidate.mobileNavigationId === 'tabs',
+  )!
+  const nav = mobileTabNavigation(page)
+
+  await page.goto(`/contact/?design=${recipe.id}`)
+  await expectMobileTabState(page, 'contact', 'page')
+
+  await page.goto(`/?design=${recipe.id}#not-a-section`)
+  await expectMobileTabState(page, 'why', 'location')
+  await expect(nav.locator('[data-nav-key="contact"]')).not.toHaveAttribute(
+    'aria-current',
+    /.+/,
+  )
+
+  await page.goto(`/not-found?design=${recipe.id}`)
+  await expect(nav.locator('[aria-current]')).toHaveCount(0)
+  await expect
+    .poll(() => nav.evaluate((element) => element.scrollLeft))
+    .toBeLessThanOrEqual(1)
+})
+
+test('mobile tab synchronization preserves focus and vertical position', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 760 })
+  const recipe = designRecipes.find(
+    (candidate) => candidate.mobileNavigationId === 'tabs',
+  )!
+  await openRecipe(page, recipe.id)
+
+  const nav = mobileTabNavigation(page)
+  const proofLink = nav.locator('[data-nav-key="proof"]')
+  await page.locator('#proof').scrollIntoViewIfNeeded()
+  await expectMobileTabState(page, 'proof', 'location')
+  await proofLink.focus()
+
+  await page.locator('#engage').evaluate((engage) => {
+    const root = document.documentElement
+    const previous = root.style.scrollBehavior
+    root.style.scrollBehavior = 'auto'
+    engage.scrollIntoView({ behavior: 'auto', block: 'start' })
+    root.style.scrollBehavior = previous
+  })
+  await expectMobileTabState(page, 'engage', 'location')
+  const settledY = await page.evaluate(() => window.scrollY)
+  await page.waitForTimeout(300)
+
+  await expect(proofLink).toBeFocused()
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBe(settledY)
+})
+
+test('switching into tab navigation preserves the current section', async ({ page }) => {
+  const transition = designRecipes
+    .filter((source) => source.mobileNavigationId !== 'tabs')
+    .map((source) => ({
+      source,
+      target: designRecipes.find(
+        (candidate) =>
+          candidate.themeId !== source.themeId &&
+          candidate.layout !== source.layout &&
+          candidate.navigationId !== source.navigationId &&
+          candidate.mobileNavigationId !== source.mobileNavigationId &&
+          candidate.mobileHeaderId !== source.mobileHeaderId,
+      ),
+    }))
+    .find(({ target }) => target?.mobileNavigationId === 'tabs')
+
+  expect(transition?.target).toBeDefined()
+  await page.addInitScript(() => {
+    Math.random = () => 0.5
+  })
+  await page.setViewportSize({ width: 320, height: 760 })
+  await openRecipe(page, transition!.source.id)
+  await page.locator('#proof').scrollIntoViewIfNeeded()
+  await expect(
+    page.locator('.primary-navigation [data-nav-key="proof"]'),
+  ).toHaveAttribute('aria-current', 'location')
+
+  await page.getByRole('button', { name: 'Regenerate design colors and layout' }).click()
+  await expect(page.locator('.site-frame')).toHaveAttribute(
+    'data-mobile-navigation',
+    'tabs',
+  )
+  await page.locator('#proof').scrollIntoViewIfNeeded()
+  await expectMobileTabState(page, 'proof', 'location')
 })
 
 test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
