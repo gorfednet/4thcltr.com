@@ -7,29 +7,35 @@ export type ContactEnquiryPayload = {
   organisation: string
   reason: string
   message: string
+  botcheck: boolean
 }
 
 export async function submitContactEnquiry(
   payload: ContactEnquiryPayload,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const body = new FormData()
-  body.append('access_key', WEB3FORMS_ACCESS_KEY)
-  body.append('name', payload.name.trim())
-  body.append('email', payload.email.trim())
-  body.append('organization', payload.organisation.trim())
-  body.append('reason', payload.reason)
-  body.append('subject', 'New 4th Culture project enquiry')
-  body.append('from_name', '4th Culture website')
-  body.append(
-    'message',
-    `Reason for contact: ${payload.reason}\nOrganisation: ${payload.organisation.trim() || 'Not provided'}\n\n${payload.message.trim()}`,
-  )
+  const body = {
+    access_key: WEB3FORMS_ACCESS_KEY,
+    name: payload.name.trim(),
+    email: payload.email.trim(),
+    organization: payload.organisation.trim(),
+    reason: payload.reason,
+    subject: 'New 4th Culture project enquiry',
+    from_name: '4th Culture website',
+    message: `Reason for contact: ${payload.reason}\nOrganisation: ${payload.organisation.trim() || 'Not provided'}\n\n${payload.message.trim()}`,
+    // Web3Forms expects a real checkbox boolean. The former multipart
+    // string "false" was non-empty and therefore treated as checked.
+    botcheck: payload.botcheck,
+  }
 
   let res: Response
   try {
     res = await fetch(WEB3FORMS_URL, {
       method: 'POST',
-      body,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
     })
   } catch {
     return {
@@ -53,5 +59,8 @@ export async function submitContactEnquiry(
     typeof data.message === 'string' && data.message.length > 0
       ? data.message
       : 'Could not send your message. Please try again in a few minutes.'
-  return { ok: false, error: msg }
+  const error = /(?:honeypot|botcheck)/i.test(msg)
+    ? 'Could not verify your submission. Refresh the page and try again.'
+    : msg
+  return { ok: false, error }
 }

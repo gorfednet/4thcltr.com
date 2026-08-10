@@ -21,7 +21,7 @@ const engagementReasons: Record<string, string> = {
 
 export default function ContactForm() {
   const [searchParams] = useSearchParams()
-  const [honeypot, setHoneypot] = useState('')
+  const [botcheck, setBotcheck] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -44,7 +44,7 @@ export default function ContactForm() {
     if (submissionInFlight.current) return
     setFormError(null)
 
-    if (honeypot.trim() !== '') {
+    if (botcheck) {
       setSubmitted(true)
       return
     }
@@ -59,6 +59,7 @@ export default function ContactForm() {
       organisation: String(formData.get('organisation') ?? ''),
       reason: String(formData.get('reason') ?? ''),
       message: String(formData.get('message') ?? ''),
+      botcheck,
     })
     submissionInFlight.current = false
     setSubmitting(false)
@@ -95,7 +96,7 @@ export default function ContactForm() {
             className="button-outline label min-h-12 px-6 py-3"
             onClick={() => {
               setSubmitted(false)
-              setHoneypot('')
+              setBotcheck(false)
             }}
           >
             Send another enquiry
@@ -109,12 +110,12 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} className="contact-form relative grid gap-6">
       <input
         hidden
-        type="text"
-        name="company_website"
+        type="checkbox"
+        name="botcheck"
         tabIndex={-1}
-        autoComplete="off"
-        value={honeypot}
-        onChange={(event) => setHoneypot(event.target.value)}
+        aria-hidden="true"
+        checked={botcheck}
+        onChange={(event) => setBotcheck(event.target.checked)}
       />
 
       {formError && (
