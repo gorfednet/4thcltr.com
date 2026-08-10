@@ -31,7 +31,8 @@ function pickActiveSection(): ScrollSpySectionId | null {
 function getHashSectionId(hash: string): ScrollSpySectionId | null {
   if (!hash) return null
   try {
-    const id = decodeURIComponent(hash.slice(1))
+    const decodedId = decodeURIComponent(hash.slice(1))
+    const id = decodedId === 'proof' ? 'history' : decodedId
     return scrollSpySections.some((section) => section.id === id)
       ? (id as ScrollSpySectionId)
       : null

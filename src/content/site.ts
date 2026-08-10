@@ -105,7 +105,7 @@ export const tenets: Tenet[] = [
   },
   {
     number: '1.6',
-    title: 'Proof over posture.',
+    title: 'Work over posture.',
     body: [
       'More than 25 years of shipped work includes two patent filings, a brokerage ranked best in Canada three years running and a health-transport product acquired for $46M. The public record also includes twelve instances of recognition and launched apps for Chapters Indigo, Land Rover and C Spire.',
       'The standard remains the same: make work that carries its weight in the market.',
@@ -199,7 +199,7 @@ export type Award = {
 }
 
 export const whySection = {
-  title: 'What we stand for, before the résumé.',
+  title: 'What we stand for.',
   lede:
     '4th Culture is an independent practice shaped by Michael’s third-culture experience, the internet and agentic intelligence. It exists to make technology more expressive, specific and recognisably human without surrendering judgment, and to build products specific enough to belong to the people they serve.',
   quote:
@@ -207,7 +207,7 @@ export const whySection = {
   manifestoLinkLabel: 'Read the seven positions',
 } as const
 
-export const proofSection = {
+export const historySection = {
   title: 'The work, on the record.',
   lede:
     'Purpose and method come first. Selected outcomes across financial services, health and life sciences, civic technology, retail and mobility show what that commitment produced in market: work that shipped, found an audience and created value beyond the interface, with external sources that document them.',
@@ -263,9 +263,6 @@ export const contactCopy = {
 export const supplementalAwardsHeading = 'Further recognition'
 
 export const heroStatLabel = 'Public recognition'
-
-export const heroRegenerateNote =
-  'This site redesigns itself to show how AI and design systems make everything interchangeable.'
 
 export type Outcome = {
   client: string
@@ -619,15 +616,15 @@ export const awards: Award[] = [
   },
 ]
 
-const proofCitationHrefSet = new Set(
+const historyCitationHrefSet = new Set(
   outcomes.flatMap((outcome) =>
     outcome.citations.map((citation) => citation.href).filter((href): href is string => Boolean(href)),
   ),
 )
 
-/** Honours not already linked from Proof outcome citations. */
+/** Honours not already linked from History outcome citations. */
 export const supplementalAwards = awards.filter((award) => {
-  if (award.href && proofCitationHrefSet.has(award.href)) return false
+  if (award.href && historyCitationHrefSet.has(award.href)) return false
   if (award.title === 'Mobile of the Day') return false
   if (award.title.includes("iTunes North American")) return false
   if (award.title === '12 Best Apps Made in Canada') return false

@@ -343,7 +343,7 @@ html[data-design-transitioning='true'] *::after {
   .bg-ground-lift .card-surface:hover,
   .bg-ground-lift .stat-cell:hover,
   .bg-ground-lift .engagement-card:hover { background: var(--color-card); }
-  .proof-row { position: relative; }
+  .history-row { position: relative; }
   .engagement-card {
     background: var(--color-card);
     transition: background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
@@ -1106,10 +1106,6 @@ html[data-design-transitioning='true'] *::after {
 [data-layout="startup"] .hero-copy { text-align: center; align-items: center; }
 [data-layout="startup"] .hero-cta { width: 100%; display: flex; flex-direction: column; align-items: center; }
 [data-layout="startup"] .hero-cta button { max-width: 28rem; }
-[data-layout="startup"] .hero-regenerate-note {
-  margin-inline: auto;
-  text-align: center;
-}
 [data-layout="startup"] .measure { margin-inline: auto; }
 
 [data-layout="brutal"] .shell { max-width: 100rem; }
@@ -1189,14 +1185,15 @@ html[data-design-transitioning='true'] *::after {
 }
 
 .hero-copy {
+  --hero-stack-gap: clamp(1rem, 2.75vh, 2rem);
   container-type: inline-size;
-  gap: 0;
+  gap: var(--hero-stack-gap);
 }
 
 .hero-title,
 .hero-lede,
 .hero-cta {
-  margin-top: clamp(1rem, 2.75vh, 2rem) !important;
+  margin-top: 0 !important;
 }
 
 .hero-cta-button:hover,
@@ -1298,10 +1295,6 @@ html[data-design-transitioning='true'] *::after {
 
   [data-hero="stacked-center"] .measure,
   [data-hero="stacked-center"] .hero-cta { margin-inline: auto; }
-  [data-hero="stacked-center"] .hero-regenerate-note {
-    margin-inline: auto;
-    text-align: center;
-  }
 
   [data-hero="stacked-flush"] .hero-visual {
     flex-shrink: 0;
@@ -1437,9 +1430,6 @@ html[data-design-transitioning='true'] *::after {
   line-height: 0.98;
   letter-spacing: -0.02em;
 }
-[data-type="airy"] .hero-copy {
-  gap: 0.25rem;
-}
 [data-type="airy"] .measure {
   font-size: 1.0625rem;
   line-height: 1.7;
@@ -1480,19 +1470,9 @@ html[data-design-transitioning='true'] *::after {
 .hero-stats { position: relative; z-index: 2; }
 .hero-visual { z-index: 0; pointer-events: none; }
 
-[data-layout="brutal"] .hero-title,
-[data-layout="dense"] .hero-title {
-  margin-bottom: 0.25rem;
-}
-
-[data-layout="brutal"] .hero-cta,
-[data-layout="dense"] .hero-cta {
-  margin-top: 0.75rem !important;
-}
-
 @media (min-width: 768px) and (max-width: 1023px) {
   .grid-12 { gap: 2.5rem 2rem; }
-  .proof-row > *,
+  .history-row > *,
   .contact-form,
   .practice-panel { min-width: 0; }
 }
@@ -1524,18 +1504,13 @@ html[data-design-transitioning='true'] *::after {
   }
 
   .hero-copy {
+    --hero-stack-gap: 0.75rem;
     justify-content: flex-start;
     padding-block: 0 !important;
   }
 
   .hero-title {
-    margin-top: 0.75rem !important;
     font-size: clamp(1.65rem, min(3.4vw, 5.5dvh), 2.9rem) !important;
-    line-height: 0.92 !important;
-  }
-
-  .hero-lede {
-    margin-top: 0.75rem !important;
   }
 
   .hero-lede .measure {
@@ -1543,16 +1518,8 @@ html[data-design-transitioning='true'] *::after {
     line-height: 1.45 !important;
   }
 
-  .hero-cta {
-    margin-top: 0.875rem !important;
-  }
-
   .hero-cta-button {
     padding-block: 0.625rem !important;
-  }
-
-  .hero-regenerate-note {
-    display: none;
   }
 }
 
@@ -1563,20 +1530,13 @@ html[data-design-transitioning='true'] *::after {
 }
 
 @media (max-width: 767px) and (max-height: 760px) {
-  .hero-copy { gap: 0.5rem; }
-  .hero-title { margin-top: 0.5rem !important; }
-  .hero-lede { margin-top: 0.5rem !important; }
-  [data-mobile-navigation='tabs'] .hero-copy { gap: 0; }
   [data-mobile-navigation='tabs'] .hero-title {
-    margin-top: 0.25rem !important;
     font-size: clamp(1.5rem, min(3.2vw, 5.15dvh), 2.7rem) !important;
   }
-  [data-mobile-navigation='tabs'] .hero-lede { margin-top: 0 !important; }
   [data-mobile-navigation='tabs'] .hero-lede .measure {
     font-size: 0.875rem !important;
     line-height: 1.35 !important;
   }
-  [data-mobile-navigation='tabs'] .hero-cta { margin-top: 0.5rem !important; }
 }
 
 @media (min-width: 1024px) and (max-height: 800px) {
@@ -1605,16 +1565,17 @@ html[data-design-transitioning='true'] *::after {
 @media (max-width: 380px) and (max-height: 700px) {
   .hero-title {
     font-size: 1.55rem !important;
-    line-height: 0.94 !important;
   }
 
   .hero-lede .measure {
     font-size: 0.875rem !important;
     line-height: 1.4 !important;
   }
+}
 
-  .hero-cta {
-    margin-top: 0.75rem !important;
+@media (max-width: 1023px) {
+  .hero-title {
+    line-height: 1 !important;
   }
 }
 

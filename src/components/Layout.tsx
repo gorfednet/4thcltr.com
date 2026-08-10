@@ -24,7 +24,7 @@ const navigationKeys = new Set<NavigationKey>([
   'why',
   'practice',
   'engage',
-  'proof',
+  'history',
   'contact',
 ])
 
@@ -39,7 +39,8 @@ function getHashNavigationKey(
   if (normalizePathname(pathname) !== '/' || !hash) return null
 
   try {
-    const key = decodeURIComponent(hash.slice(1)) as NavigationKey
+    const decodedKey = decodeURIComponent(hash.slice(1))
+    const key = (decodedKey === 'proof' ? 'history' : decodedKey) as NavigationKey
     return navigationKeys.has(key) ? key : null
   } catch {
     return null
@@ -200,13 +201,13 @@ function NavigationLinks({
         {content('3.0', 'Engage')}
       </SectionLink>
       <SectionLink
-        to="proof"
+        to="history"
         className={className}
         onNavigate={onNavigate}
-        current={currentFor('proof')}
-        navKey="proof"
+        current={currentFor('history')}
+        navKey="history"
       >
-        {content('4.0', 'Proof')}
+        {content('4.0', 'History')}
       </SectionLink>
       <SectionLink
         to="contact"
@@ -230,6 +231,7 @@ export default function Layout() {
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
+  const navigate = useNavigate()
   const {
     layout,
     mood,
@@ -395,6 +397,10 @@ export default function Layout() {
     if (!location.hash) return
 
     const targetId = decodeURIComponent(location.hash.slice(1))
+    if (targetId === 'proof') {
+      navigate(`${location.pathname}${location.search}#history`, { replace: true })
+      return
+    }
     const frame = requestAnimationFrame(() => {
       const target = document.getElementById(targetId)
       if (!target) return
@@ -404,7 +410,7 @@ export default function Layout() {
       document.documentElement.style.scrollBehavior = previous
     })
     return () => cancelAnimationFrame(frame)
-  }, [location.hash, location.pathname])
+  }, [location.hash, location.pathname, location.search, navigate])
 
   useEffect(() => {
     setMenuOpen(false)

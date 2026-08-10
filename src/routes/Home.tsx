@@ -33,10 +33,9 @@ import {
   clients,
   contactCopy,
   engagements,
-  heroRegenerateNote,
   heroStatLabel,
+  historySection,
   outcomes,
-  proofSection,
   sectionHeads,
   sectors,
   speaking,
@@ -122,14 +121,14 @@ export default function Home() {
               <p className="label text-muted">{studio.base} / available for engagements</p>
             </div>
 
-            <h1 className="display-xl hero-title mt-3.5 lg:mt-4">
+            <h1 className="display-xl hero-title">
               <span className="hero-title-line">
                 Everything feels <span className="italic text-accent">the same.</span>
               </span>
               <span className="hero-title-line">Your product doesn't have to.</span>
             </h1>
 
-            <div className="hero-lede mt-3.5 lg:mt-4">
+            <div className="hero-lede">
               <p className="measure text-[0.9375rem] leading-[1.55] text-muted lg:max-w-[46ch] lg:text-base">
                 {studio.name} is the practice of{' '}
                 <span className="text-bone">{studio.principal}</span>. {studio.positioning}
@@ -137,9 +136,6 @@ export default function Home() {
             </div>
 
             <RegenerateButton />
-            <p className="hero-regenerate-note mt-3 max-w-[46ch] text-[0.8125rem] leading-snug text-faint">
-              {heroRegenerateNote}
-            </p>
           </div>
 
           <div
@@ -355,20 +351,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="proof" className="section-anchor rule-top scroll-mt-24">
+      <section id="history" className="section-anchor rule-top scroll-mt-24">
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="4.0 / Proof"
-              title={proofSection.title}
-              lede={proofSection.lede}
+              index="4.0 / History"
+              title={historySection.title}
+              lede={historySection.lede}
             />
           </Reveal>
 
           <div className="section-content mt-16 lg:mt-20">
             {outcomes.map((outcome, index) => (
               <Reveal key={outcome.client} delay={index * 60}>
-                <article className="proof-row grid-12 border-t border-line py-10 lg:py-14">
+                <article className="history-row grid-12 border-t border-line py-10 lg:py-14">
                   <div className="md:col-span-3">
                     <h3 className="wrap-name font-display text-3xl leading-[1.05] lg:text-[2.5rem]">
                       {outcome.client}
@@ -378,7 +374,7 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <ScrollMotion drift={scrollMotionPresets.proofHeadline} className="md:col-span-9 md:col-start-4 lg:col-span-5">
+                  <ScrollMotion drift={scrollMotionPresets.historyHeadline} className="md:col-span-9 md:col-start-4 lg:col-span-5">
                     <p className="balance font-display text-xl italic leading-snug text-bone lg:text-2xl">
                       {outcome.headline}
                     </p>
@@ -549,16 +545,6 @@ export default function Home() {
                   <h3 className="label border-b border-line-soft pb-4 text-faint">
                     {supplementalAwardsHeading}
                   </h3>
-                  <p className="mt-4 text-sm text-muted">
-                    Documented client outcomes and press citations are in{' '}
-                    <a
-                      href="#proof"
-                      className="text-accent underline underline-offset-4 decoration-accent/70 transition-colors duration-300 hover:decoration-accent"
-                    >
-                      Proof
-                    </a>
-                    .
-                  </p>
                   <ul className="mt-4">
                     {supplementalAwards.map((award) => (
                       <li

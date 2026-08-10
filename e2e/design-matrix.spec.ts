@@ -53,7 +53,7 @@ function mobileTabNavigation(page: Page) {
 
 async function expectMobileTabState(
   page: Page,
-  key: 'why' | 'practice' | 'engage' | 'proof' | 'contact',
+  key: 'why' | 'practice' | 'engage' | 'history' | 'contact',
   ariaCurrent: 'location' | 'page',
 ) {
   const navigation = mobileTabNavigation(page)
@@ -203,6 +203,45 @@ test.describe('curated design matrix', () => {
 
         const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
         expect(results.violations).toEqual([])
+      })
+    }
+  }
+})
+
+test.describe('mobile hero vertical rhythm', () => {
+  const mobileHeroViewports = [
+    { name: 'iphone-short', width: 320, height: 568 },
+    { name: 'iphone-tall', width: 390, height: 844 },
+  ] as const
+
+  for (const recipe of designRecipes) {
+    for (const viewport of mobileHeroViewports) {
+      test(`${recipe.id} keeps hero spacing at ${viewport.name}`, async ({ page }) => {
+        await page.setViewportSize(viewport)
+        await openRecipe(page, recipe.id)
+
+        const geometry = await page.evaluate(() => {
+          const blocks = ['.hero-status', '.hero-title', '.hero-lede', '.hero-cta']
+            .map((selector) => document.querySelector<HTMLElement>(selector))
+          if (blocks.some((block) => !block)) return null
+
+          const boxes = blocks.map((block) => block!.getBoundingClientRect())
+          const titleStyle = getComputedStyle(blocks[1]!)
+          return {
+            gaps: boxes.slice(0, -1).map((box, index) => boxes[index + 1].top - box.bottom),
+            titleLineHeightRatio:
+              Number.parseFloat(titleStyle.lineHeight) / Number.parseFloat(titleStyle.fontSize),
+            ctaBottom: boxes[3].bottom,
+            viewportHeight: innerHeight,
+          }
+        })
+
+        expect(geometry).not.toBeNull()
+        for (const gap of geometry!.gaps) {
+          expect(gap, `${recipe.id} ${viewport.name} hero gap`).toBeGreaterThanOrEqual(11.5)
+        }
+        expect(geometry!.titleLineHeightRatio).toBeGreaterThanOrEqual(0.99)
+        expect(geometry!.ctaBottom).toBeLessThanOrEqual(geometry!.viewportHeight + 1)
       })
     }
   }
@@ -1113,7 +1152,7 @@ test('mobile tab navigation follows the current section and route', async ({ pag
   for (const recipe of tabsRecipes) {
     await openRecipe(page, recipe.id)
     const nav = mobileTabNavigation(page)
-    const proofLink = nav.locator('a[href*="#proof"]')
+    const historyLink = nav.locator('a[href*="#history"]')
 
     await expectMobileTabState(page, 'why', 'location')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeLessThanOrEqual(1)
@@ -1129,9 +1168,9 @@ test('mobile tab navigation follows the current section and route', async ({ pag
     await expectMobileTabState(page, 'why', 'location')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeLessThanOrEqual(1)
 
-    await page.locator('#proof').scrollIntoViewIfNeeded()
-    await expect(proofLink).toHaveAttribute('aria-current', 'location')
-    await expectMobileTabState(page, 'proof', 'location')
+    await page.locator('#history').scrollIntoViewIfNeeded()
+    await expect(historyLink).toHaveAttribute('aria-current', 'location')
+    await expectMobileTabState(page, 'history', 'location')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
 
     await page.goto(`/contact/?design=${recipe.id}`)
@@ -1148,17 +1187,17 @@ test('mobile tab navigation follows the current section and route', async ({ pag
     await expectMobileTabState(page, 'why', 'page')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeLessThanOrEqual(1)
 
-    await page.goto(`/?design=${recipe.id}#proof`)
-    await expectMobileTabState(page, 'proof', 'location')
+    await page.goto(`/?design=${recipe.id}#history`)
+    await expectMobileTabState(page, 'history', 'location')
     await page.goto(`/contact/?design=${recipe.id}`)
     await expectMobileTabState(page, 'contact', 'location')
     await page.goBack()
-    await expect(page).toHaveURL(new RegExp(`design=${recipe.id}#proof$`))
-    await expectMobileTabState(page, 'proof', 'location')
+    await expect(page).toHaveURL(new RegExp(`design=${recipe.id}#history$`))
+    await expectMobileTabState(page, 'history', 'location')
 
-    // Resizes reflow the page; re-anchor proof so the strip must follow again.
-    const scrollToProof = () =>
-      page.locator('#proof').evaluate((element) => {
+    // Resizes reflow the page; re-anchor history so the strip must follow again.
+    const scrollToHistory = () =>
+      page.locator('#history').evaluate((element) => {
         const root = document.documentElement
         const previous = root.style.scrollBehavior
         root.style.scrollBehavior = 'auto'
@@ -1166,11 +1205,11 @@ test('mobile tab navigation follows the current section and route', async ({ pag
         root.style.scrollBehavior = previous
       })
     await page.setViewportSize({ width: 375, height: 760 })
-    await scrollToProof()
-    await expectMobileTabState(page, 'proof', 'location')
+    await scrollToHistory()
+    await expectMobileTabState(page, 'history', 'location')
     await page.setViewportSize({ width: 320, height: 760 })
-    await scrollToProof()
-    await expectMobileTabState(page, 'proof', 'location')
+    await scrollToHistory()
+    await expectMobileTabState(page, 'history', 'location')
   }
 })
 
@@ -1199,6 +1238,16 @@ test('mobile tabs clear stale state on invalid and unmapped routes', async ({ pa
   )
 })
 
+test('legacy proof hash redirects to history', async ({ page }) => {
+  const recipe = designRecipes[0]
+  await page.goto(`/?design=${recipe.id}#proof`)
+  await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}#history$`))
+  await expect(page.locator('#history')).toBeInViewport()
+  await expect(
+    page.locator('.primary-navigation [data-nav-key="history"]').first(),
+  ).toHaveAttribute('aria-current', 'location')
+})
+
 test('mobile tab synchronization preserves focus and vertical position', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 760 })
   const recipe = designRecipes.find(
@@ -1207,10 +1256,10 @@ test('mobile tab synchronization preserves focus and vertical position', async (
   await openRecipe(page, recipe.id)
 
   const nav = mobileTabNavigation(page)
-  const proofLink = nav.locator('[data-nav-key="proof"]')
-  await page.locator('#proof').scrollIntoViewIfNeeded()
-  await expectMobileTabState(page, 'proof', 'location')
-  await proofLink.focus()
+  const historyLink = nav.locator('[data-nav-key="history"]')
+  await page.locator('#history').scrollIntoViewIfNeeded()
+  await expectMobileTabState(page, 'history', 'location')
+  await historyLink.focus()
 
   await page.locator('#engage').evaluate((engage) => {
     const root = document.documentElement
@@ -1223,7 +1272,7 @@ test('mobile tab synchronization preserves focus and vertical position', async (
   const settledY = await page.evaluate(() => window.scrollY)
   await page.waitForTimeout(300)
 
-  await expect(proofLink).toBeFocused()
+  await expect(historyLink).toBeFocused()
   await expect
     .poll(() => page.evaluate(() => window.scrollY))
     .toBe(settledY)
@@ -1251,9 +1300,9 @@ test('switching into tab navigation preserves the current section', async ({ pag
   })
   await page.setViewportSize({ width: 320, height: 760 })
   await openRecipe(page, transition!.source.id)
-  await page.locator('#proof').scrollIntoViewIfNeeded()
+  await page.locator('#history').scrollIntoViewIfNeeded()
   await expect(
-    page.locator('.primary-navigation [data-nav-key="proof"]'),
+    page.locator('.primary-navigation [data-nav-key="history"]'),
   ).toHaveAttribute('aria-current', 'location')
 
   await page.getByRole('button', { name: 'Regenerate design colors and layout' }).click()
@@ -1261,8 +1310,8 @@ test('switching into tab navigation preserves the current section', async ({ pag
     'data-mobile-navigation',
     'tabs',
   )
-  await page.locator('#proof').scrollIntoViewIfNeeded()
-  await expectMobileTabState(page, 'proof', 'location')
+  await page.locator('#history').scrollIntoViewIfNeeded()
+  await expectMobileTabState(page, 'history', 'location')
 })
 
 test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
@@ -1861,7 +1910,7 @@ test('flow numbering is hierarchical and consistent across nav and sections', as
     '1.0 / Manifesto',
     '2.0 / Practice',
     '3.0 / Engage',
-    '4.0 / Proof',
+    '4.0 / History',
     '5.0 / Who',
   ])
   await expect(
@@ -1994,12 +2043,13 @@ test('hero distributes its height on tall viewports and fits short ones', async 
     const tall = await page.evaluate(() => {
       const hero = document.querySelector('.hero-section')!.getBoundingClientRect()
       const stats = document.querySelector('.hero-stats')!.getBoundingClientRect()
-      const title = document.querySelector('.hero-title')!
+      const status = document.querySelector('.hero-status')!.getBoundingClientRect()
+      const title = document.querySelector('.hero-title')!.getBoundingClientRect()
       return {
         heroHeight: hero.height,
         statsBottom: stats.bottom,
         viewportHeight: innerHeight,
-        titleGap: Number.parseFloat(getComputedStyle(title).marginTop),
+        titleGap: title.top - status.bottom,
       }
     })
     expect(tall.heroHeight, `${recipe.id} hero fills tall phones`).toBeGreaterThanOrEqual(
@@ -2060,24 +2110,24 @@ test('hero stat cards separate from the body and use gutter spacing', async ({ p
   }
 })
 
-test('purpose sections precede proof in document order', async ({ page }) => {
+test('purpose sections precede history in document order', async ({ page }) => {
   await openRecipe(page, designRecipes[0].id)
   const order = await page.evaluate(() => {
     const why = document.getElementById('why')
     const practice = document.getElementById('practice')
-    const proof = document.getElementById('proof')
-    if (!why || !practice || !proof) return null
+    const history = document.getElementById('history')
+    if (!why || !practice || !history) return null
     const following = Node.DOCUMENT_POSITION_FOLLOWING
     return {
       whyBeforePractice: Boolean(why.compareDocumentPosition(practice) & following),
-      whyBeforeProof: Boolean(why.compareDocumentPosition(proof) & following),
-      practiceBeforeProof: Boolean(practice.compareDocumentPosition(proof) & following),
+      whyBeforeHistory: Boolean(why.compareDocumentPosition(history) & following),
+      practiceBeforeHistory: Boolean(practice.compareDocumentPosition(history) & following),
     }
   })
   expect(order).not.toBeNull()
   expect(order!.whyBeforePractice).toBe(true)
-  expect(order!.whyBeforeProof).toBe(true)
-  expect(order!.practiceBeforeProof).toBe(true)
+  expect(order!.whyBeforeHistory).toBe(true)
+  expect(order!.practiceBeforeHistory).toBe(true)
 })
 
 test('section head lede stacks under title in editorial column', async ({ page }) => {
@@ -2172,14 +2222,14 @@ test('scroll motion is disabled when reduced motion is preferred', async ({ page
   expect(motionY === '' || motionY === '0px').toBe(true)
 })
 
-test('proof section head separates from outcome rows', async ({ page }) => {
+test('history section head separates from outcome rows', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await openRecipe(page, designRecipes[0].id)
-  await page.locator('#proof h2').scrollIntoViewIfNeeded()
+  await page.locator('#history h2').scrollIntoViewIfNeeded()
 
   const bounds = await page.evaluate(() => {
-    const heading = document.querySelector('#proof h2')
-    const firstRow = document.querySelector('#proof .proof-row')
+    const heading = document.querySelector('#history h2')
+    const firstRow = document.querySelector('#history .history-row')
     if (!heading || !firstRow) return null
     const headingBox = heading.getBoundingClientRect()
     const rowBox = firstRow.getBoundingClientRect()
@@ -2198,12 +2248,12 @@ test('proof section head separates from outcome rows', async ({ page }) => {
   expect(bounds!.lineCount).toBeGreaterThan(0.9)
 })
 
-test('supplemental awards do not duplicate proof citation urls', async ({ page }) => {
+test('supplemental awards do not duplicate history citation urls', async ({ page }) => {
   await openRecipe(page, designRecipes[0].id)
   const duplicates = await page.evaluate(() => {
-    const proofHrefs = [...document.querySelectorAll('#proof a[href]')].map((link) => link.href)
+    const historyHrefs = [...document.querySelectorAll('#history a[href]')].map((link) => link.href)
     const whoHrefs = [...document.querySelectorAll('#who a[href]')].map((link) => link.href)
-    return whoHrefs.filter((href) => proofHrefs.includes(href))
+    return whoHrefs.filter((href) => historyHrefs.includes(href))
   })
   expect(duplicates).toEqual([])
 })
