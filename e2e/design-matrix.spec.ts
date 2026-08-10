@@ -1530,6 +1530,7 @@ test('contact form submits successfully without changing design state or URL', a
   expect(submittedBody).toContain('test@example.com')
   expect(submittedBody).toContain('Example Company')
   expect(submittedBody).toContain('Leadership, strategy or team development')
+  expect(submittedBody.toLowerCase()).not.toContain('botcheck')
   await expect(page).toHaveURL(/design=noir/)
   await expect(page).not.toHaveURL(/submitted=/)
   expect(requestCount).toBe(1)
@@ -1562,6 +1563,32 @@ test('contact form failure stays editable and reports the error', async ({ page 
   await page.getByRole('button', { name: 'Send enquiry' }).click()
 
   await expect(page.getByRole('alert')).toHaveText('Please try again.')
+  await expect(page.locator('form.contact-form')).toBeVisible()
+  await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
+})
+
+test('contact form surfaces Web3Forms honeypot errors without clearing the form', async ({
+  page,
+}) => {
+  await page.route('https://api.web3forms.com/submit', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: false,
+        message:
+          'Honeypot Error. Botcheck field should be hidden and should not check.',
+      }),
+    }),
+  )
+  await page.goto(`/contact?design=${designRecipes[0].id}`)
+  await page.getByLabel('Name').fill('Test Person')
+  await page.getByLabel('Email').fill('test@example.com')
+  await page.getByLabel('Reason for getting in touch').selectOption('Something else')
+  await page.getByLabel('Message').fill('A useful test enquiry.')
+  await page.getByRole('button', { name: 'Send enquiry' }).click()
+
+  await expect(page.getByRole('alert')).toContainText('Honeypot Error')
   await expect(page.locator('form.contact-form')).toBeVisible()
   await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
 })
