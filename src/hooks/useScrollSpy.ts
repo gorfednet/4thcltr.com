@@ -28,6 +28,18 @@ function pickActiveSection(): ScrollSpySectionId | null {
   return null
 }
 
+function getHashSectionId(hash: string): ScrollSpySectionId | null {
+  if (!hash) return null
+  try {
+    const id = decodeURIComponent(hash.slice(1))
+    return scrollSpySections.some((section) => section.id === id)
+      ? (id as ScrollSpySectionId)
+      : null
+  } catch {
+    return null
+  }
+}
+
 export function useScrollSpy(): ScrollSpySectionId | null {
   const location = useLocation()
   const [homeState, setHomeState] = useState<{
@@ -58,7 +70,19 @@ export function useScrollSpy(): ScrollSpySectionId | null {
       frame = window.requestAnimationFrame(update)
     }
 
-    update()
+    // A mapped hash is authoritative until scrolling settles; geometry alone
+    // would briefly report the top section before the hash scroll lands.
+    const hashSectionId = getHashSectionId(location.hash)
+    if (hashSectionId) {
+      setHomeState((current) =>
+        current.locationKey === location.key &&
+        current.activeId === hashSectionId
+          ? current
+          : { locationKey: location.key, activeId: hashSectionId },
+      )
+    } else {
+      update()
+    }
     window.addEventListener('scroll', onScrollOrResize, { passive: true })
     window.addEventListener('resize', onScrollOrResize, { passive: true })
 
@@ -69,7 +93,6 @@ export function useScrollSpy(): ScrollSpySectionId | null {
     }
   }, [location.hash, location.key, location.pathname])
 
-  if (/^\/contact\/?$/.test(location.pathname)) return 'contact'
   if (location.pathname !== '/') return null
   return homeState.locationKey === location.key ? homeState.activeId : null
 }

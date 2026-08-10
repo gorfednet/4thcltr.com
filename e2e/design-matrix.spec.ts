@@ -81,6 +81,34 @@ async function expectMobileTabState(
     .toBe(true)
 }
 
+async function assertEngagementHeadersAligned(page: Page) {
+  const engagementCards = page.locator('.engagement-card')
+  await expect(engagementCards).toHaveCount(3)
+
+  for (let index = 0; index < 3; index += 1) {
+    const card = engagementCards.nth(index)
+    const [iconBox, metaBox, headingBox] = await Promise.all([
+      card.locator('.engagement-icon svg').boundingBox(),
+      card.locator('.engagement-meta').boundingBox(),
+      card.locator('h3').boundingBox(),
+    ])
+    expect(iconBox).not.toBeNull()
+    expect(metaBox).not.toBeNull()
+    expect(headingBox).not.toBeNull()
+
+    const iconCenter = iconBox!.y + iconBox!.height / 2
+    const metaCenter = metaBox!.y + metaBox!.height / 2
+    expect(Math.abs(iconCenter - metaCenter)).toBeLessThanOrEqual(1)
+    expect(iconBox!.x + iconBox!.width).toBeLessThanOrEqual(metaBox!.x)
+    expect(headingBox!.y).toBeGreaterThan(
+      Math.max(
+        iconBox!.y + iconBox!.height,
+        metaBox!.y + metaBox!.height,
+      ),
+    )
+  }
+}
+
 function boxesOverlap(
   a: { x: number; y: number; width: number; height: number },
   b: { x: number; y: number; width: number; height: number },
@@ -197,12 +225,13 @@ test.describe('desktop interaction matrix', () => {
         await page.getByRole('button', { name: 'Menu' }).click()
       }
       await page.getByRole('link', { name: 'Contact', exact: true }).first().click()
-      await expect(page).toHaveURL(new RegExp(`/contact\\?design=${recipe.id}`))
-      await expect(page.locator('form')).toHaveCount(1)
+      await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}#contact$`))
+      await expect(page.locator('#contact form.contact-form')).toBeVisible()
 
       await page.goto(`/?design=${recipe.id}`)
       await page.getByRole('link', { name: 'Read the seven positions' }).click()
       await expect(page).toHaveURL(new RegExp(`/manifesto\\?design=${recipe.id}`))
+      await expect(page.getByRole('dialog')).toBeVisible()
     })
   }
 })
@@ -494,7 +523,7 @@ test('top headers never cover the hero proposition', async ({ page }) => {
   }
 })
 
-test('measured header spacing clears route intros across mobile treatments', async ({ page }) => {
+test('measured header spacing clears the hero across mobile treatments', async ({ page }) => {
   const representatives = mobileHeaderIds.map(
     (mobileHeaderId) =>
       designRecipes.find((recipe) => recipe.mobileHeaderId === mobileHeaderId)!,
@@ -502,15 +531,14 @@ test('measured header spacing clears route intros across mobile treatments', asy
 
   await page.setViewportSize({ width: 375, height: 812 })
   for (const recipe of representatives) {
-    await page.goto(`/contact?design=${recipe.id}`)
+    await page.goto(`/?design=${recipe.id}`)
     await page.evaluate(() => document.fonts.ready)
 
     const geometry = await page.evaluate(() => {
       const frame = document.querySelector<HTMLElement>('.site-frame')!
       const header = document.querySelector<HTMLElement>('.site-header')!
       const headerInner = document.querySelector<HTMLElement>('.site-header-inner')!
-      const heading = document.querySelector<HTMLElement>('.page-intro h1')!
-      const intro = document.querySelector<HTMLElement>('.page-intro')!
+      const heroStatus = document.querySelector<HTMLElement>('.hero-status')!
       const headerStyle = getComputedStyle(header)
 
       return {
@@ -522,8 +550,7 @@ test('measured header spacing clears route intros across mobile treatments', asy
           Number.parseFloat(headerStyle.paddingTop) +
           Number.parseFloat(headerStyle.paddingBottom),
         headerBottom: header.getBoundingClientRect().bottom,
-        headingTop: heading.getBoundingClientRect().top,
-        sectionPadding: Number.parseFloat(getComputedStyle(intro).paddingBottom),
+        heroContentTop: heroStatus.getBoundingClientRect().top,
       }
     })
 
@@ -531,16 +558,17 @@ test('measured header spacing clears route intros across mobile treatments', asy
       Math.abs(geometry.measuredToken - geometry.expectedChrome),
       `${recipe.mobileHeaderId} measured chrome`,
     ).toBeLessThanOrEqual(1)
-    expect(geometry.headingTop, `${recipe.mobileHeaderId} intro clearance`).toBeGreaterThan(
+    expect(geometry.heroContentTop, `${recipe.mobileHeaderId} hero clearance`).toBeGreaterThan(
       geometry.headerBottom,
     )
-    expect(geometry.sectionPadding).toBeGreaterThanOrEqual(44)
-    expect(geometry.sectionPadding).toBeLessThanOrEqual(132)
   }
 
   await page.goto(`/manifesto?design=${representatives[0].id}`)
-  await expect(page.getByRole('heading', { name: 'A practice built between worlds.' })).toBeVisible()
-  await expect(page.getByText('The fourth space', { exact: true })).toBeVisible()
+  const manifestoDialog = page.getByRole('dialog')
+  await expect(
+    manifestoDialog.getByRole('heading', { name: 'A practice built between worlds.' }),
+  ).toBeVisible()
+  await expect(manifestoDialog.getByText('The fourth space', { exact: true })).toBeVisible()
 })
 
 test('shared route, theme, and section URLs load directly', async ({ page }) => {
@@ -563,8 +591,13 @@ test('shared route, theme, and section URLs load directly', async ({ page }) => 
   expect(engageBox!.y).toBeLessThanOrEqual(160)
 
   await page.goto(`/contact?design=${theme.id}`)
-  await expect(page.locator('form.contact-form')).toBeVisible()
-  await expect(page).toHaveURL(new RegExp(`/contact\\?design=${theme.id}$`))
+  await expect(page).toHaveURL(new RegExp(`/\\?design=${theme.id}#contact$`))
+  await expect(page.locator('#contact form.contact-form')).toBeVisible()
+  await expect
+    .poll(() =>
+      page.locator('#contact').evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeLessThanOrEqual(240)
 
   await page.goto(`/manifesto?design=${theme.id}`)
   await expect(page.locator('article > header h1')).toBeVisible()
@@ -577,6 +610,11 @@ test.describe('manifesto recipe coverage', () => {
       await page.setViewportSize({ width: 1280, height: 900 })
       await page.goto(`/manifesto?design=${recipe.id}`)
       await page.evaluate(() => document.fonts.ready)
+
+      const dialog = page.getByRole('dialog')
+      await expect(dialog).toBeVisible()
+      await expect(dialog).toHaveAttribute('aria-modal', 'true')
+      await expect(dialog.locator('article > header h1')).toBeVisible()
 
       const overflow = await page.evaluate(
         () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -591,11 +629,44 @@ test.describe('manifesto recipe coverage', () => {
   }
 })
 
-test.describe('contact recipe coverage', () => {
+test('manifesto modal traps focus, locks scroll, and closes back to home', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  const recipe = designRecipes[0]
+
+  await page.goto(`/manifesto?design=${recipe.id}`)
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toBeVisible()
+  await expect(dialog).toHaveAttribute('aria-modal', 'true')
+  await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused()
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden')
+
+  await page.keyboard.press('Shift+Tab')
+  expect(
+    await page.evaluate(() => {
+      const modal = document.querySelector('[role="dialog"]')
+      return Boolean(modal && modal.contains(document.activeElement))
+    }),
+  ).toBe(true)
+
+  await page.keyboard.press('Escape')
+  await expect(dialog).toHaveCount(0)
+  await expect(page).toHaveURL(/\/\?design=/)
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe('')
+
+  await page.goto(`/?design=${recipe.id}`)
+  await page.getByRole('link', { name: 'Read the seven positions' }).click()
+  await expect(dialog).toBeVisible()
+  await dialog.getByRole('button', { name: 'Close' }).click()
+  await expect(dialog).toHaveCount(0)
+  await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}$`))
+})
+
+test.describe('contact redirect coverage', () => {
   for (const recipe of designRecipes) {
-    test(`${recipe.id} contact route remains accessible`, async ({ page }) => {
+    test(`${recipe.id} contact route redirects to the home form`, async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 900 })
       await page.goto(`/contact?design=${recipe.id}`)
+      await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}#contact$`))
       await page.evaluate(() => document.fonts.ready)
 
       const overflow = await page.evaluate(
@@ -604,12 +675,11 @@ test.describe('contact recipe coverage', () => {
       expect(overflow).toBeLessThanOrEqual(1)
       await expect(page.locator('form.contact-form')).toHaveCount(1)
       await expect(page.getByLabel('Reason for getting in touch')).not.toContainText(/music/i)
-      await assertVisibleControlsNotCovered(page)
-
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-        .analyze()
-      expect(results.violations).toEqual([])
+      await expect
+        .poll(() =>
+          page.locator('#contact').evaluate((element) => element.getBoundingClientRect().top),
+        )
+        .toBeLessThanOrEqual(240)
     })
   }
 })
@@ -1065,7 +1135,8 @@ test('mobile tab navigation follows the current section and route', async ({ pag
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
 
     await page.goto(`/contact/?design=${recipe.id}`)
-    await expectMobileTabState(page, 'contact', 'page')
+    await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}#contact$`))
+    await expectMobileTabState(page, 'contact', 'location')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
 
     await page.getByRole('link', { name: '4th Culture, home' }).first().click()
@@ -1080,14 +1151,25 @@ test('mobile tab navigation follows the current section and route', async ({ pag
     await page.goto(`/?design=${recipe.id}#proof`)
     await expectMobileTabState(page, 'proof', 'location')
     await page.goto(`/contact/?design=${recipe.id}`)
-    await expectMobileTabState(page, 'contact', 'page')
+    await expectMobileTabState(page, 'contact', 'location')
     await page.goBack()
     await expect(page).toHaveURL(new RegExp(`design=${recipe.id}#proof$`))
     await expectMobileTabState(page, 'proof', 'location')
 
+    // Resizes reflow the page; re-anchor proof so the strip must follow again.
+    const scrollToProof = () =>
+      page.locator('#proof').evaluate((element) => {
+        const root = document.documentElement
+        const previous = root.style.scrollBehavior
+        root.style.scrollBehavior = 'auto'
+        element.scrollIntoView({ behavior: 'auto', block: 'start' })
+        root.style.scrollBehavior = previous
+      })
     await page.setViewportSize({ width: 375, height: 760 })
+    await scrollToProof()
     await expectMobileTabState(page, 'proof', 'location')
     await page.setViewportSize({ width: 320, height: 760 })
+    await scrollToProof()
     await expectMobileTabState(page, 'proof', 'location')
   }
 })
@@ -1100,20 +1182,21 @@ test('mobile tabs clear stale state on invalid and unmapped routes', async ({ pa
   const nav = mobileTabNavigation(page)
 
   await page.goto(`/contact/?design=${recipe.id}`)
-  await expectMobileTabState(page, 'contact', 'page')
-
-  await page.goto(`/?design=${recipe.id}#not-a-section`)
-  await expectMobileTabState(page, 'why', 'location')
-  await expect(nav.locator('[data-nav-key="contact"]')).not.toHaveAttribute(
-    'aria-current',
-    /.+/,
-  )
+  await expectMobileTabState(page, 'contact', 'location')
 
   await page.goto(`/not-found?design=${recipe.id}`)
   await expect(nav.locator('[aria-current]')).toHaveCount(0)
   await expect
     .poll(() => nav.evaluate((element) => element.scrollLeft))
     .toBeLessThanOrEqual(1)
+
+  // Cross-document load with an invalid hash starts fresh at the top.
+  await page.goto(`/?design=${recipe.id}#not-a-section`)
+  await expectMobileTabState(page, 'why', 'location')
+  await expect(nav.locator('[data-nav-key="contact"]')).not.toHaveAttribute(
+    'aria-current',
+    /.+/,
+  )
 })
 
 test('mobile tab synchronization preserves focus and vertical position', async ({ page }) => {
@@ -1193,7 +1276,7 @@ test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
   const nav = page.locator('[data-mobile-navigation="tabs"] .primary-navigation')
   const contactLink = nav.getByRole('link', { name: 'Contact', exact: true })
 
-  await expect(contactLink).toHaveAttribute('aria-current', 'page')
+  await expect(contactLink).toHaveAttribute('aria-current', 'location')
   await expect.poll(() =>
     nav.evaluate((navigation) => {
       const navigationBox = navigation.getBoundingClientRect()
@@ -1209,13 +1292,13 @@ test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
   ).toBe(true)
 })
 
-test('primary navigation includes Contact link to contact route', async ({ page }) => {
+test('primary navigation includes Contact link to the start section', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   await openRecipe(page, designRecipes[0].id)
 
   const contactLink = page.getByRole('link', { name: 'Contact', exact: true }).first()
   await expect(contactLink).toBeVisible()
-  await expect(contactLink).toHaveAttribute('href', expect.stringContaining('/contact'))
+  await expect(contactLink).toHaveAttribute('href', expect.stringContaining('#contact'))
 })
 
 test('navigation links do not overlap hero wireframe imagery', async ({ page }) => {
@@ -1335,10 +1418,9 @@ test('design swaps suppress inherited motion and close open menus', async ({ pag
 test('site has one accessible contact form without DOM botcheck', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await openRecipe(page, designRecipes[0].id)
-  await expect(page.locator('form')).toHaveCount(0)
-  await page.goto(`/contact?design=${designRecipes[0].id}`)
   const form = page.locator('form.contact-form')
 
+  await expect(page.locator('form')).toHaveCount(1)
   await expect(form).toHaveCount(1)
   await expect(form.locator('input[name="botcheck"]')).toHaveCount(0)
   await expect(form.getByLabel('Name')).toHaveAttribute('required', '')
@@ -1448,6 +1530,7 @@ test('contact form submits successfully without changing design state or URL', a
   expect(submittedBody).toContain('test@example.com')
   expect(submittedBody).toContain('Example Company')
   expect(submittedBody).toContain('Leadership, strategy or team development')
+  expect(submittedBody.toLowerCase()).not.toContain('botcheck')
   await expect(page).toHaveURL(/design=noir/)
   await expect(page).not.toHaveURL(/submitted=/)
   expect(requestCount).toBe(1)
@@ -1484,11 +1567,36 @@ test('contact form failure stays editable and reports the error', async ({ page 
   await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
 })
 
-test('a bare route loads the default recipe and a direct design link remains deterministic', async ({ page }) => {
+test('contact form surfaces Web3Forms honeypot errors without clearing the form', async ({
+  page,
+}) => {
+  await page.route('https://api.web3forms.com/submit', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: false,
+        message:
+          'Honeypot Error. Botcheck field should be hidden and should not check.',
+      }),
+    }),
+  )
+  await page.goto(`/contact?design=${designRecipes[0].id}`)
+  await page.getByLabel('Name').fill('Test Person')
+  await page.getByLabel('Email').fill('test@example.com')
+  await page.getByLabel('Reason for getting in touch').selectOption('Something else')
+  await page.getByLabel('Message').fill('A useful test enquiry.')
+  await page.getByRole('button', { name: 'Send enquiry' }).click()
+
+  await expect(page.getByRole('alert')).toContainText('Honeypot Error')
+  await expect(page.locator('form.contact-form')).toBeVisible()
+  await expect(page.getByLabel('Message')).toHaveValue('A useful test enquiry.')
+})
+
+test('a bare route redirects home and a direct design link remains deterministic', async ({ page }) => {
   await page.goto('/contact')
-  await expect(page).toHaveURL(new RegExp(`design=${designRecipes[0].id}`))
-  const persisted = new URL(page.url()).searchParams.get('design')
-  expect(persisted).toBe(designRecipes[0].id)
+  await expect(page).toHaveURL(/#contact$/)
+  await expect(page.locator('#contact form.contact-form')).toBeVisible()
 
   const requested = designRecipes.at(-1)!
   await page.goto(`/manifesto?design=${requested.id}`)
@@ -1534,11 +1642,12 @@ test('public copy and metadata contain no em dashes', async ({ page }) => {
   expect(await page.locator('body').innerText()).not.toContain('—')
 
   await page.goto('/contact')
+  await expect(page).toHaveURL(/#contact$/)
   expect(await page.locator('body').innerText()).not.toContain('—')
-  await expect(page).toHaveTitle(/Contact Michael Duncan McArthur/)
+  await expect(page).toHaveTitle(/4th Culture/)
   await expect(page.locator('link[rel="canonical"]').last()).toHaveAttribute(
     'href',
-    'https://4thcltr.com/contact',
+    'https://4thcltr.com/',
   )
 })
 
@@ -1694,21 +1803,7 @@ test('card metadata uses compact icon and label hierarchy', async ({ page }) => 
       expect(iconBox!.x + iconBox!.width).toBeLessThanOrEqual(copyBox!.x + 1)
     }
 
-    const engagementCards = page.locator('.engagement-card')
-    await expect(engagementCards).toHaveCount(3)
-    for (let index = 0; index < 3; index += 1) {
-      const card = engagementCards.nth(index)
-      const [iconBox, metaBox, headingBox] = await Promise.all([
-        card.locator('svg').first().boundingBox(),
-        card.locator('.engagement-meta').boundingBox(),
-        card.locator('h3').boundingBox(),
-      ])
-      expect(iconBox).not.toBeNull()
-      expect(metaBox).not.toBeNull()
-      expect(headingBox).not.toBeNull()
-      expect(Math.abs(iconBox!.y - metaBox!.y)).toBeLessThanOrEqual(8)
-      expect(headingBox!.y).toBeGreaterThan(metaBox!.y + metaBox!.height)
-    }
+    await assertEngagementHeadersAligned(page)
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -1717,11 +1812,81 @@ test('card metadata uses compact icon and label hierarchy', async ({ page }) => 
   }
 
   await expect(page.locator('.engagement-meta')).toHaveText([
-    '01 / Single day',
-    '02 / One to four weeks',
-    '03 / Project length',
+    '3.1 / Single day',
+    '3.2 / One to four weeks',
+    '3.3 / Project length',
   ])
 })
+
+test('flow numbering is hierarchical and consistent across nav and sections', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  await expect(page.locator('.section-head-index')).toHaveText([
+    '1.0 / Manifesto',
+    '2.0 / Practice',
+    '3.0 / Engage',
+    '4.0 / Proof',
+    '5.0 / Who',
+  ])
+  await expect(
+    page.locator('#contact .label.text-accent').first(),
+  ).toHaveText('6.0 / Start')
+
+  const navGlyphs = page.locator('.primary-navigation .nav-glyph')
+  await expect(navGlyphs).toHaveText(['1.0', '2.0', '3.0', '4.0', '6.0'])
+
+  await expect(
+    page.locator('.brand-story-card .label.text-accent'),
+  ).toHaveText(['1.0.1', '1.0.2', '1.0.3', '1.0.4'])
+
+  await page.goto(`/manifesto?design=${designRecipes[0].id}`)
+  await page.evaluate(() => document.fonts.ready)
+  const manifestoModal = page.getByRole('dialog')
+  const positionNumbers = manifestoModal.locator(
+    'section .font-display.italic.text-accent',
+  )
+  await expect(positionNumbers).toHaveText([
+    '1.1',
+    '1.2',
+    '1.3',
+    '1.4',
+    '1.5',
+    '1.6',
+    '1.7',
+  ])
+  await expect(manifestoModal.getByText('1.0.4', { exact: true })).toBeVisible()
+
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  )
+  expect(overflow).toBeLessThanOrEqual(1)
+})
+
+for (const recipe of designRecipes) {
+  test(`engagement card headers align across responsive grids in ${recipe.id}`, async ({
+    page,
+  }) => {
+    await openRecipe(page, recipe.id)
+
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 768, height: 1024 },
+      { width: 1280, height: 800 },
+    ]) {
+      await page.setViewportSize(viewport)
+      await assertEngagementHeadersAligned(page)
+
+      const overflow = await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      )
+      expect(overflow).toBeLessThanOrEqual(1)
+    }
+  })
+}
 
 test('engagement tiers show clear rates and carry intent into contact', async ({ page }) => {
   await openRecipe(page, designRecipes[0].id)
@@ -1762,6 +1927,63 @@ test('engagement tiers show clear rates and carry intent into contact', async ({
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )
   expect(overflow).toBeLessThanOrEqual(1)
+})
+
+test('engagement CTAs scroll to the inline form and prefill the reason', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await openRecipe(page, designRecipes[0].id)
+
+  await page.locator('.engagement-action[href*="engagement=week"]').click()
+  await expect(page).toHaveURL(/engagement=week/)
+  await expect(page).toHaveURL(/#contact$/)
+  await expect(page.getByLabel('Reason for getting in touch')).toHaveValue(
+    'One-to-four-week engagement',
+  )
+  await expect
+    .poll(() =>
+      page.locator('#contact').evaluate((element) => element.getBoundingClientRect().top),
+    )
+    .toBeLessThanOrEqual(200)
+})
+
+test('hero distributes its height on tall viewports and fits short ones', async ({ page }) => {
+  const heroVariants = ['split', 'split-reverse', 'stacked-center', 'stacked-flush'].map(
+    (hero) => designRecipes.find((recipe) => recipe.hero === hero)!,
+  )
+
+  for (const recipe of heroVariants) {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openRecipe(page, recipe.id)
+
+    const tall = await page.evaluate(() => {
+      const hero = document.querySelector('.hero-section')!.getBoundingClientRect()
+      const stats = document.querySelector('.hero-stats')!.getBoundingClientRect()
+      const title = document.querySelector('.hero-title')!
+      return {
+        heroHeight: hero.height,
+        statsBottom: stats.bottom,
+        viewportHeight: innerHeight,
+        titleGap: Number.parseFloat(getComputedStyle(title).marginTop),
+      }
+    })
+    expect(tall.heroHeight, `${recipe.id} hero fills tall phones`).toBeGreaterThanOrEqual(
+      tall.viewportHeight - 1,
+    )
+    expect(tall.statsBottom, `${recipe.id} stats anchor the fold`).toBeGreaterThan(
+      tall.viewportHeight * 0.8,
+    )
+    expect(tall.titleGap, `${recipe.id} tall rhythm breathes`).toBeGreaterThanOrEqual(16)
+
+    await page.setViewportSize({ width: 375, height: 667 })
+    const shortCtaBottom = await page.evaluate(
+      () =>
+        document.querySelector('.hero-cta-button')?.getBoundingClientRect().bottom ??
+        Number.POSITIVE_INFINITY,
+    )
+    expect(shortCtaBottom, `${recipe.id} short phones keep the CTA in view`).toBeLessThanOrEqual(
+      668,
+    )
+  }
 })
 
 test('hero stat cards separate from the body and use gutter spacing', async ({ page }) => {

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { AnchorHTMLAttributes, ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { useTheme } from '../context/ThemeContext'
 import { designAwarePath } from '../utils/designPath'
@@ -10,7 +10,11 @@ type SectionLinkProps = {
   onNavigate?: () => void
   current?: 'location' | 'page'
   navKey?: string
-}
+  params?: Record<string, string>
+} & Omit<
+  AnchorHTMLAttributes<HTMLAnchorElement>,
+  'href' | 'onClick' | 'className' | 'children' | 'aria-current'
+>
 
 /**
  * Scrolls to a homepage section. If we are on another route it routes home
@@ -23,10 +27,22 @@ export default function SectionLink({
   onNavigate,
   current,
   navKey,
+  params,
+  ...anchorProps
 }: SectionLinkProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const { recipe } = useTheme()
+
+  const query =
+    params && Object.keys(params).length > 0
+      ? `?${new URLSearchParams(params).toString()}`
+      : ''
+  const destination = designAwarePath(
+    `/${query}#${to}`,
+    location.search,
+    recipe.id,
+  )
 
   const scrollTo = () => {
     document.getElementById(to)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -36,17 +52,18 @@ export default function SectionLink({
     event.preventDefault()
     onNavigate?.()
 
-    navigate(designAwarePath(`/#${to}`, location.search, recipe.id))
+    navigate(destination)
     requestAnimationFrame(() => requestAnimationFrame(scrollTo))
   }
 
   return (
     <a
-      href={designAwarePath(`/#${to}`, location.search, recipe.id)}
+      href={destination}
       onClick={handleClick}
       className={className}
       aria-current={current}
       data-nav-key={navKey}
+      {...anchorProps}
     >
       {children}
     </a>

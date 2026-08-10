@@ -24,7 +24,6 @@ export async function submitContactEnquiry(
     'message',
     `Reason for contact: ${payload.reason}\nOrganisation: ${payload.organisation.trim() || 'Not provided'}\n\n${payload.message.trim()}`,
   )
-  body.append('botcheck', 'false')
 
   let res: Response
   try {

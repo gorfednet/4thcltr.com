@@ -51,9 +51,6 @@ function getRouteNavigation(pathname: string): CurrentNavigation {
   if (normalized === '/manifesto') {
     return { key: 'why', ariaCurrent: 'page' }
   }
-  if (normalized === '/contact') {
-    return { key: 'contact', ariaCurrent: 'page' }
-  }
   return null
 }
 
@@ -171,7 +168,7 @@ function NavigationLinks({
           aria-current={currentFor('why')}
           data-nav-key="why"
         >
-          {content('01', 'Manifesto')}
+          {content('1.0', 'Manifesto')}
         </DesignLink>
       ) : (
         <SectionLink
@@ -181,7 +178,7 @@ function NavigationLinks({
           current={currentFor('why')}
           navKey="why"
         >
-          {content('01', 'Manifesto')}
+          {content('1.0', 'Manifesto')}
         </SectionLink>
       )}
       <SectionLink
@@ -191,7 +188,7 @@ function NavigationLinks({
         current={currentFor('practice')}
         navKey="practice"
       >
-        {content('02', 'Practice')}
+        {content('2.0', 'Practice')}
       </SectionLink>
       <SectionLink
         to="engage"
@@ -200,7 +197,7 @@ function NavigationLinks({
         current={currentFor('engage')}
         navKey="engage"
       >
-        {content('03', 'Engage')}
+        {content('3.0', 'Engage')}
       </SectionLink>
       <SectionLink
         to="proof"
@@ -209,17 +206,17 @@ function NavigationLinks({
         current={currentFor('proof')}
         navKey="proof"
       >
-        {content('04', 'Proof')}
+        {content('4.0', 'Proof')}
       </SectionLink>
-      <DesignLink
-        to="/contact"
+      <SectionLink
+        to="contact"
         className={`${className} nav-contact`}
-        onClick={onNavigate}
-        aria-current={currentFor('contact')}
-        data-nav-key="contact"
+        onNavigate={onNavigate}
+        current={currentFor('contact')}
+        navKey="contact"
       >
-        {content('05', 'Contact')}
-      </DesignLink>
+        {content('6.0', 'Contact')}
+      </SectionLink>
     </>
   )
 }
@@ -604,9 +601,9 @@ export default function Layout() {
                   </SectionLink>
                 </li>
                 <li>
-                  <DesignLink to="/contact" className="footer-link">
+                  <SectionLink to="contact" className="footer-link">
                     Describe the problem
-                  </DesignLink>
+                  </SectionLink>
                 </li>
               </ul>
             </div>

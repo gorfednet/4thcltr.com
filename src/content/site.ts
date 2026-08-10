@@ -23,25 +23,25 @@ export const brandStory = {
     '4th Culture is an independent practice shaped by Michael’s third-culture experience, the internet and agentic intelligence. It exists to make technology more expressive, specific and recognisably human without surrendering judgment.',
   inputs: [
     {
-      index: '01',
+      index: '1.0.1',
       name: 'Lived culture',
       detail:
         '4th Culture is shaped by Michael’s third-culture experience growing up abroad and by the necessity of seeing from more than one point of view.',
     },
     {
-      index: '02',
+      index: '1.0.2',
       name: 'The network',
       detail: 'The networked culture where language, behaviour and belonging keep being remade.',
     },
     {
-      index: '03',
+      index: '1.0.3',
       name: 'Agentic intelligence',
       detail:
         'Human-directed systems that expand what a small, senior practice can explore, build and deliver.',
     },
   ],
   result: {
-    index: '04',
+    index: '1.0.4',
     name: 'The fourth space',
     detail:
       'A deliberate practice where cultural fluency, human character and computational capability meet in products that do not feel interchangeable.',
@@ -62,7 +62,7 @@ export type Tenet = {
 
 export const tenets: Tenet[] = [
   {
-    number: '01',
+    number: '1.1',
     title: 'Design for the space between systems.',
     body: [
       'Products now operate between people, organisations, cultures and autonomous systems. The interface is only one visible part of a larger relationship that has to be understood and designed.',
@@ -71,7 +71,7 @@ export const tenets: Tenet[] = [
     ],
   },
   {
-    number: '02',
+    number: '1.2',
     title: 'People set the direction and own the result.',
     body: [
       'A human in the loop should mean more than a final review of a generated deck. A person sets the intent, judges the work and accepts the consequences.',
@@ -79,7 +79,7 @@ export const tenets: Tenet[] = [
     ],
   },
   {
-    number: '03',
+    number: '1.3',
     title: 'The internet keeps teaching itself the same design.',
     body: [
       'The same rounded card. The same gradient hero. The same three-column feature grid, the same testimonial carousel, the same soft blue. An entire industry converged on one template and called it best practice.',
@@ -88,7 +88,7 @@ export const tenets: Tenet[] = [
     ],
   },
   {
-    number: '04',
+    number: '1.4',
     title: 'AI is useful when judgment stays human.',
     body: [
       'We use these tools every day. They are fast, broad and especially useful for the parts of a project that do not benefit from ceremony.',
@@ -96,7 +96,7 @@ export const tenets: Tenet[] = [
     ],
   },
   {
-    number: '05',
+    number: '1.5',
     title: 'Differentiation begins before the interface.',
     body: [
       'Some clients arrive with a product that blurs into the category. Others arrive with a new utility platform that has no category pattern to borrow. Both need a reason to exist that people can recognise and use.',
@@ -104,7 +104,7 @@ export const tenets: Tenet[] = [
     ],
   },
   {
-    number: '06',
+    number: '1.6',
     title: 'Proof over posture.',
     body: [
       'More than 25 years of shipped work includes two patent filings, a brokerage ranked best in Canada three years running and a health-transport product acquired for $46M. The public record also includes twelve instances of recognition and launched apps for Chapters Indigo, Land Rover and C Spire.',
@@ -112,7 +112,7 @@ export const tenets: Tenet[] = [
     ],
   },
   {
-    number: '07',
+    number: '1.7',
     title: 'Small, senior and accountable.',
     body: [
       'The principal stays on the project from the first conversation through delivery. Specialist partners extend the team without obscuring who made a decision or who owns it.',
@@ -662,7 +662,7 @@ export type Engagement = {
 
 export const engagements: Engagement[] = [
   {
-    index: '01',
+    index: '3.1',
     name: 'The day',
     duration: 'Single day',
     key: 'day',
@@ -680,7 +680,7 @@ export const engagements: Engagement[] = [
     ],
   },
   {
-    index: '02',
+    index: '3.2',
     name: 'The week',
     duration: 'One to four weeks',
     key: 'week',
@@ -698,7 +698,7 @@ export const engagements: Engagement[] = [
     ],
   },
   {
-    index: '03',
+    index: '3.3',
     name: 'The assembled team',
     duration: 'Project length',
     key: 'project',

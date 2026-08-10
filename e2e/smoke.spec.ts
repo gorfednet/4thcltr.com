@@ -15,11 +15,17 @@ test.describe('smoke', () => {
     expect(errors, `page errors: ${errors.join('; ')}`).toEqual([])
   })
 
-  for (const path of ['/manifesto/', '/contact/']) {
-    test(`${path} loads directly`, async ({ page }) => {
-      const response = await page.goto(path)
-      expect(response?.status()).toBeLessThan(400)
-      await expect(page.locator('h1')).toBeVisible()
-    })
-  }
+  test('/manifesto/ loads directly as a modal above home', async ({ page }) => {
+    const response = await page.goto('/manifesto/')
+    expect(response?.status()).toBeLessThan(400)
+    await expect(page.getByRole('dialog').locator('h1')).toBeVisible()
+  })
+
+  test('/contact/ redirects to the home start section', async ({ page }) => {
+    const response = await page.goto('/contact/')
+    expect(response?.status()).toBeLessThan(400)
+    await expect(page).toHaveURL(/#contact$/)
+    await expect(page.locator('h1')).toBeVisible()
+    await expect(page.locator('#contact form.contact-form')).toBeVisible()
+  })
 })

@@ -8,8 +8,10 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react'
+import ContactForm from '../components/ContactForm'
 import DesignLink from '../components/DesignLink'
 import HeroVisual from '../components/HeroVisual'
+import SectionLink from '../components/SectionLink'
 import PageMeta from '../components/PageMeta'
 import Practice from '../components/Practice'
 import RegenerateButton from '../components/RegenerateButton'
@@ -29,6 +31,7 @@ import {
   broadcast,
   career,
   clients,
+  contactCopy,
   engagements,
   heroRegenerateNote,
   heroStatLabel,
@@ -181,7 +184,7 @@ export default function Home() {
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="01 / Manifesto"
+              index="1.0 / Manifesto"
               title={whySection.title}
               lede={whySection.lede}
             />
@@ -252,7 +255,7 @@ export default function Home() {
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="02 / Practice"
+              index="2.0 / Practice"
               title={sectionHeads.practice.title}
               lede={sectionHeads.practice.lede}
             />
@@ -265,7 +268,7 @@ export default function Home() {
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="03 / Engage"
+              index="3.0 / Engage"
               title={sectionHeads.engage.title}
               lede={sectionHeads.engage.lede}
             />
@@ -287,8 +290,10 @@ export default function Home() {
                     engagement.key === 'project' ? ' engagement-card-featured' : ''
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <span className="text-accent">{engagementIcons[index]}</span>
+                  <div className="engagement-head flex items-center justify-between gap-4">
+                    <span className="engagement-icon flex shrink-0 items-center justify-center text-accent">
+                      {engagementIcons[index]}
+                    </span>
                     <span className="engagement-meta label text-right text-faint">
                       <span className="text-accent">{engagement.index}</span>
                       <span aria-hidden> / </span>
@@ -328,8 +333,9 @@ export default function Home() {
                   </ul>
 
                   <div className="mt-auto pt-9">
-                    <DesignLink
-                      to={`/contact?engagement=${engagement.key}`}
+                    <SectionLink
+                      to="contact"
+                      params={{ engagement: engagement.key }}
                       className="engagement-action group flex min-h-12 items-center justify-between gap-4 border border-line px-5 py-3.5 text-bone"
                       data-cta={`engage-${engagement.key}`}
                     >
@@ -340,7 +346,7 @@ export default function Home() {
                         aria-hidden
                         className="transition-transform duration-300 group-hover:translate-x-1"
                       />
-                    </DesignLink>
+                    </SectionLink>
                   </div>
                 </div>
               </Reveal>
@@ -353,7 +359,7 @@ export default function Home() {
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="04 / Proof"
+              index="4.0 / Proof"
               title={proofSection.title}
               lede={proofSection.lede}
             />
@@ -466,7 +472,7 @@ export default function Home() {
         <div className="section-shell shell py-24 lg:py-36">
           <Reveal>
             <SectionHead
-              index="05 / Who"
+              index="5.0 / Who"
               title={sectionHeads.who.title}
               lede={sectionHeads.who.lede}
             />
@@ -613,7 +619,7 @@ export default function Home() {
       <section id="contact" className="section-anchor rule-top scroll-mt-24 bg-ground-lift">
         <div className="section-shell shell py-28 lg:py-40">
           <Reveal>
-            <p className="label text-accent">06 / Start</p>
+            <p className="label text-accent">6.0 / Start</p>
             <h2 className="display-xl mt-8 text-[length:clamp(2.75rem,9vw,8rem)]">
               Describe the
               <br />
@@ -621,25 +627,33 @@ export default function Home() {
             </h2>
 
             <div className="section-content grid-12 mt-16">
-              <div className="md:col-span-8 lg:col-span-6">
+              <aside className="md:col-span-4 lg:col-span-4">
                 <p className="measure text-xl leading-relaxed text-muted">
                   {startSection.lede}
                 </p>
-              </div>
+                <div className="mt-10 border-t border-line-soft pt-6">
+                  <p className="label text-faint">Useful context</p>
+                  <ul className="mt-5 space-y-3 text-base leading-relaxed text-muted">
+                    <li>Your role and organisation</li>
+                    <li>The decision or problem at hand</li>
+                    <li>Where the product is today: concept, launch, live or scaling</li>
+                    <li>Any timing, team or regulatory constraints</li>
+                    <li>What a strong result would make possible</li>
+                  </ul>
+                </div>
+                <div className="mt-10 border-t border-line-soft pt-6">
+                  <p className="label text-faint">What happens next</p>
+                  <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted">
+                    {contactCopy.whatHappensNext.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ul>
+                </div>
+              </aside>
 
-              <DesignLink
-                to="/contact"
-                className="button-solid group min-h-12 justify-between gap-4 px-6 py-4 md:col-span-6 md:col-start-3 lg:col-span-4 lg:col-start-9"
-                data-cta="start"
-              >
-                <span className="label">{startSection.ctaLabel}</span>
-                <ArrowRight
-                  size={14}
-                  strokeWidth={1.5}
-                  aria-hidden
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </DesignLink>
+              <div className="mt-12 md:col-span-8 md:mt-0 lg:col-span-7 lg:col-start-6">
+                <ContactForm />
+              </div>
             </div>
           </Reveal>
         </div>

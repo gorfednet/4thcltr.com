@@ -47,12 +47,6 @@ export const pageSeo = {
     description:
       'Seven positions from 4th Culture on design judgment, differentiation and making specific, useful products from first concept to delivery.',
   },
-  contact: {
-    path: '/contact',
-    title: 'Contact Michael Duncan McArthur',
-    description:
-      'Contact 4th Culture about product strategy, design leadership, end-to-end delivery, assembled teams, speaking and advisory work.',
-  },
   notFound: {
     path: '/404',
     title: 'Nothing here',
