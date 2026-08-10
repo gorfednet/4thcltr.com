@@ -87,8 +87,7 @@ export default function ContactForm() {
           Thank you for the context.
         </h3>
         <p className="measure mt-6 text-lg leading-relaxed text-muted">
-          Michael will read your note and reply directly. The design you chose
-          has stayed exactly where you left it.
+          Michael will read your note and reply directly.
         </p>
         <div className="mt-10">
           <button
