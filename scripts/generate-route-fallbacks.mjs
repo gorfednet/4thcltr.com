@@ -16,6 +16,9 @@ const routes = [
   },
 ]
 
+// SPA shell only: React redirects /contact to /#contact while nginx serves this file.
+const spaShellSegments = ['contact']
+
 function replaceTag(html, pattern, replacement) {
   return html.replace(pattern, replacement)
 }
@@ -81,6 +84,14 @@ async function ensureRouteFallbacks() {
     const destination = path.join(routeDir, 'index.html')
     await fs.mkdir(routeDir, { recursive: true })
     await fs.writeFile(destination, applyRouteMeta(html, route), 'utf8')
+    console.log(`Wrote ${path.relative(process.cwd(), destination)}`)
+  }
+
+  for (const segment of spaShellSegments) {
+    const routeDir = path.join(distDir, segment)
+    const destination = path.join(routeDir, 'index.html')
+    await fs.mkdir(routeDir, { recursive: true })
+    await fs.writeFile(destination, html, 'utf8')
     console.log(`Wrote ${path.relative(process.cwd(), destination)}`)
   }
 }
