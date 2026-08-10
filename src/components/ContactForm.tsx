@@ -21,7 +21,6 @@ const engagementReasons: Record<string, string> = {
 
 export default function ContactForm() {
   const [searchParams] = useSearchParams()
-  const [botcheck, setBotcheck] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -44,13 +43,14 @@ export default function ContactForm() {
     if (submissionInFlight.current) return
     setFormError(null)
 
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    const botcheck = formData.has('botcheck')
     if (botcheck) {
       setSubmitted(true)
       return
     }
 
-    const form = event.currentTarget
-    const formData = new FormData(form)
     submissionInFlight.current = true
     setSubmitting(true)
     const result = await submitContactEnquiry({
@@ -94,10 +94,7 @@ export default function ContactForm() {
           <button
             type="button"
             className="button-outline label min-h-12 px-6 py-3"
-            onClick={() => {
-              setSubmitted(false)
-              setBotcheck(false)
-            }}
+            onClick={() => setSubmitted(false)}
           >
             Send another enquiry
           </button>
@@ -114,8 +111,6 @@ export default function ContactForm() {
         name="botcheck"
         tabIndex={-1}
         aria-hidden="true"
-        checked={botcheck}
-        onChange={(event) => setBotcheck(event.target.checked)}
       />
 
       {formError && (

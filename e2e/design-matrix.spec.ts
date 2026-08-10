@@ -1454,6 +1454,26 @@ test('site has one accessible contact form with an unchecked hidden botcheck', a
   await expect(form.getByRole('button', { name: 'Send enquiry' })).toBeEnabled()
 })
 
+test('contact honeypot reads the submitted DOM state without a change event', async ({
+  page,
+}) => {
+  let requestCount = 0
+  await page.route('https://api.web3forms.com/submit', async (route) => {
+    requestCount += 1
+    await route.abort()
+  })
+  await openRecipe(page, designRecipes[0].id)
+
+  await page.locator('form.contact-form').evaluate((form: HTMLFormElement) => {
+    const botcheck = form.elements.namedItem('botcheck') as HTMLInputElement
+    botcheck.checked = true
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+  })
+
+  await expect(page.getByRole('status')).toContainText('Message sent')
+  expect(requestCount).toBe(0)
+})
+
 test('contact writing controls remain restrained in every recipe', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   for (const recipe of designRecipes) {
