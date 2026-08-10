@@ -418,7 +418,7 @@ export const outcomes: Outcome[] = [
     sector: 'Retail',
     headline: 'Mobile and in-store purchasing, launched on both platforms.',
     detail:
-      'iOS and Android applications bringing in-store purchasing and Passbook support to Canada’s largest book retailer, built while establishing the product design team at BNOTIONS. The experience brought mobile purchasing into stores across both major smartphone platforms.',
+      'Built while establishing the product design team at BNOTIONS, the iOS and Android applications brought in-store purchasing and Passbook support to Canada’s largest book retailer.',
     citations: [
       {
         label: 'Indigo launches mobile apps for in-store purchasing, 2013',
