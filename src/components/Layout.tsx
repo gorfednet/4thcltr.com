@@ -25,6 +25,7 @@ const navigationKeys = new Set<NavigationKey>([
   'practice',
   'engage',
   'history',
+  'who',
   'contact',
 ])
 
@@ -210,13 +211,22 @@ function NavigationLinks({
         {content('4.0', 'History')}
       </SectionLink>
       <SectionLink
+        to="who"
+        className={className}
+        onNavigate={onNavigate}
+        current={currentFor('who')}
+        navKey="who"
+      >
+        {content('5.0', 'Who')}
+      </SectionLink>
+      <SectionLink
         to="contact"
         className={`${className} nav-contact`}
         onNavigate={onNavigate}
         current={currentFor('contact')}
         navKey="contact"
       >
-        {content('6.0', 'Contact')}
+        {content('6.0', 'Start')}
       </SectionLink>
     </>
   )
@@ -401,15 +411,30 @@ export default function Layout() {
       navigate(`${location.pathname}${location.search}#history`, { replace: true })
       return
     }
-    const frame = requestAnimationFrame(() => {
+    let active = true
+    let settleFrame = 0
+    let settledFrame = 0
+    const scrollToTarget = () => {
       const target = document.getElementById(targetId)
       if (!target) return
       const previous = document.documentElement.style.scrollBehavior
       document.documentElement.style.scrollBehavior = 'auto'
       target.scrollIntoView({ block: 'start' })
       document.documentElement.style.scrollBehavior = previous
+    }
+    const initialFrame = requestAnimationFrame(scrollToTarget)
+    document.fonts.ready.then(() => {
+      if (!active) return
+      settleFrame = requestAnimationFrame(() => {
+        settledFrame = requestAnimationFrame(scrollToTarget)
+      })
     })
-    return () => cancelAnimationFrame(frame)
+    return () => {
+      active = false
+      cancelAnimationFrame(initialFrame)
+      if (settleFrame) cancelAnimationFrame(settleFrame)
+      if (settledFrame) cancelAnimationFrame(settledFrame)
+    }
   }, [location.hash, location.pathname, location.search, navigate])
 
   useEffect(() => {

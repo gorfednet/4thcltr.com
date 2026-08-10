@@ -53,7 +53,7 @@ function mobileTabNavigation(page: Page) {
 
 async function expectMobileTabState(
   page: Page,
-  key: 'why' | 'practice' | 'engage' | 'history' | 'contact',
+  key: 'why' | 'practice' | 'engage' | 'history' | 'who' | 'contact',
   ariaCurrent: 'location' | 'page',
 ) {
   const navigation = mobileTabNavigation(page)
@@ -259,11 +259,11 @@ test.describe('desktop interaction matrix', () => {
         await expect(tabs.nth(index)).toHaveAttribute('aria-selected', 'true')
       }
 
-      const projectLink = page.getByRole('link', { name: 'Contact', exact: true })
+      const projectLink = page.getByRole('link', { name: 'Start', exact: true })
       if ((await projectLink.count()) === 0) {
         await page.getByRole('button', { name: 'Menu' }).click()
       }
-      await page.getByRole('link', { name: 'Contact', exact: true }).first().click()
+      await page.getByRole('link', { name: 'Start', exact: true }).first().click()
       await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}#contact$`))
       await expect(page.locator('#contact form.contact-form')).toBeVisible()
 
@@ -882,7 +882,7 @@ test('expanded mobile menus expose every destination without clipping', async ({
           }),
       )
       expect(visibleControls).toHaveLength(
-        mobileMenuCloseAtTriggerIds.has(mobileNavigationId) ? 5 : 6,
+        mobileMenuCloseAtTriggerIds.has(mobileNavigationId) ? 6 : 7,
       )
       for (const control of visibleControls) {
         expect(control.height).toBeGreaterThan(0)
@@ -1173,6 +1173,10 @@ test('mobile tab navigation follows the current section and route', async ({ pag
     await expectMobileTabState(page, 'history', 'location')
     await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
 
+    await page.locator('#who').scrollIntoViewIfNeeded()
+    await expectMobileTabState(page, 'who', 'location')
+    await expect.poll(() => nav.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0)
+
     await page.goto(`/contact/?design=${recipe.id}`)
     await expect(page).toHaveURL(new RegExp(`/\\?design=${recipe.id}#contact$`))
     await expectMobileTabState(page, 'contact', 'location')
@@ -1323,7 +1327,7 @@ test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
 
   await page.goto(`/contact/?design=${recipe.id}`)
   const nav = page.locator('[data-mobile-navigation="tabs"] .primary-navigation')
-  const contactLink = nav.getByRole('link', { name: 'Contact', exact: true })
+  const contactLink = nav.getByRole('link', { name: 'Start', exact: true })
 
   await expect(contactLink).toHaveAttribute('aria-current', 'location')
   await expect.poll(() =>
@@ -1341,13 +1345,16 @@ test('mobile tab auto-follow respects reduced motion', async ({ page }) => {
   ).toBe(true)
 })
 
-test('primary navigation includes Contact link to the start section', async ({ page }) => {
+test('primary navigation includes Who and Start chapters', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   await openRecipe(page, designRecipes[0].id)
 
-  const contactLink = page.getByRole('link', { name: 'Contact', exact: true }).first()
-  await expect(contactLink).toBeVisible()
-  await expect(contactLink).toHaveAttribute('href', expect.stringContaining('#contact'))
+  const whoLink = page.getByRole('link', { name: 'Who', exact: true }).first()
+  const startLink = page.getByRole('link', { name: 'Start', exact: true }).first()
+  await expect(whoLink).toBeVisible()
+  await expect(whoLink).toHaveAttribute('href', expect.stringContaining('#who'))
+  await expect(startLink).toBeVisible()
+  await expect(startLink).toHaveAttribute('href', expect.stringContaining('#contact'))
 })
 
 test('navigation links do not overlap hero wireframe imagery', async ({ page }) => {
@@ -1918,7 +1925,7 @@ test('flow numbering is hierarchical and consistent across nav and sections', as
   ).toHaveText('6.0 / Start')
 
   const navGlyphs = page.locator('.primary-navigation .nav-glyph')
-  await expect(navGlyphs).toHaveText(['1.0', '2.0', '3.0', '4.0', '6.0'])
+  await expect(navGlyphs).toHaveText(['1.0', '2.0', '3.0', '4.0', '5.0', '6.0'])
 
   await expect(
     page.locator('.brand-story-card .label.text-accent'),
@@ -2162,25 +2169,33 @@ test('scroll spy highlights practice nav when practice is in view', async ({ pag
   await expect(practiceNav).toHaveAttribute('aria-current', 'location')
 })
 
-test('scroll spy clears active nav over unmapped scroll zones', async ({ page }) => {
+test('scroll spy hands off History to Who to Start without dead zones', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 })
   await openRecipe(page, designRecipes[0].id)
 
-  await page.evaluate(() => {
-    const who = document.getElementById('who')
-    if (!who) return
-    const rect = who.getBoundingClientRect()
-    window.scrollTo({
-      top: window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2,
-      behavior: 'instant',
+  const scrollToCenter = (selector: string) =>
+    page.locator(selector).evaluate((element) => {
+      const rect = element.getBoundingClientRect()
+      window.scrollTo({
+        top: window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2,
+        behavior: 'instant',
+      })
     })
-  })
-  await page.waitForTimeout(300)
 
-  const activeCount = await page
-    .locator('.primary-navigation a[aria-current="location"]')
-    .count()
-  expect(activeCount).toBe(0)
+  await scrollToCenter('.brands-sector-band')
+  await expect(
+    page.locator('.primary-navigation [data-nav-key="history"]').first(),
+  ).toHaveAttribute('aria-current', 'location')
+
+  await scrollToCenter('#who')
+  await expect(
+    page.locator('.primary-navigation [data-nav-key="who"]').first(),
+  ).toHaveAttribute('aria-current', 'location')
+
+  await page.locator('#contact').scrollIntoViewIfNeeded()
+  await expect(
+    page.locator('.primary-navigation [data-nav-key="contact"]').first(),
+  ).toHaveAttribute('aria-current', 'location')
 })
 
 test('engagement outcome promise precedes the price block', async ({ page }) => {
@@ -2256,4 +2271,23 @@ test('supplemental awards do not duplicate history citation urls', async ({ page
     return whoHrefs.filter((href) => historyHrefs.includes(href))
   })
   expect(duplicates).toEqual([])
+})
+
+test('TowIt recognition is consolidated in History with Wikipedia last', async ({ page }) => {
+  await openRecipe(page, designRecipes[0].id)
+
+  const towItRow = page.locator('#history .history-row').filter({
+    has: page.getByRole('heading', { name: 'TowIt', exact: true }),
+  })
+  const citations = towItRow.locator('ul li')
+  await expect(citations).toHaveCount(10)
+  await expect(towItRow).toContainText('Product Hunt')
+  await expect(towItRow).toContainText('Planetizen')
+  await expect(towItRow).toContainText('Indie88')
+  await expect(citations.last()).toContainText('Wikipedia entry')
+
+  const furtherRecognition = page
+    .getByRole('heading', { name: 'Further recognition', exact: true })
+    .locator('..')
+  await expect(furtherRecognition).not.toContainText(/TowIt|Product Hunt|Planetizen|Indie88/)
 })
