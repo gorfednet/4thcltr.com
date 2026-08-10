@@ -13,6 +13,94 @@ import { studio } from '../content/site'
 import { useScrollSpy } from '../hooks/useScrollSpy'
 import { designAwarePath } from '../utils/designPath'
 
+type NavigationKey = Exclude<ReturnType<typeof useScrollSpy>, null>
+
+type CurrentNavigation = {
+  key: NavigationKey
+  ariaCurrent: 'location' | 'page'
+} | null
+
+const navigationKeys = new Set<NavigationKey>([
+  'why',
+  'practice',
+  'engage',
+  'proof',
+  'contact',
+])
+
+function normalizePathname(pathname: string): string {
+  return pathname === '/' ? pathname : pathname.replace(/\/+$/, '')
+}
+
+function getHashNavigationKey(
+  pathname: string,
+  hash: string,
+): NavigationKey | null {
+  if (normalizePathname(pathname) !== '/' || !hash) return null
+
+  try {
+    const key = decodeURIComponent(hash.slice(1)) as NavigationKey
+    return navigationKeys.has(key) ? key : null
+  } catch {
+    return null
+  }
+}
+
+function getRouteNavigation(pathname: string): CurrentNavigation {
+  const normalized = normalizePathname(pathname)
+  if (normalized === '/manifesto') {
+    return { key: 'why', ariaCurrent: 'page' }
+  }
+  if (normalized === '/contact') {
+    return { key: 'contact', ariaCurrent: 'page' }
+  }
+  return null
+}
+
+function getInitialNavigationKey(
+  pathname: string,
+  hash: string,
+): NavigationKey | null {
+  const routeNavigation = getRouteNavigation(pathname)
+  if (routeNavigation) return routeNavigation.key
+  if (normalizePathname(pathname) !== '/') return null
+  if (!hash) return 'why'
+  return getHashNavigationKey(pathname, hash)
+}
+
+function isThinTabNavigation(mobileNavigationId: string): boolean {
+  return (
+    mobileNavigationId === 'tabs' &&
+    window.matchMedia('(max-width: 1023px)').matches
+  )
+}
+
+function positionNavigation(
+  navigationElement: HTMLElement,
+  key: NavigationKey | null,
+  behavior: ScrollBehavior,
+) {
+  if (!key) {
+    navigationElement.scrollTo({ left: 0, behavior })
+    return
+  }
+
+  const tab = navigationElement.querySelector<HTMLElement>(
+    `[data-nav-key="${key}"]`,
+  )
+  if (!tab) return
+
+  const targetLeft =
+    tab.offsetLeft -
+    (navigationElement.clientWidth - tab.offsetWidth) / 2
+  const maxLeft =
+    navigationElement.scrollWidth - navigationElement.clientWidth
+  const left = Math.max(0, Math.min(targetLeft, maxLeft))
+
+  if (Math.abs(navigationElement.scrollLeft - left) < 1) return
+  navigationElement.scrollTo({ left, behavior })
+}
+
 function Wordmark({ onClick }: { onClick?: () => void }) {
   const location = useLocation()
   const navigate = useNavigate()
@@ -54,14 +142,18 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
 function NavigationLinks({
   className,
   onNavigate,
-  activeSectionId,
+  currentNavigation,
 }: {
   className: string
   onNavigate?: () => void
-  activeSectionId: ReturnType<typeof useScrollSpy>
+  currentNavigation: CurrentNavigation
 }) {
   const location = useLocation()
-  const isContactPage = /^\/contact\/?$/.test(location.pathname)
+  const isManifestoPage = normalizePathname(location.pathname) === '/manifesto'
+  const currentFor = (key: NavigationKey) =>
+    currentNavigation?.key === key
+      ? currentNavigation.ariaCurrent
+      : undefined
   const content = (glyph: string, label: string) => (
     <>
       <span className="nav-glyph" aria-hidden>{glyph}</span>
@@ -71,19 +163,33 @@ function NavigationLinks({
 
   return (
     <>
-      <SectionLink
-        to="why"
-        className={className}
-        onNavigate={onNavigate}
-        current={activeSectionId === 'why'}
-      >
-        {content('01', 'Manifesto')}
-      </SectionLink>
+      {isManifestoPage ? (
+        <DesignLink
+          to="/manifesto"
+          className={className}
+          onClick={onNavigate}
+          aria-current={currentFor('why')}
+          data-nav-key="why"
+        >
+          {content('01', 'Manifesto')}
+        </DesignLink>
+      ) : (
+        <SectionLink
+          to="why"
+          className={className}
+          onNavigate={onNavigate}
+          current={currentFor('why')}
+          navKey="why"
+        >
+          {content('01', 'Manifesto')}
+        </SectionLink>
+      )}
       <SectionLink
         to="practice"
         className={className}
         onNavigate={onNavigate}
-        current={activeSectionId === 'practice'}
+        current={currentFor('practice')}
+        navKey="practice"
       >
         {content('02', 'Practice')}
       </SectionLink>
@@ -91,7 +197,8 @@ function NavigationLinks({
         to="engage"
         className={className}
         onNavigate={onNavigate}
-        current={activeSectionId === 'engage'}
+        current={currentFor('engage')}
+        navKey="engage"
       >
         {content('03', 'Engage')}
       </SectionLink>
@@ -99,7 +206,8 @@ function NavigationLinks({
         to="proof"
         className={className}
         onNavigate={onNavigate}
-        current={activeSectionId === 'proof'}
+        current={currentFor('proof')}
+        navKey="proof"
       >
         {content('04', 'Proof')}
       </SectionLink>
@@ -107,11 +215,8 @@ function NavigationLinks({
         to="/contact"
         className={`${className} nav-contact`}
         onClick={onNavigate}
-        aria-current={
-          isContactPage || activeSectionId === 'contact'
-            ? 'page'
-            : undefined
-        }
+        aria-current={currentFor('contact')}
+        data-nav-key="contact"
       >
         {content('05', 'Contact')}
       </DesignLink>
@@ -143,6 +248,43 @@ export default function Layout() {
   const navigation = getNavigationConstruct(navigationId)
   const mobileMenuClosesAtTrigger = mobileMenuCloseAtTriggerIds.has(mobileNavigationId)
   const activeSectionId = useScrollSpy()
+  const normalizedPathname = normalizePathname(location.pathname)
+  const routeNavigation = getRouteNavigation(location.pathname)
+  const currentNavigation: CurrentNavigation =
+    routeNavigation ??
+    (normalizedPathname === '/' && activeSectionId
+      ? { key: activeSectionId, ariaCurrent: 'location' }
+      : null)
+  const currentNavigationKey = currentNavigation?.key ?? null
+  const currentNavigationAriaCurrent =
+    currentNavigation?.ariaCurrent ?? null
+
+  useLayoutEffect(() => {
+    const navigationElement = primaryNavigationRef.current
+    if (
+      !navigationElement ||
+      !isThinTabNavigation(mobileNavigationId)
+    ) {
+      return
+    }
+
+    const renderedCurrentKey =
+      navigationElement
+        .querySelector<HTMLElement>('[aria-current][data-nav-key]')
+        ?.dataset.navKey as NavigationKey | undefined
+    positionNavigation(
+      navigationElement,
+      renderedCurrentKey ??
+        getInitialNavigationKey(location.pathname, location.hash),
+      'auto',
+    )
+  }, [
+    location.hash,
+    location.key,
+    location.pathname,
+    mobileNavigationId,
+    recipe.id,
+  ])
 
   useEffect(() => {
     if (mobileNavigationId !== 'tabs') return
@@ -152,51 +294,59 @@ export default function Layout() {
 
     let frame = 0
     let active = true
+    let scheduledBehavior: ScrollBehavior = 'auto'
 
-    const centerActiveTab = () => {
+    const synchronizeNavigation = () => {
       frame = 0
-      if (!active || !window.matchMedia('(max-width: 1023px)').matches) return
+      if (!active || !isThinTabNavigation(mobileNavigationId)) return
 
-      const activeTab =
-        navigationElement.querySelector<HTMLElement>('[aria-current]')
-      if (!activeTab) return
-
-      const targetLeft =
-        activeTab.offsetLeft -
-        (navigationElement.clientWidth - activeTab.offsetWidth) / 2
-      const maxLeft =
-        navigationElement.scrollWidth - navigationElement.clientWidth
-      const left = Math.max(0, Math.min(targetLeft, maxLeft))
-
-      if (Math.abs(navigationElement.scrollLeft - left) < 1) return
-
-      navigationElement.scrollTo({
-        left,
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-          ? 'auto'
-          : 'smooth',
-      })
+      if (currentNavigationKey) {
+        positionNavigation(
+          navigationElement,
+          currentNavigationKey,
+          scheduledBehavior,
+        )
+      } else if (normalizedPathname !== '/') {
+        positionNavigation(navigationElement, null, 'auto')
+      }
     }
 
-    const scheduleCenter = () => {
+    const scheduleSynchronization = (behavior: ScrollBehavior) => {
       if (!active) return
+      scheduledBehavior = behavior
       if (frame) cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(centerActiveTab)
+      frame = requestAnimationFrame(synchronizeNavigation)
     }
 
-    scheduleCenter()
-    window.addEventListener('resize', scheduleCenter, { passive: true })
-    document.fonts.ready.then(scheduleCenter)
+    const motionBehavior = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
+      ? 'auto'
+      : 'smooth'
+    const synchronizeImmediately = () => scheduleSynchronization('auto')
+
+    scheduleSynchronization(motionBehavior)
+    window.addEventListener('resize', synchronizeImmediately, {
+      passive: true,
+    })
+    window.addEventListener('orientationchange', synchronizeImmediately, {
+      passive: true,
+    })
+    window.addEventListener('pageshow', synchronizeImmediately)
+    document.fonts.ready.then(synchronizeImmediately)
 
     return () => {
       active = false
       if (frame) cancelAnimationFrame(frame)
-      window.removeEventListener('resize', scheduleCenter)
+      window.removeEventListener('resize', synchronizeImmediately)
+      window.removeEventListener('orientationchange', synchronizeImmediately)
+      window.removeEventListener('pageshow', synchronizeImmediately)
     }
   }, [
-    activeSectionId,
-    location.pathname,
+    currentNavigationAriaCurrent,
+    currentNavigationKey,
     mobileNavigationId,
+    normalizedPathname,
     recipe.id,
   ])
 
@@ -343,7 +493,10 @@ export default function Layout() {
             aria-label="Primary navigation"
             className="primary-navigation"
           >
-            <NavigationLinks className={navLinkClass} activeSectionId={activeSectionId} />
+            <NavigationLinks
+              className={navLinkClass}
+              currentNavigation={currentNavigation}
+            />
           </nav>
 
           <button
@@ -385,7 +538,7 @@ export default function Layout() {
                 <NavigationLinks
                   className="mobile-nav-link"
                   onNavigate={() => setMenuOpen(false)}
-                  activeSectionId={activeSectionId}
+                  currentNavigation={currentNavigation}
                 />
                 <button
                   type="button"

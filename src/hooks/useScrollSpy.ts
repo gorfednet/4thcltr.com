@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import {
   scrollSpySections,
@@ -6,64 +6,51 @@ import {
 } from '../content/motion'
 
 function getAnchorOffset(): number {
-  const root = document.documentElement
-  const clearance = getComputedStyle(root).getPropertyValue('--header-clearance')
-  const parsed = Number.parseFloat(clearance)
-  return Number.isFinite(parsed) ? parsed + 24 : 120
+  const header = document.querySelector<HTMLElement>('.site-header')
+  const headerBottom = header?.getBoundingClientRect().bottom
+  // Place the reading anchor below the fixed header and its visual breathing room.
+  return typeof headerBottom === 'number' && Number.isFinite(headerBottom)
+    ? headerBottom + 48
+    : 120
 }
 
 function pickActiveSection(): ScrollSpySectionId | null {
   const anchorY = getAnchorOffset()
-  const viewportHeight = window.innerHeight
-  let bestId: ScrollSpySectionId | null = null
-  let bestDistance = Infinity
 
   for (const { id } of scrollSpySections) {
     const el = document.getElementById(id)
     if (!el) continue
     const rect = el.getBoundingClientRect()
-    const center = rect.top + rect.height / 2
-    const distance = Math.abs(center - anchorY)
-    if (distance < bestDistance) {
-      bestDistance = distance
-      bestId = id
-    }
+    if (rect.top <= anchorY && rect.bottom > anchorY) return id
   }
 
-  if (!bestId) return null
-
-  const el = document.getElementById(bestId)
-  if (!el) return null
-  const rect = el.getBoundingClientRect()
-  if (
-    rect.bottom < anchorY - viewportHeight * 0.1 ||
-    rect.top > anchorY + viewportHeight * 0.6
-  ) {
-    return null
-  }
-
-  return bestId
+  if (window.scrollY <= anchorY) return 'why'
+  return null
 }
 
 export function useScrollSpy(): ScrollSpySectionId | null {
   const location = useLocation()
-  const [activeId, setActiveId] = useState<ScrollSpySectionId | null>(null)
+  const [homeState, setHomeState] = useState<{
+    locationKey: string
+    activeId: ScrollSpySectionId | null
+  }>(() => ({
+    locationKey: location.key,
+    activeId: null,
+  }))
 
-  useEffect(() => {
-    if (/^\/contact\/?$/.test(location.pathname)) {
-      setActiveId('contact')
-      return
-    }
-
-    if (location.pathname !== '/') {
-      setActiveId(null)
-      return
-    }
+  useLayoutEffect(() => {
+    if (location.pathname !== '/') return
 
     let frame = 0
     const update = () => {
       frame = 0
-      setActiveId(pickActiveSection())
+      const activeId = pickActiveSection()
+      setHomeState((current) =>
+        current.locationKey === location.key &&
+        current.activeId === activeId
+          ? current
+          : { locationKey: location.key, activeId },
+      )
     }
 
     const onScrollOrResize = () => {
@@ -80,7 +67,9 @@ export function useScrollSpy(): ScrollSpySectionId | null {
       window.removeEventListener('scroll', onScrollOrResize)
       window.removeEventListener('resize', onScrollOrResize)
     }
-  }, [location.pathname, location.hash])
+  }, [location.hash, location.key, location.pathname])
 
-  return activeId
+  if (/^\/contact\/?$/.test(location.pathname)) return 'contact'
+  if (location.pathname !== '/') return null
+  return homeState.locationKey === location.key ? homeState.activeId : null
 }
